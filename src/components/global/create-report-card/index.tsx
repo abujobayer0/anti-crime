@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import { SelectComponent } from "../select-component";
 import { SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
 import { uploadFileToImageBB } from "@/lib/utils";
+import axios from "axios";
 
 type Props = {
   onSubmit?: (data: ReportData) => void;
@@ -31,111 +32,124 @@ interface District {
 }
 
 const CreateReportCard = ({ onSubmit }: Props) => {
-  const [divisions, setDivisions] = useState<Division[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [formData, setFormData] = useState<ReportData>({
-    title: "",
-    division: "",
-    district: "",
-    description: "",
-    images: [],
+  // Combine related state into a single object
+  const [formState, setFormState] = useState({
+    divisions: [] as Division[],
+    districts: [] as District[],
+    imagePreview: [] as string[],
+    isLoading: false,
+    formData: {
+      title: "",
+      division: "",
+      district: "",
+      description: "",
+      images: [] as string[],
+    },
   });
-  const [imagePreview, setImagePreview] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchDivisions = async () => {
-      try {
-        const response = await fetch("https://bdapis.com/api/v1.2/divisions");
-        const data = await response.json();
-        setDivisions(data.data);
-      } catch (error) {
-        console.error("Error fetching divisions:", error);
-      }
-    };
-    fetchDivisions();
+  // Memoize API calls
+  const fetchDivisions = React.useCallback(async () => {
+    try {
+      const { data } = await axios.get("https://bdapis.com/api/v1.2/divisions");
+      setFormState((prev) => ({ ...prev, divisions: data.data }));
+    } catch (error) {
+      console.error("Error fetching divisions:", error);
+    }
   }, []);
 
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      if (!formData.division) return;
-      try {
-        const response = await fetch(
-          `https://bdapis.com/api/v1.2/division/${formData.division}`
-        );
-        const data = await response.json();
-        setDistricts(data.data);
-      } catch (error) {
-        console.error("Error fetching districts:", error);
-      }
-    };
-    fetchDistricts();
-  }, [formData.division]);
+  const fetchDistricts = React.useCallback(async (division: string) => {
+    try {
+      const { data } = await axios.get(
+        `https://bdapis.com/api/v1.2/division/${division}`
+      );
+      setFormState((prev) => ({ ...prev, districts: data.data }));
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+    }
+  }, []);
 
+  // Use single useEffect for API calls
+  useEffect(() => {
+    fetchDivisions();
+  }, [fetchDivisions]);
+
+  useEffect(() => {
+    if (formState.formData.division) {
+      fetchDistricts(formState.formData.division);
+    }
+  }, [formState.formData.division, fetchDistricts]);
+
+  // Cleanup function for image previews
+  useEffect(() => {
+    return () => {
+      formState.imagePreview.forEach(URL.revokeObjectURL);
+    };
+  }, [formState.imagePreview]);
+
+  // Optimized handlers
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const files = event.target.files;
-    if (files) {
-      const newFiles = Array.from(files);
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
 
-      // Show preview immediately
-      const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
-      setImagePreview((prev) => [...prev, ...newPreviews]);
+    const newPreviews = files.map(URL.createObjectURL);
 
-      // Upload images to ImageBB
-      try {
-        const uploadedUrls = await Promise.all(
-          newFiles.map((file) => uploadFileToImageBB(file))
-        );
+    setFormState((prev) => ({
+      ...prev,
+      imagePreview: [...prev.imagePreview, ...newPreviews],
+    }));
 
-        setFormData((prev) => ({
-          ...prev,
-          images: [...(prev.images || []), ...uploadedUrls],
-        }));
-      } catch (error) {
-        console.error("Error uploading images:", error);
-        // Remove previews if upload fails
-        setImagePreview((prev) => prev.slice(0, prev.length - newFiles.length));
-      }
+    try {
+      const uploadedUrls = await Promise.all(files.map(uploadFileToImageBB));
+
+      setFormState((prev) => ({
+        ...prev,
+        formData: {
+          ...prev.formData,
+          images: [...prev.formData.images, ...uploadedUrls],
+        },
+      }));
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      setFormState((prev) => ({
+        ...prev,
+        imagePreview: prev.imagePreview.slice(
+          0,
+          prev.imagePreview.length - files.length
+        ),
+      }));
     }
   };
 
-  useEffect(() => {
-    return () => {
-      imagePreview.forEach((url) => {
-        URL.revokeObjectURL(url);
-      });
-    };
-  }, [imagePreview]);
-
   const handleAIGenerate = async () => {
-    if (!formData.images?.[0]) {
-      alert("Please upload at least one image first");
+    const { formData } = formState;
+
+    if (!formData.images?.length || !formData.division || !formData.district) {
+      alert("Please upload an image and select both division and district");
       return;
     }
 
-    setIsLoading(true);
+    setFormState((prev) => ({ ...prev, isLoading: true }));
+
     try {
-      const response = await fetch("http://localhost:5000/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ imageUrl: formData.images[0] }),
+      const { data } = await axios.post("http://localhost:5001/analyze", {
+        imageUrl: formData.images[0],
+        division: formData.division,
+        district: formData.district,
+        crime_time: new Date(),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setFormData((prev) => ({
-          ...prev,
-          description: data.description,
-        }));
-      }
+      if (!data?.report) throw new Error("Invalid response from AI service");
+
+      setFormState((prev) => ({
+        ...prev,
+        formData: { ...prev.formData, description: data.report },
+      }));
     } catch (error) {
-      console.error("Error generating description:", error);
+      handleAPIError(error);
     } finally {
-      setIsLoading(false);
+      setFormState((prev) => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -143,28 +157,22 @@ const CreateReportCard = ({ onSubmit }: Props) => {
     e.preventDefault();
 
     if (
-      !formData.title ||
-      !formData.division ||
-      !formData.district ||
-      !formData.description ||
-      !formData.images?.length
+      !formState.formData.title ||
+      !formState.formData.division ||
+      !formState.formData.district ||
+      !formState.formData.description ||
+      !formState.formData.images?.length
     ) {
       alert("Please fill in all required fields and upload at least one image");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/reports", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        onSubmit?.(formData);
-      }
+      const { data } = await axios.post(
+        "http://localhost:5001/api/reports",
+        formState.formData
+      );
+      onSubmit?.(formState.formData);
     } catch (error) {
       console.error("Error submitting report:", error);
     }
@@ -180,8 +188,8 @@ const CreateReportCard = ({ onSubmit }: Props) => {
           content={
             <SelectGroup>
               <SelectLabel>Division</SelectLabel>
-              {divisions &&
-                divisions?.map((div) => (
+              {formState.divisions &&
+                formState.divisions?.map((div) => (
                   <SelectItem key={div.division} value={div.division}>
                     {div.division}
                   </SelectItem>
@@ -190,7 +198,10 @@ const CreateReportCard = ({ onSubmit }: Props) => {
           }
           selectValue={"Division"}
           onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, division: value }))
+            setFormState((prev) => ({
+              ...prev,
+              formData: { ...prev.formData, division: value },
+            }))
           }
         />
 
@@ -198,8 +209,8 @@ const CreateReportCard = ({ onSubmit }: Props) => {
           content={
             <SelectGroup>
               <SelectLabel>District</SelectLabel>
-              {districts &&
-                districts?.map((dist) => (
+              {formState.districts &&
+                formState.districts?.map((dist) => (
                   <SelectItem key={dist.district} value={dist.district}>
                     {dist.district}
                   </SelectItem>
@@ -208,7 +219,10 @@ const CreateReportCard = ({ onSubmit }: Props) => {
           }
           selectValue={"District"}
           onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, district: value }))
+            setFormState((prev) => ({
+              ...prev,
+              formData: { ...prev.formData, district: value },
+            }))
           }
         />
       </div>
@@ -216,9 +230,12 @@ const CreateReportCard = ({ onSubmit }: Props) => {
         type="text"
         name="title"
         className="w-full border p-2 rounded-md mb-4"
-        value={formData.title}
+        value={formState.formData.title}
         onChange={(e) =>
-          setFormData((prev) => ({ ...prev, title: e.target.value }))
+          setFormState((prev) => ({
+            ...prev,
+            formData: { ...prev.formData, title: e.target.value },
+          }))
         }
         required
         placeholder="Enter report title..."
@@ -227,9 +244,12 @@ const CreateReportCard = ({ onSubmit }: Props) => {
         name="description"
         id="description"
         className="w-full h-24 border p-2 rounded-md"
-        value={formData.description}
+        value={formState.formData.description}
         onChange={(e) =>
-          setFormData((prev) => ({ ...prev, description: e.target.value }))
+          setFormState((prev) => ({
+            ...prev,
+            formData: { ...prev.formData, description: e.target.value },
+          }))
         }
         placeholder="Enter your report description..."
         required
@@ -241,9 +261,9 @@ const CreateReportCard = ({ onSubmit }: Props) => {
             type="button"
             variant="ghost"
             onClick={handleAIGenerate}
-            disabled={isLoading}
+            disabled={formState.isLoading}
           >
-            <Sparkles className={isLoading ? "animate-spin" : ""} />
+            <Sparkles className={formState.isLoading ? "animate-spin" : ""} />
           </Button>
 
           <Button
@@ -261,7 +281,7 @@ const CreateReportCard = ({ onSubmit }: Props) => {
             />
           </Button>
 
-          {imagePreview.map((preview, index) => (
+          {formState.imagePreview.map((preview, index) => (
             <div key={preview} className="relative w-12 h-12">
               <img
                 src={preview}
@@ -272,10 +292,17 @@ const CreateReportCard = ({ onSubmit }: Props) => {
                 type="button"
                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
                 onClick={() => {
-                  setImagePreview((prev) => prev.filter((_, i) => i !== index));
-                  setFormData((prev) => ({
+                  setFormState((prev) => ({
                     ...prev,
-                    images: prev.images?.filter((_, i) => i !== index) || [],
+                    imagePreview: prev.imagePreview.filter(
+                      (_, i) => i !== index
+                    ),
+                    formData: {
+                      ...prev.formData,
+                      images:
+                        prev.formData.images?.filter((_, i) => i !== index) ||
+                        [],
+                    },
                   }));
                 }}
               >
@@ -289,6 +316,25 @@ const CreateReportCard = ({ onSubmit }: Props) => {
       </div>
     </form>
   );
+};
+
+// Helper function for error handling
+const handleAPIError = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    if (error.code === "ECONNREFUSED") {
+      alert("Unable to connect to AI service. Please try again later.");
+    } else if (error.response?.status === 429) {
+      alert("Too many requests. Please wait a moment and try again.");
+    } else {
+      alert(
+        `AI service error: ${
+          error.response?.data?.message || "Please try again later"
+        }`
+      );
+    }
+  } else {
+    alert("Failed to generate description. Please try again.");
+  }
 };
 
 export default CreateReportCard;
