@@ -10,6 +10,7 @@ import {
   Siren,
   TimerIcon,
 } from "lucide-react";
+import Link from "next/link";
 
 const dummyData = {
   description:
@@ -103,7 +104,12 @@ const CrimeReportCard = () => {
 
       <div className="p-4 md:p-6 space-y-4">
         <div className="flex flex-col  justify-between gap-2">
-          <h2 className="text-xl font-bold w-full">Robbery at Local Store</h2>
+          <Link
+            href={"/dfffffgfg"}
+            className="text-xl font-bold w-full hover:underline"
+          >
+            Robbery at Local Store
+          </Link>
 
           <div className="flex items-center gap-2 text-sm">
             <LocateIcon size={12} />
