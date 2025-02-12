@@ -28,14 +28,12 @@ const LoginPage = () => {
   // Form submission handler
   const onSubmit = async (data: { email: string; password: string }) => {
     try {
-      console.log("Submitting login with:", data);
       const credentials = {
         email: data.email,
         password: data.password,
       };
 
       const res = await login(credentials).unwrap();
-      console.log("Login response:", res);
 
       if (res?.success) {
         const userData = {
@@ -45,22 +43,19 @@ const LoginPage = () => {
             email: res.data?.result?.email,
             role: res.data?.result?.role,
             name: res.data?.result?.name,
-            contract: res.data?.result?.contract,
+            contact: res.data?.result?.contact,
           },
         };
 
-        console.log("Dispatching user data to Redux:", userData);
         dispatch(setCredentials(userData));
 
         // Store token in cookie
         Cookies.set("accessToken", res.data?.accessToken, { expires: 7 }); // Expires in 7 days
 
-        console.log("Redux dispatch completed");
         setError("");
         router.push("/");
       }
     } catch (err: any) {
-      console.error("Login error:", err);
       setError(err?.data?.message || "Login failed");
     }
   };

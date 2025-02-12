@@ -13,7 +13,7 @@ export function GlobalPopover({ action, content, align }: Props) {
   return (
     <Popover>
       <PopoverTrigger asChild>{action}</PopoverTrigger>
-      <PopoverContent align={align} className="w-54 p-2">
+      <PopoverContent align={align} className="w-54 p-2" sideOffset={5}>
         {content}
       </PopoverContent>
     </Popover>

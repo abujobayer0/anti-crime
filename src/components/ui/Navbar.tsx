@@ -25,7 +25,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full shadow flex justify-end py-3">
+    <nav className="w-full !z-40 shadow-custom-sm bg-card flex justify-end py-3 sticky top-0 backdrop-blur-sm">
       <div className="flex items-center">
         <Input placeholder="Search..." className="w-[300px] mx-5" />
         <Button

@@ -6,18 +6,22 @@ interface User {
   id: string;
   email: string;
   role: string;
+  image?: string;
   name?: string;
   contract?: string;
+  isVerified?: boolean;
 }
 
 interface AuthState {
   user: User | null;
   token: string | null;
+  reports: any[];
 }
 
 const initialState: AuthState = {
   user: null,
   token: null,
+  reports: [],
 };
 
 const authSlice = createSlice({
@@ -43,7 +47,7 @@ export const getUser = (state: RootState) => state.auth.user;
 export const getToken = (state: RootState) => state.auth.token;
 export const getUserRole = (state: RootState) => state.auth.user?.role;
 export const isAuthenticated = (state: RootState) => !!state.auth.token;
-
+export const getUserReports = (state: RootState) => state.auth.reports;
 export const { setCredentials, logout } = authSlice.actions;
 
 export default authSlice.reducer;

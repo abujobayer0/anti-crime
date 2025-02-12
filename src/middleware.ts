@@ -32,7 +32,7 @@ export const config = {
     "/auth/registration",
     "/notifications",
     "/heatmap",
-    "/emergency-contact/:path*",
+    "/reports/:path*",
     "/profile",
   ],
 };

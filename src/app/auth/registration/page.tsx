@@ -42,7 +42,7 @@ const RegistrationPage = () => {
         name: data.name,
         email: data.email,
         password: data.password,
-        contract: data.mobile,
+        contact: data.mobile,
       };
       const res = await registration(credentials).unwrap();
       if (res.success) {
@@ -53,7 +53,7 @@ const RegistrationPage = () => {
             email: res.data?.result?.email,
             role: res.data?.result?.role,
             name: res.data?.result?.name,
-            contract: res.data?.result?.contract,
+            contact: res.data?.result?.contact,
           },
         };
 
