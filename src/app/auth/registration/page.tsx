@@ -1,29 +1,49 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import registrationBg from "../../../assets/images/registration.png";
+import registrationBg from "../../../../assets/images/registration.png";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
+import { useRouter } from "next/navigation";
 
 const RegistrationPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<{ name: string; email: string; password: string; mobile: string }>();
+  const [registration, { isLoading }] = useRegisterMutation();
+  const router = useRouter();
+  const [error, setError] = useState("");
 
   // Form submission handler
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
+  const onSubmit = async (data: { name: string; email: string; password: string; mobile: string }) => {
+    try {
+      const credentials = {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        contract: data.mobile,
+      };
+      const res = await registration(credentials).unwrap();
+      if (res.success) {
+        setError("");
+        router.push("/");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err?.data.message);
+      console.log(err);
+    }
   };
 
   return (
     <AuthenticationPageBody
-      ltr={true}
       src={registrationBg.src}
       title="Create New Account"
       form={
@@ -92,7 +112,7 @@ const RegistrationPage = () => {
                   message: "Password must be at least 6 characters",
                 },
               })}
-              placeholder="......."
+              placeholder="******"
               className="outline-none"
             />
             {errors.password && typeof errors.password.message === "string" && (
@@ -105,7 +125,7 @@ const RegistrationPage = () => {
             Already have an account?{" "}
             <Link
               className="text-sky-600 font-medium hover:underline"
-              href="/login"
+              href="/auth/login"
             >
               Login
             </Link>
@@ -116,8 +136,9 @@ const RegistrationPage = () => {
             type="submit"
             className="bg-[#309689] hover:bg-[#207267] w-full transition-all duration-300 active:scale-95"
           >
-            Register
+            {isLoading ? "Loading..." : "Register"}
           </Button>
+          {error && <p className="text-red-500">{error}</p>}
         </form>
       }
     />
