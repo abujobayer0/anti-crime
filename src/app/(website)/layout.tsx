@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppSidebar } from "@/components/global/appSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import Navbar from "@/components/ui/Navbar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,14 +14,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex">
-      <div>
-        <SidebarProvider>
-          <AppSidebar />
-        </SidebarProvider>
-      </div>
+    <div className="">
+      <Navbar />
+      <div className="flex">
+        <div>
+          <SidebarProvider>
+            <AppSidebar />
+          </SidebarProvider>
+        </div>
 
-      <div className="p-5">{children}</div>
+        <div className="p-5">{children}</div>
+      </div>
     </div>
   );
 }
