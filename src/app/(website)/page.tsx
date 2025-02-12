@@ -2,9 +2,7 @@ import CreateReportCard from "@/components/global/create-report-card";
 import CrimeReportCard from "@/components/global/crime-report-card";
 import React from "react";
 
-type Props = {};
-
-const Page = (props: Props) => {
+const Page = () => {
   return (
     <div>
       <div className="p-5 gap-5 flex flex-col">

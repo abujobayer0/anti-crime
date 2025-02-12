@@ -242,6 +242,6 @@ const Page = (props: Props) => {
       </div>
     </div>
   );
-};
+d};
 
 export default Page;
