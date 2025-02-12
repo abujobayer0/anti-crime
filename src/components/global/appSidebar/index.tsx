@@ -16,7 +16,7 @@ import Link from "next/link";
 const items = [
   {
     title: "Crime Feed",
-    url: "/feed",
+    url: "/",
     icon: Home,
   },
   {
@@ -46,7 +46,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <Link href={"/feed"}>
+          <Link href={"/"}>
             <SidebarGroupLabel className="my-4">
               <Image
                 src={"/anticrime-logo.png"}
