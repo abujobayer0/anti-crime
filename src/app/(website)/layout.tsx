@@ -19,6 +19,7 @@ export default function RootLayout({
           <AppSidebar />
         </SidebarProvider>
       </div>
+
       <div className="p-5">{children}</div>
     </div>
   );
