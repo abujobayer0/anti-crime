@@ -8,27 +8,29 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
 
-const LoginPage = () => {
+const RegistrationPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ email: string; password: string }>();
-  const [login, { isLoading }] = useLoginMutation();
+  } = useForm<{ name: string; email: string; password: string; mobile: string }>();
+  const [registration, { isLoading }] = useRegisterMutation();
   const router = useRouter();
   const [error, setError] = useState("");
 
   // Form submission handler
-  const onSubmit = async (data: { email: string; password: string }) => {
+  const onSubmit = async (data: { name: string; email: string; password: string; mobile: string }) => {
     try {
       const credentials = {
+        name: data.name,
         email: data.email,
         password: data.password,
+        contract: data.mobile,
       };
-      const res = await login(credentials).unwrap();
+      const res = await registration(credentials).unwrap();
       if (res.success) {
         setError("");
         router.push("/");
@@ -43,12 +45,25 @@ const LoginPage = () => {
   return (
     <AuthenticationPageBody
       src={registrationBg.src}
-      title="Login"
+      title="Create New Account"
       form={
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-3 shadow-md p-4 rounded-md"
         >
+          {/* Name Input */}
+          <div className="space-y-2">
+            <Label>Name</Label>
+            <Input
+              {...register("name", { required: "Name is required" })}
+              placeholder="Enter your name"
+              className="outline-none"
+            />
+            {errors.name && typeof errors.name.message === "string" && (
+              <p className="text-red-500">{errors.name.message}</p>
+            )}
+          </div>
+
           {/* Email Input */}
           <div className="space-y-2">
             <Label>Email</Label>
@@ -66,6 +81,22 @@ const LoginPage = () => {
             />
             {errors.email && typeof errors.email.message === "string" && (
               <p className="text-red-500">{errors.email.message}</p>
+            )}
+          </div>
+
+          {/* Phone Number Input */}
+          <div className="space-y-2">
+            <Label>Mobile</Label>
+            <Input
+              type="number"
+              {...register("mobile", {
+                required: "Mobile number is required",
+              })}
+              placeholder="017XXXXXXXX"
+              className="outline-none"
+            />
+            {errors.mobile && typeof errors.mobile.message === "string" && (
+              <p className="text-red-500">{errors.mobile.message}</p>
             )}
           </div>
 
@@ -91,28 +122,27 @@ const LoginPage = () => {
 
           {/* Already have an account */}
           <p className="text-gray-600">
-            Don&apos;t have an account?{" "}
+            Already have an account?{" "}
             <Link
               className="text-sky-600 font-medium hover:underline"
-              href="/auth/registration"
+              href="/auth/login"
             >
-              Registration
+              Login
             </Link>
           </p>
 
           {/* Submit Button */}
           <Button
-            disabled={isLoading}
             type="submit"
             className="bg-[#309689] hover:bg-[#207267] w-full transition-all duration-300 active:scale-95"
           >
-            {isLoading ? "Loading..." : "Login"}
+            {isLoading ? "Loading..." : "Register"}
           </Button>
-          {error && <p className="text-red-500 font-medium">{error}</p>}
+          {error && <p className="text-red-500">{error}</p>}
         </form>
       }
     />
   );
 };
 
-export default LoginPage;
+export default RegistrationPage;
