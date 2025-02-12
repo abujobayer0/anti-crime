@@ -10,11 +10,20 @@ import {
 interface Props {
   selectValue: string;
   content: React.ReactNode;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  disabled?: boolean;
 }
 
-export function SelectComponent({ selectValue, content }: Props) {
+export function SelectComponent({
+  selectValue,
+  content,
+  value,
+  onValueChange,
+  disabled = false,
+}: Props) {
   return (
-    <Select>
+    <Select value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder={selectValue} />
       </SelectTrigger>
