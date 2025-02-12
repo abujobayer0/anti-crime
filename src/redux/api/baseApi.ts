@@ -7,7 +7,7 @@ import { RootState } from "../store";
 // const liveUrl = process.env.NEXT_PUBLIC_LIVE_API;
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5000/api/v1",
+  baseUrl: "http://localhost:5001/api/v1",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;

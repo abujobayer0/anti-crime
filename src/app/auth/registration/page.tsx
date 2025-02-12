@@ -10,19 +10,33 @@ import Link from "next/link";
 import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/redux/hooks";
+import { setCredentials } from "@/redux/features/auth/authSlice";
+import Cookies from "js-cookie";
 
 const RegistrationPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ name: string; email: string; password: string; mobile: string }>();
+  } = useForm<{
+    name: string;
+    email: string;
+    password: string;
+    mobile: string;
+  }>();
   const [registration, { isLoading }] = useRegisterMutation();
   const router = useRouter();
   const [error, setError] = useState("");
+  const dispatch = useAppDispatch();
 
   // Form submission handler
-  const onSubmit = async (data: { name: string; email: string; password: string; mobile: string }) => {
+  const onSubmit = async (data: {
+    name: string;
+    email: string;
+    password: string;
+    mobile: string;
+  }) => {
     try {
       const credentials = {
         name: data.name,
@@ -32,6 +46,23 @@ const RegistrationPage = () => {
       };
       const res = await registration(credentials).unwrap();
       if (res.success) {
+        const userData = {
+          token: res.data?.accessToken,
+          user: {
+            id: res.data?.result?._id,
+            email: res.data?.result?.email,
+            role: res.data?.result?.role,
+            name: res.data?.result?.name,
+            contract: res.data?.result?.contract,
+          },
+        };
+
+        console.log("Dispatching user data to Redux:", userData);
+        dispatch(setCredentials(userData));
+
+        // Store token in cookie
+        Cookies.set("accessToken", res.data?.accessToken, { expires: 7 });
+
         setError("");
         router.push("/");
       }

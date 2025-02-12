@@ -6,6 +6,9 @@ import { SelectComponent } from "../select-component";
 import { SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
 import { uploadFileToImageBB } from "@/lib/utils";
 import axios from "axios";
+import { getUser } from "@/redux/features/auth/authSlice";
+import { useAppSelector } from "@/redux/hooks";
+import Cookies from "js-cookie";
 
 type Props = {
   onSubmit?: (data: ReportData) => void;
@@ -17,6 +20,9 @@ interface ReportData {
   district: string;
   description: string;
   images?: string[];
+  crimeTime: Date;
+  postTime: Date;
+  userId: string;
 }
 
 interface Division {
@@ -33,6 +39,8 @@ interface District {
 
 const CreateReportCard = ({ onSubmit }: Props) => {
   // Combine related state into a single object
+  const user = useAppSelector(getUser);
+  console.log(user);
   const [formState, setFormState] = useState({
     divisions: [] as Division[],
     districts: [] as District[],
@@ -44,6 +52,9 @@ const CreateReportCard = ({ onSubmit }: Props) => {
       district: "",
       description: "",
       images: [] as string[],
+      crimeTime: new Date(),
+      postTime: new Date(),
+      userId: user?.id || "",
     },
   });
 
@@ -125,20 +136,46 @@ const CreateReportCard = ({ onSubmit }: Props) => {
   const handleAIGenerate = async () => {
     const { formData } = formState;
 
-    if (!formData.images?.length || !formData.division || !formData.district) {
-      alert("Please upload an image and select both division and district");
+    const missingFields = [];
+    if (!formData.images?.length) missingFields.push("image");
+    if (!formData.division) missingFields.push("division");
+    if (!formData.district) missingFields.push("district");
+
+    if (missingFields.length > 0) {
+      alert(
+        `Please provide the following required fields: ${missingFields.join(
+          ", "
+        )}`
+      );
       return;
     }
 
     setFormState((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      const { data } = await axios.post("http://localhost:5001/analyze", {
-        imageUrl: formData.images[0],
-        division: formData.division,
-        district: formData.district,
-        crime_time: new Date(),
-      });
+      // Get access token from cookies
+      const accessToken = Cookies.get("accessToken");
+
+      if (!accessToken) {
+        alert("Please login to use AI generation");
+        return;
+      }
+
+      const { data } = await axios.post(
+        "http://localhost:5001/analyze",
+        {
+          imageUrl: formData.images[0],
+          division: formData.division,
+          district: formData.district,
+          crime_time: new Date(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!data?.report) throw new Error("Invalid response from AI service");
 
@@ -161,27 +198,82 @@ const CreateReportCard = ({ onSubmit }: Props) => {
       !formState.formData.division ||
       !formState.formData.district ||
       !formState.formData.description ||
-      !formState.formData.images?.length
+      !formState.formData.images?.length ||
+      !formState.formData.userId
     ) {
       alert("Please fill in all required fields and upload at least one image");
       return;
     }
 
     try {
+      const accessToken = Cookies.get("accessToken");
+
+      if (!accessToken) {
+        alert("Please login to submit a report");
+        return;
+      }
+
+      // Update the form data to include current postTime
+      const reportData = {
+        ...formState.formData,
+        postTime: new Date(),
+      };
+
       const { data } = await axios.post(
-        "http://localhost:5001/api/reports",
-        formState.formData
+        "http://localhost:5001/api/v1/reports",
+        reportData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
-      onSubmit?.(formState.formData);
+
+      if (data.success) {
+        alert("Report submitted successfully!");
+        onSubmit?.(formState.formData);
+
+        // Clear form after successful submission
+        setFormState((prev) => ({
+          ...prev,
+          formData: {
+            title: "",
+            division: "",
+            district: "",
+            description: "",
+            images: [],
+            crimeTime: new Date(),
+            postTime: new Date(),
+            userId: user?.id || "",
+          },
+          imagePreview: [],
+        }));
+      }
     } catch (error) {
-      console.error("Error submitting report:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          alert("Your session has expired. Please login again.");
+        } else if (error.response?.status === 400) {
+          alert(
+            error.response.data.message ||
+              "Invalid report data. Please check all fields."
+          );
+        } else {
+          alert("Failed to submit report. Please try again later.");
+        }
+        console.error("Error submitting report:", error.response?.data);
+      } else {
+        alert("An unexpected error occurred. Please try again.");
+        console.error("Error submitting report:", error);
+      }
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full border p-4 rounded-md shadow-sm"
+      className="w-full border max-w-2xl mx-auto p-4 rounded-md shadow-sm"
     >
       <div className="flex gap-2 mb-4 justify-end">
         <SelectComponent

@@ -12,43 +12,41 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const dummyData = {
-  description:
-    "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ducimus culpatotam illo in quidem dolorum sequi aspernatur ut sunt atque, qui magnitempore quae laborum minima molestiae nisi accusantium harum. Eos cumnam asperiores eum maiores provident esse aut quibusdam omnis dolore nesciunt, veniam consequatur eius qui, ex vero nisi neque nostrum! Ipsam voluptatem est quam ullam magni tempora laborum obcaecati animi suscipit porro praesentium esse ducimus nostrum quo dolorem ea, voluptas tempore delectus eos eligendi atque minus. Porro tempore atque labore ipsum commodi laudantium officiis vitae accusamus libero magnam, id incidunt at nisi quidem impedit. Hic, numquam facere. Doloremque?",
-  comments: [
-    {
-      id: 1,
-      comment:
-        "I witnessed this incident. The perpetrator was wearing a red jacket.",
-      proofImage: "/proof1.jpg",
-      proofVideo: null,
-      createdAt: "2024-03-15T10:30:00Z",
-      user: "Jane Smith",
-    },
-    {
-      id: 2,
-      comment: "I have security camera footage from my shop that might help.",
-      proofImage: null,
-      proofVideo: "/proof-video.mp4",
-      createdAt: "2024-03-15T11:45:00Z",
-      user: "Mike Johnson",
-    },
-    {
-      id: 3,
-      comment: "The police have been notified and are investigating.",
-      proofImage: "/police-report.jpg",
-      proofVideo: null,
-      createdAt: "2024-03-15T13:20:00Z",
-      user: "Officer Wilson",
-    },
-  ],
-};
-const CrimeReportCard = () => {
+interface User {
+  _id: string;
+  name: string;
+  profileImage: string;
+  isVerified: boolean;
+  // Add other user fields as needed
+}
+
+interface CrimeReport {
+  _id: string;
+  userId: User;
+  title: string;
+  description: string;
+  images: string[];
+  division: string;
+  district: string;
+  crimeTime: string;
+  upvotes: string[];
+  downvotes: string[];
+  comments: any[]; // Type this properly based on your comment structure
+}
+
+interface Props {
+  report: CrimeReport;
+}
+
+const CrimeReportCard = ({ report }: Props) => {
   const [collapsedDescription, setCollapsedDescription] = useState(false);
   const [collapsedComments, setCollapsedComments] = useState(false);
-  const [votes, setVotes] = useState({ upvotes: 0, downvotes: 0 });
+  const [votes, setVotes] = useState({
+    upvotes: report.upvotes.length,
+    downvotes: report.downvotes.length,
+  });
   const [showCommentForm, setShowCommentForm] = useState(false);
-  const [comments, setComments] = useState(dummyData.comments);
+  // const [comments, setComments] = useState(reports.comments || []);
   const [commentForm, setCommentForm] = useState({
     comment: "",
     proofImage: null,
@@ -56,33 +54,37 @@ const CrimeReportCard = () => {
   });
 
   const description =
-    dummyData.description.length > 300 && !collapsedDescription
-      ? dummyData.description.slice(0, 300)
-      : dummyData.description;
+    report?.description?.length > 300 && !collapsedDescription
+      ? report.description.slice(0, 300)
+      : report?.description;
 
   const handleSubmitProof = () => {
     // Implementation of handleSubmitProof function
   };
 
   return (
-    <div className="flex flex-col w-full max-w-2xl mx-auto border rounded-md shadow-sm bg-white transition-all">
+    <div className="flex flex-col w-full  max-w-2xl mx-auto border rounded-md shadow-sm bg-white transition-all">
       <div className="flex items-center justify-between p-4 md:p-6 border-b">
         <div className="flex items-center gap-3">
           <Image
-            src={"/anticrime-logo.png"}
+            src={report?.userId?.profileImage}
             alt="user"
             width={40}
             height={40}
             className="rounded-full border-2 border-blue-500 hover:scale-105 transition-transform"
           />
           <div>
-            <div className="font-semibold">John Doe</div>
-            <div className="text-sm text-gray-500">Verified User</div>
+            <div className="font-semibold">{report?.userId?.name}</div>
+            <div className="text-sm text-gray-500">
+              {report?.userId?.isVerified ? "Verified User" : "User"}
+            </div>
           </div>
-          <div className="py-1 px-2 flex items-center text-xs gap-1 bg-green-400/20 text-green-700 rounded-xl">
-            Verified
-            <CheckCircle size={12} />
-          </div>
+          {report?.userId?.isVerified && (
+            <div className="py-1 px-2 flex items-center text-xs gap-1 bg-green-400/20 text-green-700 rounded-xl">
+              Verified
+              <CheckCircle size={12} />
+            </div>
+          )}
         </div>
         <GlobalPopover
           align="end"
@@ -105,19 +107,23 @@ const CrimeReportCard = () => {
       <div className="p-4 md:p-6 space-y-4">
         <div className="flex flex-col  justify-between gap-2">
           <Link
-            href={"/dfffffgfg"}
+            href={`/reports/${report._id}`}
             className="text-xl font-bold w-full hover:underline"
           >
-            Robbery at Local Store
+            {report?.title}
           </Link>
 
           <div className="flex items-center gap-2 text-sm">
             <LocateIcon size={12} />
-            <span>Dhaka Division, Mirpur</span>
+            <span>
+              {report?.division}, {report?.district}
+            </span>
           </div>
           <div className="flex items-center text-sm gap-2">
             <TimerIcon size={12} />
-            <span>Crime Time: Oct 1, 2021 15:30</span>
+            <span>
+              Crime Time: {new Date(report?.crimeTime).toLocaleString()}
+            </span>
           </div>
         </div>
 
@@ -131,13 +137,10 @@ const CrimeReportCard = () => {
           </button>
         </div>
         <div className="w-full grid grid-cols-2 gap-2 container ">
-          {[0, 0, 0, 0].map((i, j) => (
-            <div
-              key={j}
-              className="relative aspect-video w-full overflow-hidden"
-            >
+          {report?.images?.map((image: string, j: number) => (
+            <div key={j} className="relative w-full overflow-hidden">
               <img
-                src="/card.avif"
+                src={image}
                 alt="crime scene"
                 className="w-full h-full object-cover"
               />
@@ -286,7 +289,7 @@ const CrimeReportCard = () => {
         )}
       </div>
 
-      {!collapsedComments && (
+      {/* {!collapsedComments && (
         <div
           onClick={() => setCollapsedComments(true)}
           className="p-4 border-t cursor-pointer"
@@ -341,7 +344,7 @@ const CrimeReportCard = () => {
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

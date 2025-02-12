@@ -23,7 +23,7 @@ export default function RootLayout({
           </SidebarProvider>
         </div>
 
-        <div className="p-5">{children}</div>
+        <div className="p-5 w-full">{children}</div>
       </div>
     </div>
   );

@@ -10,6 +10,9 @@ import Link from "next/link";
 import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/redux/hooks";
+import { setCredentials } from "@/redux/features/auth/authSlice";
+import Cookies from "js-cookie";
 
 const LoginPage = () => {
   const {
@@ -20,23 +23,45 @@ const LoginPage = () => {
   const [login, { isLoading }] = useLoginMutation();
   const router = useRouter();
   const [error, setError] = useState("");
+  const dispatch = useAppDispatch();
 
   // Form submission handler
   const onSubmit = async (data: { email: string; password: string }) => {
     try {
+      console.log("Submitting login with:", data);
       const credentials = {
         email: data.email,
         password: data.password,
       };
+
       const res = await login(credentials).unwrap();
-      if (res.success) {
+      console.log("Login response:", res);
+
+      if (res?.success) {
+        const userData = {
+          token: res.data?.accessToken,
+          user: {
+            id: res.data?.result?._id,
+            email: res.data?.result?.email,
+            role: res.data?.result?.role,
+            name: res.data?.result?.name,
+            contract: res.data?.result?.contract,
+          },
+        };
+
+        console.log("Dispatching user data to Redux:", userData);
+        dispatch(setCredentials(userData));
+
+        // Store token in cookie
+        Cookies.set("accessToken", res.data?.accessToken, { expires: 7 }); // Expires in 7 days
+
+        console.log("Redux dispatch completed");
         setError("");
         router.push("/");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError(err?.data.message);
-      console.log(err);
+      console.error("Login error:", err);
+      setError(err?.data?.message || "Login failed");
     }
   };
 
