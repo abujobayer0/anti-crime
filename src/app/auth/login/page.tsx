@@ -10,6 +10,8 @@ import Link from "next/link";
 import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
+import { setCredentials } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hooks";
 
 const LoginPage = () => {
   const {
@@ -20,6 +22,7 @@ const LoginPage = () => {
   const [login, { isLoading }] = useLoginMutation();
   const router = useRouter();
   const [error, setError] = useState("");
+  const dispatch = useAppDispatch();
 
   // Form submission handler
   const onSubmit = async (data: { email: string; password: string }) => {
@@ -29,7 +32,14 @@ const LoginPage = () => {
         password: data.password,
       };
       const res = await login(credentials).unwrap();
+      console.log(res);
       if (res.success) {
+        dispatch(
+          setCredentials({
+            user: res.data?.result,
+            token: res.data?.accessToken,
+          })
+        );
         setError("");
         router.push("/");
       }
