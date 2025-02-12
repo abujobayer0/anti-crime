@@ -64,7 +64,7 @@ const CrimeReportCard = () => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-2xl mx-auto border rounded-xl shadow-lg bg-white transition-all hover:shadow-xl">
+    <div className="flex flex-col w-full max-w-2xl mx-auto border rounded-md shadow-sm bg-white transition-all">
       <div className="flex items-center justify-between p-4 md:p-6 border-b">
         <div className="flex items-center gap-3">
           <Image
@@ -124,13 +124,19 @@ const CrimeReportCard = () => {
             {collapsedDescription ? "Show less" : "Show more"}
           </button>
         </div>
-
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl">
-          <img
-            src="/card.avif"
-            alt="crime scene"
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-          />
+        <div className="w-full grid grid-cols-2 gap-2 container ">
+          {[0, 0, 0, 0].map((i, j) => (
+            <div
+              key={j}
+              className="relative aspect-video w-full overflow-hidden"
+            >
+              <img
+                src="/card.avif"
+                alt="crime scene"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t">
