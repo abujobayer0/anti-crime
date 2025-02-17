@@ -21,4 +21,7 @@ export const ENDPOINTS = {
     delete: (id: string) => `/reports/${id}`,
     generateAiDescription: "/reports/analyze",
   },
+  comments: {
+    create: (reportId: string) => `/comments/${reportId}/comment`,
+  },
 };

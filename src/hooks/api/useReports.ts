@@ -150,16 +150,29 @@ export const useReports = () => {
       evidence,
     }: {
       reportId: string;
-      evidence: any;
+      commentId?: string;
+      evidence: {
+        description: string;
+        proofImage: string[];
+        video?: string[];
+        replyTo?: string;
+      };
     }) => {
       const { data } = await client.post(
-        `${ENDPOINTS.reports.list}/${reportId}/evidence`,
-        evidence
+        `${ENDPOINTS.comments.create(reportId)}`,
+        {
+          comment: evidence.description || "",
+          proofImage: evidence.proofImage,
+          video: evidence.video,
+          reportId: reportId,
+          replyTo: evidence.replyTo,
+        }
       );
+
+      await queryClient.invalidateQueries({
+        queryKey: ["reports", data.reportId],
+      });
       return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
   });
 

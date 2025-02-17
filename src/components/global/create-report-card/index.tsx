@@ -15,15 +15,14 @@ import { SelectComponent } from "../select-component";
 import { SelectItem } from "@/components/ui/select";
 import { uploadFileToImageBB } from "@/lib/utils";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { handleAPIError } from "@/lib/Error";
 import { useReports } from "@/hooks/api/useReports";
-import { useUser } from "@/hooks/api/useUser";
 import { useForm } from "@/hooks";
 
 type Props = {
   onSubmit?: (data: ReportData) => void;
+  user: any;
 };
 
 interface ReportData {
@@ -51,10 +50,10 @@ interface District {
   coordinates: string;
 }
 
-const CreateReportCard = ({ onSubmit }: Props) => {
+const CreateReportCard = ({ onSubmit, user }: Props) => {
   const [video, setVideo] = useState<File | null>(null);
-  const { data: user } = useUser({ reports: false });
-  const userName = user?.name || "Anonymous";
+
+  const userName = user?.user?.name || "Anonymous";
   const { createReport, generateAiDescription } = useReports();
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
@@ -90,6 +89,7 @@ const CreateReportCard = ({ onSubmit }: Props) => {
       if (!values.division) errors.division = "Division is required";
       if (!values.district) errors.district = "District is required";
       if (!values.description) errors.description = "Description is required";
+      if (!values.userId) errors.userId = "User must be logged in";
       if (!values.images?.length)
         errors.images = "At least one image is required";
       return errors;
@@ -107,10 +107,11 @@ const CreateReportCard = ({ onSubmit }: Props) => {
             images: [],
             crimeTime: new Date(),
             postTime: new Date(),
-            userId: user?.user?._id,
+            userId: "",
             divisionCoordinates: "",
             districtCoordinates: "",
           });
+          setImagePreview([]);
         },
         onError: (error) => {
           handleAPIError(error);
@@ -119,7 +120,6 @@ const CreateReportCard = ({ onSubmit }: Props) => {
     },
   });
 
-  // Fetch divisions on component mount
   useEffect(() => {
     const fetchDivisions = async () => {
       try {
@@ -162,16 +162,11 @@ const CreateReportCard = ({ onSubmit }: Props) => {
   ) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
-
     const newPreviews = files.map(URL.createObjectURL);
-
     setUploadingImages(new Set(newPreviews));
-
     setImagePreview([...imagePreview, ...newPreviews]);
-
     try {
       const uploadedUrls = await Promise.all(files.map(uploadFileToImageBB));
-
       setFormData({
         ...formData,
         images: [...(formData.images || []), ...uploadedUrls],
@@ -228,6 +223,15 @@ const CreateReportCard = ({ onSubmit }: Props) => {
     handleChange("districtCoordinates", selectedDistrict?.coordinates || "");
   };
 
+  useEffect(() => {
+    if (user?.user?._id) {
+      setFormData((prevData) => ({
+        ...prevData,
+        userId: user.user._id,
+      }));
+    }
+  }, [user, formData.userId]);
+
   return (
     <div className="flex justify-center w-full items-center">
       <div className="bg-white w-full max-w-screen-lg  rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-border/40">
@@ -236,14 +240,14 @@ const CreateReportCard = ({ onSubmit }: Props) => {
           <div className="flex items-center gap-4">
             <div className="relative w-12 h-12">
               <Image
-                src={user?.user?.profileImage}
+                src={user?.user?.profileImage || "/anticrime-logo.png"}
                 alt={userName}
                 fill
                 sizes="12px"
                 priority
                 className="rounded-full object-cover ring-2 ring-primary/10"
               />
-              {!user?.isVerified && (
+              {!user?.user?.isVerified && (
                 <div className="absolute -top-1 -right-1 bg-destructive/10 text-destructive p-1 rounded-full">
                   <AlertCircle className="w-3 h-3" />
                 </div>

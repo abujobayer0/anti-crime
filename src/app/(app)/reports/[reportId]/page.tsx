@@ -6,17 +6,65 @@ import {
   MessageSquare,
   ThumbsUp,
   ThumbsDown,
+  X,
+  ImagePlus,
 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useReports } from "@/hooks/api/useReports";
+import { Avatar } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
 
-import { EvidenceModal } from "@/components/global/evidence-modal";
 import { useParams } from "next/navigation";
+import { uploadFileToImageBB } from "@/lib/utils";
+import CommentItem from "@/components/global/comments-items";
+
 const ReportDetailsPage = () => {
   const params = useParams();
-  const { getReport } = useReports();
+  const { getReport, addEvidence } = useReports();
+  const [newComment, setNewComment] = useState<string>("");
+  const [commentImages, setCommentImages] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+
+  const handleCommentFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    setCommentImages((prev) => [...prev, ...Array.from(files)]);
+  };
+
+  const removeCommentImage = (index: number) => {
+    setCommentImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!newComment && commentImages.length === 0) return;
+    setIsUploading(true);
+
+    try {
+      const uploadedImageUrls = await Promise.all(
+        commentImages.map(async (image) => {
+          const imageUrl = await uploadFileToImageBB(image);
+          return imageUrl;
+        })
+      );
+
+      await addEvidence.mutateAsync({
+        reportId: params.reportId as string,
+        evidence: {
+          description: newComment,
+          proofImage: uploadedImageUrls,
+        },
+      });
+
+      setNewComment("");
+      setCommentImages([]);
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const { data: report, isLoading } = getReport(params.reportId as string);
 
@@ -98,50 +146,90 @@ const ReportDetailsPage = () => {
                 <span>{report?.downvotes.length}</span>
               </Button>
             </div>
-            <EvidenceModal reportId={params.reportId as string} />
           </div>
         </div>
 
-        <div className="lg:w-[380px] space-y-4">
-          <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="w-full max-w-xl space-y-4">
+          <div className="bg-white rounded-xl shadow-sm p-6">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Evidence & Comments
             </h3>
 
-            <div className="space-y-4">
-              {report?.comments.map((comment: any, index: number) => (
-                <div key={index} className="pb-4 border-b last:border-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Image
-                      src={comment.user.profileImage}
-                      alt={comment.user.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                    <div>
-                      <p className="font-medium text-sm">{comment.user.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(comment.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {comment.comment}
-                  </p>
-                  {comment.proofImage && (
-                    <div className="relative aspect-video rounded-lg overflow-hidden">
-                      <Image
-                        src={comment.proofImage}
-                        alt="Evidence"
-                        fill
-                        className="object-cover"
-                      />
+            <div className="space-y-6">
+              <div className="flex gap-3 space-y-3 bg-gray-50/50 rounded-xl p-3 border border-gray-100">
+                <Avatar className="h-8 w-8">
+                  <Image
+                    src={report?.userId?.profileImage || "/anticrime-logo.png"}
+                    alt="Current user"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                </Avatar>
+                <div className="flex-1">
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Add evidence or comment..."
+                    className="text-sm min-h-[60px]"
+                  />
+
+                  {commentImages.length > 0 && (
+                    <div className="grid grid-cols-10 gap-2 w-full mt-2">
+                      {commentImages.map((image, index) => (
+                        <div
+                          key={index}
+                          className="relative group max-w-20 aspect-square"
+                        >
+                          <div className="w-full h-full rounded-lg border border-border p-1 flex items-center justify-center relative overflow-hidden">
+                            <img
+                              src={URL.createObjectURL(image)}
+                              alt={`Comment image ${index + 1}`}
+                              className="object-cover w-full h-full rounded-lg transition-transform duration-200 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
+                            <button
+                              type="button"
+                              onClick={() => removeCommentImage(index)}
+                              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-600"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
+
+                  <div className="flex items-center justify-between mt-4">
+                    <label className="cursor-pointer hover:text-primary transition-colors">
+                      <ImagePlus className="w-5 h-5" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleCommentFileUpload}
+                      />
+                    </label>
+
+                    <Button
+                      size="sm"
+                      onClick={handleCommentSubmit}
+                      disabled={isUploading || !newComment}
+                    >
+                      {isUploading ? "Posting..." : "Post"}
+                    </Button>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="space-y-6">
+                {report?.comments.map((comment: any) => (
+                  <CommentItem key={comment._id} comment={comment} />
+                ))}
+              </div>
             </div>
           </div>
         </div>

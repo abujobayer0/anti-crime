@@ -5,6 +5,7 @@ import CrimeReportCard from "@/components/global/crime-report-card";
 import CreateReportCard from "@/components/global/create-report-card";
 import React from "react";
 import { Activity, AlertTriangle, MapPin, Clock } from "lucide-react";
+import { useUser } from "@/hooks";
 
 interface RecentActivity {
   id: string;
@@ -75,7 +76,7 @@ const dummyActivities: RecentActivity[] = [
 const HomePage = () => {
   const { getReports, deleteReport, voteReport, updateReport } = useReports();
   const { data: reports, isLoading, error } = getReports;
-
+  const { data: user } = useUser({ reports: false });
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading reports</div>;
 
@@ -106,7 +107,7 @@ const HomePage = () => {
       <div className="flex gap-6">
         <div className="flex-1">
           <div className="gap-5 flex flex-col">
-            <CreateReportCard />
+            <CreateReportCard user={user} />
             {reports?.data?.map((report: any) => (
               <CrimeReportCard
                 key={report._id}

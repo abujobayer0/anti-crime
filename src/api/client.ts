@@ -4,14 +4,19 @@ import Cookies from "js-cookie";
 
 const apiClient = axios.create(apiConfig);
 
-// Request interceptor
-apiClient.interceptors.request.use((config) => {
-  const token = Cookies.get("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Add a request interceptor
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 // Response interceptor
 apiClient.interceptors.response.use(
