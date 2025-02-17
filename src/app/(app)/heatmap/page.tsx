@@ -55,7 +55,7 @@ const HeatmapPage = () => {
   const [mapZoom, setMapZoom] = useState(7);
 
   useEffect(() => {
-    if (reportsData) {
+    if (reportsData?.data) {
       const fetchData = async () => {
         try {
           const divisionsResponse = await fetch(
@@ -63,7 +63,7 @@ const HeatmapPage = () => {
           );
           const divisionsData = await divisionsResponse.json();
 
-          const reportsWithLocation = reportsData?.map((report: any) => {
+          const reportsWithLocation = reportsData?.data?.map((report: any) => {
             return {
               ...report,
               location: {
@@ -84,7 +84,7 @@ const HeatmapPage = () => {
 
       fetchData();
     }
-  }, [reportsData]);
+  }, [reportsData, isLoading]);
 
   // Fetch districts when division changes
   useEffect(() => {

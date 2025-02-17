@@ -1,11 +1,12 @@
 "use client";
-import Image from "next/image";
+
 import React, { useState } from "react";
+import Link from "next/link";
+import { Props } from "./types";
+import { CommentsSection } from "../comments-section";
+import Image from "next/image";
 import { GlobalPopover } from "../global-popover";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, ImagePlus, X } from "lucide-react";
-import { Avatar } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
 
 import {
   EllipsisVertical,
@@ -18,18 +19,12 @@ import {
   Edit2,
 } from "lucide-react";
 
-import Link from "next/link";
-
-import { uploadFileToImageBB } from "@/lib/utils";
-import { useReports } from "@/hooks/api/useReports";
-import CommentItem from "../comments-items";
-import { Comment, Props } from "./types";
-
 const CrimeReportCard = ({
   report,
   deleteReport,
   updateReport,
   voteReport,
+  user,
 }: Props) => {
   const [collapsedDescription, setCollapsedDescription] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -43,13 +38,6 @@ const CrimeReportCard = ({
     downvotes: report.downvotes.length,
   });
 
-  const [showComments, setShowComments] = useState(false);
-  const [newComment, setNewComment] = useState<string>("");
-
-  const [commentImages, setCommentImages] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const { addEvidence: addComment } = useReports();
-
   const description =
     report?.description?.length > 300 && !collapsedDescription
       ? report.description.slice(0, 300)
@@ -57,45 +45,10 @@ const CrimeReportCard = ({
 
   const handleVote = (type: "upvote" | "downvote") => {
     voteReport.mutate({ id: report._id, type });
-  };
-
-  const handleCommentFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    setCommentImages((prev) => [...prev, ...Array.from(files)]);
-  };
-
-  const removeCommentImage = (index: number) => {
-    setCommentImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleCommentSubmit = async () => {
-    if (!newComment && commentImages.length === 0) return;
-    setIsUploading(true);
-
-    try {
-      const uploadedImageUrls = await Promise.all(
-        commentImages.map(async (image) => {
-          const imageUrl = await uploadFileToImageBB(image);
-          return imageUrl;
-        })
-      );
-
-      await addComment.mutateAsync({
-        reportId: report._id,
-        evidence: {
-          description: newComment,
-          proofImage: uploadedImageUrls,
-        },
-      });
-
-      setNewComment("");
-      setCommentImages([]);
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-    } finally {
-      setIsUploading(false);
-    }
+    setVotes((prev) => ({
+      ...prev,
+      [type]: prev[type as keyof typeof prev] + 1,
+    }));
   };
 
   return (
@@ -324,105 +277,16 @@ const CrimeReportCard = ({
                   <span>{votes.downvotes}</span>
                 </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-2 "
-                onClick={() => setShowComments(!showComments)}
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span>{report?.comments?.length} Comments</span>
-              </Button>
             </div>
           )}
         </div>
 
         {!isEditing && (
-          <div className="border-t">
-            {showComments && (
-              <div className="mt-4 space-y-4 ">
-                <div className="flex gap-3 space-y-3  bg-gray-50/50 rounded-xl p-3 border border-gray-100">
-                  <Avatar className="h-8 w-8 ">
-                    <Image
-                      src={
-                        report?.userId?.profileImage || "/anticrime-logo.png"
-                      }
-                      alt="Current user"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  </Avatar>
-                  <div className="flex-1">
-                    <Textarea
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="Write a comment..."
-                      className="text-sm min-h-[60px]"
-                    />
-
-                    {commentImages.length > 0 && (
-                      <div className="grid grid-cols-10 gap-2 w-full mt-2">
-                        {commentImages.map((image, index) => (
-                          <div
-                            key={index}
-                            className="relative group max-w-20 aspect-square"
-                          >
-                            <div className="w-full h-full rounded-lg border border-border p-1 flex items-center justify-center relative overflow-hidden">
-                              <img
-                                src={URL.createObjectURL(image)}
-                                alt={`Comment image ${index + 1}`}
-                                className="object-cover w-full h-full rounded-lg transition-transform duration-200 group-hover:scale-105"
-                              />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
-                              <button
-                                type="button"
-                                onClick={() => removeCommentImage(index)}
-                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-600"
-                              >
-                                <X className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex items-center  justify-between mt-4 ">
-                      <div className="flex gap-2">
-                        <label className="cursor-pointer hover:text-primary transition-colors">
-                          <ImagePlus className="w-5 h-5" />
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            className="hidden"
-                            onChange={handleCommentFileUpload}
-                          />
-                        </label>
-                      </div>
-
-                      <Button
-                        size="sm"
-                        onClick={handleCommentSubmit}
-                        disabled={isUploading || !newComment}
-                      >
-                        {isUploading ? "Posting..." : "Post"}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {report?.comments &&
-                    Array.isArray(report.comments) &&
-                    report.comments.map((comment: Comment) => (
-                      <CommentItem key={comment._id} comment={comment} />
-                    ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <CommentsSection
+            comments={report?.comments}
+            reportId={report._id}
+            userImage={user?.user?.profileImage}
+          />
         )}
       </div>
     </div>

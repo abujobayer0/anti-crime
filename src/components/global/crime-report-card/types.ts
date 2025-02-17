@@ -43,4 +43,7 @@ export interface Props {
   deleteReport: any;
   updateReport: any;
   voteReport: any;
+  user: {
+    user: User;
+  };
 }
