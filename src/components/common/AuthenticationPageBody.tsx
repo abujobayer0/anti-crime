@@ -1,39 +1,43 @@
+import React from "react";
 import Image from "next/image";
-import React, { ReactNode } from "react";
-import bgShap from "../../../assets/shaps/auth-bg.png";
+import Earth from "../global/globe";
 
-interface AuthenticationPageBodyProps {
-  src: string;
-  title:string,
-  form: ReactNode,
+interface Props {
+  title: string;
+  subtitle: string;
+  form: React.ReactNode;
+  illustration: React.ReactNode;
 }
 
-const AuthenticationPageBody: React.FC<AuthenticationPageBodyProps> = ({
-  src,
-  title,
-  form,
-}) => {
+const AuthenticationPageBody = ({ title, subtitle, form }: Props) => {
   return (
-    <div className="flex h-screen w-full">
-      {/* Left Section */}
-      <div
-        className="w-[60%] bg-cover bg-center bg-no-repeat flex items-center justify-end"
-        style={{ backgroundImage: `url(${bgShap.src})` }}
-      >
-        <div>
-          <Image src={src} width={500} height={500} alt="registration-png" />
+    <div className="flex">
+      <div className="w-full h-full absolute top-0 backdrop-blur-md  left-0 z-10 bg-primary/10 mx-auto  flex items-center justify-center ">
+        <div className="w-full bg-white shadow-sm p-8 rounded-lg  max-w-lg space-y-8">
+          <div className="flex items-center gap-3 justify-center lg:justify-start">
+            <Image
+              src="/anticrime-logo.png"
+              width={48}
+              height={48}
+              alt="AntiCrime logo"
+              className="rounded-xl"
+            />
+            <span className="font-bold text-2xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              AntiCrime
+            </span>
+          </div>
+
+          <div className="space-y-2 text-center lg:text-left">
+            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+            <p className="text-muted-foreground">{subtitle}</p>
+          </div>
+
+          {form}
         </div>
       </div>
-
-      {/* Right Section (Form) */}
-      <div className="w-[40%] flex items-center justify-center">
-        <div className="w-[350px]">
-          <h3 className="font-bold text-3xl text-primary mb-10 text-center">
-            {title}
-          </h3>
-
-          {/* React Hook Form */}
-          {form}
+      <div className="hidden lg:flex w-full h-screen overflow-hidden  ">
+        <div className="w-full opacity-30">
+          <Earth />
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import { SelectComponent } from "@/components/global/select-component";
 import { SelectItem } from "@/components/ui/select";
 import HeatmapLayer from "./HeatmapLayer";
 import { Button } from "@/components/ui/button";
+import { useReports } from "@/hooks/api/useReports";
 
 interface CrimeReport {
   _id: string;
@@ -27,22 +28,6 @@ interface CrimeReport {
   };
 }
 
-// Add interfaces for the API data structure
-interface Division {
-  division: string;
-  divisionbn?: string;
-  coordinates: string;
-  district?: string[];
-}
-
-interface District {
-  district: string;
-  districtbn?: string;
-  coordinates: string;
-  upazilla?: string[];
-}
-
-// Create a MapController component to handle map navigation
 const MapController = ({ coordinates }: { coordinates: [number, number] }) => {
   const map = useMap();
 
@@ -61,6 +46,8 @@ const HeatmapPage = () => {
   const [districts, setDistricts] = useState<{ district: string }[]>([]);
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const { getReports } = useReports();
+  const { data: reportsData, isLoading: reportsLoading } = getReports;
   const [isLoading, setIsLoading] = useState(true);
   const [currentMapCenter, setCurrentMapCenter] = useState<[number, number]>([
     23.8103, 90.4125,
@@ -68,40 +55,36 @@ const HeatmapPage = () => {
   const [mapZoom, setMapZoom] = useState(7);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const reportsResponse = await fetch(
-          "http://localhost:5001/api/v1/reports"
-        );
-        const reportsData = await reportsResponse.json();
+    if (reportsData) {
+      const fetchData = async () => {
+        try {
+          const divisionsResponse = await fetch(
+            "https://bdapis.com/api/v1.2/divisions"
+          );
+          const divisionsData = await divisionsResponse.json();
 
-        const divisionsResponse = await fetch(
-          "https://bdapis.com/api/v1.2/divisions"
-        );
-        const divisionsData = await divisionsResponse.json();
+          const reportsWithLocation = reportsData?.map((report: any) => {
+            return {
+              ...report,
+              location: {
+                lat: parseFloat(report.districtCoordinates[0]?.split(",")[0]),
+                lng: parseFloat(report.districtCoordinates[0]?.split(",")[1]),
+              },
+            };
+          });
 
-        const reportsWithLocation = reportsData.data.map((report: any) => {
-          console.log(report, "report");
-          return {
-            ...report,
-            location: {
-              lat: parseFloat(report.districtCoordinates[0]?.split(",")[0]),
-              lng: parseFloat(report.districtCoordinates[0]?.split(",")[1]),
-            },
-          };
-        });
+          setReports(reportsWithLocation);
+          setDivisions(divisionsData.data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-        setReports(reportsWithLocation);
-        setDivisions(divisionsData.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+      fetchData();
+    }
+  }, [reportsData]);
 
   // Fetch districts when division changes
   useEffect(() => {
@@ -158,7 +141,6 @@ const HeatmapPage = () => {
       },
     })),
   };
-  console.log(reports, "heatmapData");
 
   // Handle division selection
   const handleDivisionChange = (value: string) => {
@@ -221,7 +203,7 @@ const HeatmapPage = () => {
     zoom: mapZoom,
     style: { width: "100%", height: "100%" },
   };
-  console.log(reports);
+
   return (
     <div className="space-y-6">
       <Card className="p-6 relative bg-white">

@@ -1,11 +1,10 @@
 "use client";
 
-import CreateReportCard from "@/components/global/create-report-card";
+import { useReports } from "@/hooks/api/useReports";
 import CrimeReportCard from "@/components/global/crime-report-card";
-import React, { useEffect, useState } from "react";
+import CreateReportCard from "@/components/global/create-report-card";
+import React from "react";
 import { Activity, AlertTriangle, MapPin, Clock } from "lucide-react";
-import { handleAPIError } from "@/lib/Error";
-import { toast } from "sonner";
 
 interface RecentActivity {
   id: string;
@@ -73,44 +72,12 @@ const dummyActivities: RecentActivity[] = [
   },
 ];
 
-const Page = () => {
-  const [reports, setReports] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+const HomePage = () => {
+  const { getReports, deleteReport, voteReport, updateReport } = useReports();
+  const { data: reports, isLoading, error } = getReports;
 
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const response = await fetch("http://localhost:5001/api/v1/reports", {
-          cache: "no-store",
-        });
-        const data = await response.json();
-        setReports(data.data);
-      } catch (error) {
-        console.error("Error fetching reports:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchReports();
-  }, []);
-
-  const deleteReport = async (id: string) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5001/api/v1/reports/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
-      if (response.ok) {
-        toast.success("Report deleted successfully");
-        setReports(reports.filter((report: any) => report._id !== id));
-      }
-    } catch (error) {
-      handleAPIError(error);
-    }
-  };
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading reports</div>;
 
   const getActivityIcon = (type: RecentActivity["type"]) => {
     switch (type) {
@@ -134,44 +101,19 @@ const Page = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4">
-        <div className="flex gap-6">
-          <div className="flex-1">
-            <div className="gap-5 flex flex-col">
-              <div className="animate-pulse">
-                <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-                <div className="h-48 bg-gray-200 rounded-lg"></div>
-              </div>
-            </div>
-          </div>
-          <div className="w-80 shrink-0 md:block hidden">
-            <div className="bg-card rounded-lg shadow-custom-sm p-4 sticky top-16">
-              <div className="h-4 bg-gray-200 rounded w-2/3 mb-4"></div>
-              <div className="space-y-3">
-                <div className="h-3 bg-gray-200 rounded"></div>
-                <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4">
       <div className="flex gap-6">
-        {/* Main Content */}
         <div className="flex-1">
           <div className="gap-5 flex flex-col">
             <CreateReportCard />
-            {reports.map((report: any, index: number) => (
+            {reports?.data?.map((report: any) => (
               <CrimeReportCard
-                key={report._id || index}
-                deleteReport={deleteReport}
+                key={report._id}
                 report={report}
+                deleteReport={deleteReport}
+                updateReport={updateReport}
+                voteReport={voteReport}
               />
             ))}
           </div>
@@ -214,4 +156,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default HomePage;

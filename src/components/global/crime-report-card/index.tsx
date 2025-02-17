@@ -17,8 +17,7 @@ import {
 
 import Link from "next/link";
 import { EvidenceModal } from "../evidence-modal";
-import axios from "axios";
-import { toast } from "sonner";
+
 interface User {
   _id: string;
   name: string;
@@ -42,10 +41,17 @@ interface CrimeReport {
 
 interface Props {
   report: CrimeReport;
-  deleteReport: (id: string) => void;
+  deleteReport: any;
+  updateReport: any;
+  voteReport: any;
 }
 
-const CrimeReportCard = ({ report, deleteReport }: Props) => {
+const CrimeReportCard = ({
+  report,
+  deleteReport,
+  updateReport,
+  voteReport,
+}: Props) => {
   const [collapsedDescription, setCollapsedDescription] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedReport, setEditedReport] = useState({
@@ -62,34 +68,21 @@ const CrimeReportCard = ({ report, deleteReport }: Props) => {
       ? report.description.slice(0, 300)
       : report?.description;
 
-  const handleEvidenceSubmit = (evidence: {
-    description: string;
-    images: File[];
-    video: File | null;
-  }) => {
-    console.log("Evidence submitted:", evidence);
-  };
-
-  const handleSaveEdit = async () => {
-    const response = await axios.patch(
-      `http://localhost:5001/api/v1/reports/${report._id}`,
-      editedReport
-    );
-    if (response.status === 200) {
-      toast.success("Report updated successfully");
-    }
-    console.log("Saving edits:", editedReport);
-    setIsEditing(false);
+  const handleVote = (type: "upvote" | "downvote") => {
+    voteReport.mutate({ id: report._id, type });
   };
 
   return (
-    <div className="flex flex-col relative w-full mx-auto rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-200">
+    <div className="flex flex-col max-w-screen-lg relative w-full mx-auto rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-200">
       <div className="flex relative items-center justify-between p-6 border-b border-border/60">
         <div className="flex items-center gap-4">
           <Image
             src={report?.userId?.profileImage}
             alt="user"
             width={48}
+            blurDataURL={report?.userId?.profileImage}
+            placeholder="blur"
+            priority
             height={48}
             className="rounded-full object-cover ring-2 ring-primary/10"
           />
@@ -131,7 +124,7 @@ const CrimeReportCard = ({ report, deleteReport }: Props) => {
                 <Edit2 size={16} /> {isEditing ? "Cancel Edit" : "Edit Report"}
               </Button>
               <Button
-                onClick={() => deleteReport(report._id)}
+                onClick={() => deleteReport.mutate(report._id)}
                 variant="ghost"
                 className="flex w-full justify-start text-sm gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
               >
@@ -236,6 +229,21 @@ const CrimeReportCard = ({ report, deleteReport }: Props) => {
                       src={image}
                       alt={`crime scene ${index + 1}`}
                       fill
+                      blurDataURL={image}
+                      placeholder="blur"
+                      priority
+                      loader={({ src, width, quality }) => {
+                        return `${src}?w=${width}&q=${quality || 75}`;
+                      }}
+                      quality={500}
+                      loading="eager"
+                      unoptimized
+                      overrideSrc={image}
+                      layout="fill"
+                      objectFit="cover"
+                      objectPosition="center"
+                      lazyBoundary="200px"
+                      lazyRoot="200px"
                       className="object-covoer hover:scale-105 transition-all duration-300"
                     />
                     {index === 5 && report.images.length > 6 && (
@@ -256,7 +264,10 @@ const CrimeReportCard = ({ report, deleteReport }: Props) => {
             <div className="flex gap-2">
               <Button
                 variant="default"
-                onClick={handleSaveEdit}
+                onClick={() => {
+                  updateReport.mutate({ id: report._id, data: editedReport });
+                  setIsEditing(false);
+                }}
                 className="bg-primary text-white hover:bg-primary/90"
               >
                 Save Changes
@@ -275,9 +286,7 @@ const CrimeReportCard = ({ report, deleteReport }: Props) => {
                 variant="ghost"
                 size="sm"
                 className={`gap-2 ${votes.upvotes > 0 ? "text-green-600" : ""}`}
-                onClick={() =>
-                  setVotes((prev) => ({ ...prev, upvotes: prev.upvotes + 1 }))
-                }
+                onClick={() => handleVote("upvote")}
               >
                 <ThumbsUp className="h-4 w-4" />
                 <span>{votes.upvotes}</span>
@@ -286,12 +295,7 @@ const CrimeReportCard = ({ report, deleteReport }: Props) => {
                 variant="ghost"
                 size="sm"
                 className={`gap-2 ${votes.downvotes > 0 ? "text-red-600" : ""}`}
-                onClick={() =>
-                  setVotes((prev) => ({
-                    ...prev,
-                    downvotes: prev.downvotes + 1,
-                  }))
-                }
+                onClick={() => handleVote("downvote")}
               >
                 <ThumbsDown className="h-4 w-4" />
                 <span>{votes.downvotes}</span>
@@ -299,7 +303,7 @@ const CrimeReportCard = ({ report, deleteReport }: Props) => {
             </div>
           )}
 
-          {!isEditing && <EvidenceModal onSubmit={handleEvidenceSubmit} />}
+          {!isEditing && <EvidenceModal reportId={report._id} />}
         </div>
       </div>
     </div>

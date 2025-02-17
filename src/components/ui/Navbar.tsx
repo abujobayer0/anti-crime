@@ -8,10 +8,12 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
+import { useAuth } from "@/hooks/api/useAuth";
 
 const Navbar = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { logout: authLogout } = useAuth();
 
   const handleLogout = () => {
     // Remove token from cookies
@@ -32,7 +34,7 @@ const Navbar = () => {
           variant="outline"
           className="mr-2"
           size="icon"
-          onClick={handleLogout}
+          onClick={() => authLogout.mutate()}
           title="Logout"
         >
           <LogOut />

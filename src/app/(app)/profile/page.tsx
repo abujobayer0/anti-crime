@@ -15,50 +15,19 @@ import {
   Check,
   MessageSquare,
   Video,
+  Circle,
+  Loader2,
 } from "lucide-react";
-import CrimeReportCard from "@/components/global/crime-report-card";
-import { useAppSelector } from "@/redux/hooks";
-import { getUser } from "@/redux/features/auth/authSlice";
+
+import { useUser } from "@/hooks/api/useUser";
+import { useProfile } from "@/hooks/api/useProfile";
+import { uploadFileToImageBB } from "@/lib/utils";
 
 const ProfilePage = () => {
-  const user = useAppSelector(getUser);
+  const { data: userData, isLoading } = useUser({ reports: true });
+  const { updateProfile, verifyOTP, sendOTP } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
-  const [userReports, setUserReports] = useState([
-    {
-      _id: "1",
-      userId: "user123",
-      title: "Suspicious Activity in Gulshan-1",
-      description:
-        "Multiple individuals spotted attempting to break into parked vehicles near Gulshan-1 DCC Market. They were wearing dark clothes and appeared to be using some kind of tool.",
-      images: ["/card.avif", "/card.avif", "/card.avif", "/card.avif"],
-      video: "/video.mp4",
-      division: "Dhaka",
-      district: "Dhaka",
-      postTime: new Date("2024-03-15T10:30:00Z"),
-      crimeTime: new Date("2024-03-15T02:15:00Z"),
-      upvotes: ["user1", "user2", "user3"],
-      downvotes: ["user4"],
-      comments: ["comment1", "comment2"],
-      isDeleted: false,
-    },
-    {
-      _id: "2",
-      userId: "user123",
-      title: "Street Harassment in Dhanmondi",
-      description:
-        "Group of individuals harassing pedestrians near Dhanmondi Lake. This has been happening frequently in the evenings. Local authorities should increase patrols in this area.",
-      images: ["/card.avif"],
-      division: "Dhaka",
-      district: "Dhaka",
-      postTime: new Date("2024-03-14T15:45:00Z"),
-      crimeTime: new Date("2024-03-14T15:00:00Z"),
-      upvotes: ["user1", "user5", "user6", "user7"],
-      downvotes: [],
-      video: "/video.mp4",
-      comments: ["comment3"],
-      isDeleted: false,
-    },
-  ]);
+  const [imgUploading, setImgUploading] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -66,79 +35,68 @@ const ProfilePage = () => {
     bio: "I am a concerned citizen helping to make our community safer.",
     profileImage: "/anticrime-logo.png",
     isVerified: false,
+    role: "",
+    reports: [],
+    _id: "",
   });
+
   const [isVerifying, setIsVerifying] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
 
   // Add a useEffect to update profile data after mounting
   useEffect(() => {
-    if (user) {
+    if (userData?.user) {
       setProfileData((prev) => ({
         ...prev,
-        name: user.name || "",
-        email: user.email || "",
-        phone: user.contract || "",
-        isVerified: user.isVerified || false,
+        name: userData.user.name || "",
+        email: userData.user.email || "",
+        phone: userData.user.contact || "",
+        isVerified: userData.user.isVerified,
+        profileImage: userData.user.profileImage || "",
+        bio: userData.user.bio || "",
+        role: userData.user.role || "",
+        reports: userData.userReports || [],
+        _id: userData.user._id,
       }));
     }
-  }, [user]);
+  }, [userData?.user]);
 
-  const handleProfileUpdate = async (e: React.FormEvent) => {
+  const handleProfileUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Implement profile update logic here
-    setIsEditing(false);
+
+    updateProfile.mutate(
+      {
+        name: profileData.name,
+        contact: profileData.phone,
+        bio: profileData.bio,
+        profileImage: profileData.profileImage,
+        id: profileData._id,
+      },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+        },
+      }
+    );
   };
 
-  const handleSendOTP = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5001/api/v1/auth/send-otp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-          body: JSON.stringify({ phone: profileData.phone }),
-        }
-      );
-
-      if (response.ok) {
-        setOtpSent(true);
-        setIsVerifying(true);
-      }
-    } catch (error) {
-      console.error("Error sending OTP:", error);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImgUploading(true);
+      const url = await uploadFileToImageBB(file);
+      setProfileData({ ...profileData, profileImage: url });
+      setImgUploading(false);
     }
   };
 
-  const handleVerifyOTP = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:5001/api/v1/auth/verify-otp",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-          body: JSON.stringify({
-            phone: profileData.phone,
-            otp: otp,
-          }),
-        }
-      );
+  const handleSendOTP = () => {
+    sendOTP.mutate(userData?.phone);
+  };
 
-      if (response.ok) {
-        // Update user verification status in Redux
-        setIsVerifying(false);
-        setOtpSent(false);
-        setOtp("");
-      }
-    } catch (error) {
-      console.error("Error verifying OTP:", error);
-    }
+  const handleVerifyOTP = (otp: string) => {
+    verifyOTP.mutate({ phone: userData?.phone, otp });
   };
 
   const formatTimeAgo = (date: Date) => {
@@ -153,6 +111,8 @@ const ProfilePage = () => {
     return `${minutes} minutes ago`;
   };
 
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
@@ -164,12 +124,23 @@ const ProfilePage = () => {
                 src={profileData.profileImage}
                 alt="Profile"
                 fill
+                priority
                 className="rounded-full object-cover"
               />
+              {imgUploading && (
+                <div className="absolute bg-white/25 backdrop-blur-md rounded-full top-0 left-0 w-full h-full flex items-center justify-center">
+                  <Loader2 className="w-6 text-white h-6 animate-spin" />
+                </div>
+              )}
               {isEditing && (
                 <label className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer">
                   <Edit2 className="w-4 h-4" />
-                  <input type="file" className="hidden" accept="image/*" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
                 </label>
               )}
             </div>
@@ -209,7 +180,11 @@ const ProfilePage = () => {
                   className="resize-none"
                 />
                 <div className="flex gap-2">
-                  <Button type="submit" className="flex-1">
+                  <Button
+                    type="submit"
+                    disabled={imgUploading}
+                    className="flex-1"
+                  >
                     Save
                   </Button>
                   <Button
@@ -236,13 +211,13 @@ const ProfilePage = () => {
                     <Phone className="w-4 h-4" />
                     <span>{profileData.phone}</span>
                   </div>
-                  {user?.role === "admin" && (
+                  {profileData.role === "admin" && (
                     <div className="flex items-center gap-2 text-primary">
                       <Shield className="w-4 h-4" />
                       <span>Admin</span>
                     </div>
                   )}
-                  {!user?.isVerified && (
+                  {!profileData.isVerified && (
                     <div className="flex items-center gap-2 text-destructive">
                       <AlertCircle className="w-4 h-4" />
                       <span>Unverified Account</span>
@@ -259,7 +234,7 @@ const ProfilePage = () => {
               </div>
             )}
 
-            {!isEditing && !user?.isVerified && (
+            {!isEditing && !profileData.isVerified && (
               <div className="mt-4">
                 {!isVerifying ? (
                   <Button
@@ -280,7 +255,7 @@ const ProfilePage = () => {
                     />
                     <div className="flex gap-2">
                       <Button
-                        onClick={handleVerifyOTP}
+                        onClick={() => handleVerifyOTP(otp)}
                         variant="default"
                         className="flex-1"
                       >
@@ -320,14 +295,14 @@ const ProfilePage = () => {
             <h3 className="text-xl font-semibold">My Crime Reports</h3>
             <div className="flex gap-2 items-center">
               <span className="text-sm text-muted-foreground px-3 py-1 bg-gray-100 rounded-full">
-                Total Reports: {userReports.length}
+                Total Reports: {profileData.reports?.length}
               </span>
             </div>
           </div>
 
-          {userReports.length > 0 ? (
+          {profileData.reports?.length > 0 ? (
             <div className="grid gap-6">
-              {userReports.map((report: any) => (
+              {profileData.reports?.map((report: any) => (
                 <div
                   key={report._id}
                   className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100"

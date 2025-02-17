@@ -11,17 +11,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ImagePlus, VideoIcon, X, MessageSquare } from "lucide-react";
+import { useReports } from "@/hooks/api/useReports";
 
 interface EvidenceModalProps {
   trigger?: React.ReactNode;
-  onSubmit: (evidence: {
-    description: string;
-    images: File[];
-    video: File | null;
-  }) => void;
+  reportId: string;
 }
 
-export const EvidenceModal = ({ trigger, onSubmit }: EvidenceModalProps) => {
+export const EvidenceModal = ({ trigger, reportId }: EvidenceModalProps) => {
+  const { addEvidence } = useReports();
   const [evidence, setEvidence] = useState({
     description: "",
     images: [] as File[],
@@ -64,7 +62,10 @@ export const EvidenceModal = ({ trigger, onSubmit }: EvidenceModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(evidence);
+    addEvidence.mutate({
+      reportId,
+      evidence: evidence,
+    });
     setEvidence({ description: "", images: [], video: null }); // Reset form
   };
 
