@@ -4,7 +4,7 @@ import CreateReportCard from "../../create-report-card";
 import { ReportsListContainer } from "./ReportsList.container";
 
 const ReportsList = () => {
-  const { data: user } = useUser({ reports: false });
+  const { data: user } = useUser();
 
   return (
     <>

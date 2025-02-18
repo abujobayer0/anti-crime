@@ -7,13 +7,13 @@ export const ReportsListContainer = () => {
   const { getReports, deleteReport, updateReport, voteReport } = useReports();
   const { data: reports, isLoading } = getReports;
 
-  const { data: user } = useUser({ reports: false });
+  const { data: user } = useUser();
 
   const handleDelete = (id: string) => {
     deleteReport.mutate(id);
   };
 
-  const handleUpdate = (id: string, data: any) => {
+  const handleUpdate = ({ id, data }: { id: string; data: any }) => {
     updateReport.mutate({ id, data });
   };
 

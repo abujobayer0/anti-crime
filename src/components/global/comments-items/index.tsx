@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useReports } from "@/hooks";
 import { uploadFileToImageBB } from "@/lib/utils";
+import { formatTimeAgo } from "@/lib/report";
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -77,7 +78,7 @@ const CommentItem = ({
           <div className="flex items-center gap-2">
             <p className="font-semibold text-sm">{comment.userId?.name}</p>
             <span className="text-xs text-muted-foreground">
-              {new Date(comment.createdAt).toLocaleDateString()}
+              {formatTimeAgo(new Date(comment.createdAt))}
             </span>
           </div>
           <p className="text-sm leading-relaxed">{comment.comment}</p>

@@ -1,13 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "@/api/client";
 
-export const useUser = (reports: { reports: boolean }) => {
+export const useUser = () => {
   return useQuery({
     queryKey: ["user"],
     queryFn: async () => {
-      const { data } = await apiClient.get(
-        `/auth/me?reports=${reports.reports}`
-      );
+      const { data } = await apiClient.get(`/users/get-me`);
       return data.data;
     },
     retry: false,

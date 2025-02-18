@@ -7,7 +7,7 @@ interface ViewProps {
   isLoading: boolean;
   user: User;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, data: any) => void;
+  onUpdate: (props: { id: string; data: any }) => void;
   onVote: (props: { id: string; type: "upvote" | "downvote" }) => void;
 }
 

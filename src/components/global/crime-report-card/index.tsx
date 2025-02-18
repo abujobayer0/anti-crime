@@ -2,29 +2,29 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Props, User } from "./types";
+import { Props } from "./types";
 import { CommentsSection } from "../comments-section";
 import Image from "next/image";
 import { GlobalPopover } from "../global-popover";
 import { Button } from "@/components/ui/button";
+import { VoteButtons } from "./VoteButtons";
 
 import {
   EllipsisVertical,
   LocateIcon,
   Siren,
   TimerIcon,
-  ThumbsUp,
-  ThumbsDown,
   Trash2,
   Edit2,
 } from "lucide-react";
+import { formatTimeAgo } from "@/lib/report";
 
 const CrimeReportCard = ({
   report,
   deleteReport,
   updateReport,
   voteReport,
-  user: { user },
+  user,
 }: Props) => {
   const [collapsedDescription, setCollapsedDescription] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -33,59 +33,10 @@ const CrimeReportCard = ({
     description: report.description,
   });
 
-  const [votes, setVotes] = useState({
-    upvotes: report.upvotes.length,
-    downvotes: report.downvotes.length,
-    hasUpvoted: report.upvotes
-      .map((vote: User) => vote._id)
-      .includes(user?._id),
-    hasDownvoted: report.downvotes
-      .map((vote: User) => vote._id)
-      .includes(user?._id),
-  });
-
   const description =
     report?.description?.length > 300 && !collapsedDescription
       ? report.description.slice(0, 300)
       : report?.description;
-
-  const handleVote = (type: "upvote" | "downvote") => {
-    voteReport({ id: report._id, type });
-
-    setVotes((prev) => {
-      if (type === "upvote") {
-        if (prev.hasUpvoted) {
-          return {
-            ...prev,
-            upvotes: prev.upvotes - 1,
-            hasUpvoted: false,
-          };
-        } else {
-          return {
-            upvotes: prev.upvotes + 1,
-            downvotes: prev.hasDownvoted ? prev.downvotes - 1 : prev.downvotes,
-            hasUpvoted: true,
-            hasDownvoted: false,
-          };
-        }
-      } else {
-        if (prev.hasDownvoted) {
-          return {
-            ...prev,
-            downvotes: prev.downvotes - 1,
-            hasDownvoted: false,
-          };
-        } else {
-          return {
-            downvotes: prev.downvotes + 1,
-            upvotes: prev.hasUpvoted ? prev.upvotes - 1 : prev.upvotes,
-            hasDownvoted: true,
-            hasUpvoted: false,
-          };
-        }
-      }
-    });
-  };
 
   return (
     <div className="flex flex-col max-w-screen-md relative w-full mx-auto rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-200">
@@ -102,11 +53,7 @@ const CrimeReportCard = ({
           <div>
             <div className="text-lg font-semibold">{report?.userId?.name}</div>
             <p className="text-sm text-muted-foreground">
-              {new Date(report?.crimeTime).toLocaleDateString("en-US", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
+              {formatTimeAgo(new Date(report?.postTime))}
             </p>
           </div>
         </div>
@@ -129,20 +76,25 @@ const CrimeReportCard = ({
               >
                 <Siren size={16} /> Emergency Contact
               </Button>
-              <Button
-                onClick={() => setIsEditing(!isEditing)}
-                variant="ghost"
-                className="flex w-full justify-start text-sm gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
-              >
-                <Edit2 size={16} /> {isEditing ? "Cancel Edit" : "Edit Report"}
-              </Button>
-              <Button
-                onClick={() => deleteReport.mutate(report._id)}
-                variant="ghost"
-                className="flex w-full justify-start text-sm gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
-              >
-                <Trash2 size={16} /> Delete Report
-              </Button>
+              {report?.userId?._id === user?._id && (
+                <Button
+                  onClick={() => setIsEditing(!isEditing)}
+                  variant="ghost"
+                  className="flex w-full justify-start text-sm gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
+                >
+                  <Edit2 size={16} />{" "}
+                  {isEditing ? "Cancel Edit" : "Edit Report"}
+                </Button>
+              )}
+              {report?.userId?._id === user?._id && (
+                <Button
+                  onClick={() => deleteReport(report._id)}
+                  variant="ghost"
+                  className="flex w-full justify-start text-sm gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
+                >
+                  <Trash2 size={16} /> Delete Report
+                </Button>
+              )}
             </>
           }
         />
@@ -179,7 +131,8 @@ const CrimeReportCard = ({
             <div className="flex items-center gap-2">
               <TimerIcon size={16} />
               <span>
-                Crime Time: {new Date(report?.crimeTime).toLocaleTimeString()}
+                Crime Time:
+                {formatTimeAgo(new Date(report?.crimeTime))}
               </span>
             </div>
           </div>
@@ -271,7 +224,7 @@ const CrimeReportCard = ({
               <Button
                 variant="default"
                 onClick={() => {
-                  updateReport.mutate({ id: report._id, data: editedReport });
+                  updateReport({ id: report._id, data: editedReport });
                   setIsEditing(false);
                 }}
                 className="bg-primary text-white hover:bg-primary/90"
@@ -288,30 +241,14 @@ const CrimeReportCard = ({
             </div>
           ) : (
             <div className="flex gap-4 justify-between w-full">
-              <div className="flex gap-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`gap-2 ${
-                    votes.hasUpvoted ? "text-green-600 bg-green-50" : ""
-                  }`}
-                  onClick={() => handleVote("upvote")}
-                >
-                  <ThumbsUp className="h-4 w-4" />
-                  <span>{votes.upvotes}</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`gap-2 ${
-                    votes.hasDownvoted ? "text-red-600 bg-red-50" : ""
-                  }`}
-                  onClick={() => handleVote("downvote")}
-                >
-                  <ThumbsDown className="h-4 w-4" />
-                  <span>{votes.downvotes}</span>
-                </Button>
-              </div>
+              <VoteButtons
+                initialUpvotes={report.upvotes.length}
+                initialDownvotes={report.downvotes.length}
+                initialUpvoters={report.upvotes}
+                initialDownvoters={report.downvotes}
+                currentUserId={user?._id}
+                onVote={(type) => voteReport({ id: report._id, type })}
+              />
             </div>
           )}
         </div>

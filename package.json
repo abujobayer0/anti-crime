@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.744.0",
+    "@google/generative-ai": "^0.21.0",
     "@hookform/resolvers": "^4.0.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -45,6 +46,7 @@
     "@tanstack/react-query-devtools": "^5.66.3",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.9",
+    "base64-js": "^1.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",

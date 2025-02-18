@@ -1,8 +1,10 @@
 import Image from "next/image";
 import { LocateIcon, TimerIcon, MessageSquare } from "lucide-react";
 import { CommentsSection } from "../../comments-section";
-
 import type { CrimeReport, User } from "../../crime-report-card/types";
+import { VoteButtons } from "../../crime-report-card/VoteButtons";
+import { useReports } from "@/hooks";
+import { formatTimeAgo } from "@/lib/report";
 
 interface ViewProps {
   report: CrimeReport;
@@ -10,6 +12,12 @@ interface ViewProps {
 }
 
 export const ReportDetailsView = ({ report, user }: ViewProps) => {
+  const { voteReport } = useReports();
+
+  const handleVote = (props: { id: string; type: "upvote" | "downvote" }) => {
+    voteReport.mutate(props);
+  };
+
   return (
     <div className="container z-[-1] mx-auto px-4 py-6">
       <div className="flex flex-col lg:flex-row gap-6">
@@ -28,7 +36,7 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
                   {report?.userId?.name}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(report?.crimeTime).toLocaleDateString()}
+                  {formatTimeAgo(new Date(report?.crimeTime))}
                 </p>
               </div>
             </div>
@@ -45,7 +53,7 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
               <div className="flex items-center gap-2">
                 <TimerIcon size={16} />
                 <span>
-                  Crime Time: {new Date(report?.crimeTime).toLocaleTimeString()}
+                  Crime Time: {formatTimeAgo(new Date(report?.crimeTime))}
                 </span>
               </div>
             </div>
@@ -78,10 +86,20 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
 
         <div className="w-full lg:max-w-xl space-y-4">
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              Evidence & Comments
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Evidence & Comments
+              </h3>
+              <VoteButtons
+                initialUpvotes={report.upvotes.length}
+                initialDownvotes={report.downvotes.length}
+                initialUpvoters={report.upvotes}
+                initialDownvoters={report.downvotes}
+                currentUserId={user?._id}
+                onVote={(type) => handleVote({ id: report._id, type })}
+              />
+            </div>
             <CommentsSection
               comments={report.comments}
               reportId={report._id}

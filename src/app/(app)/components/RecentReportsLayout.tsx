@@ -1,23 +1,23 @@
-import { getAllReports } from "@/actions/reports";
-import ReportsList from "@/components/global/reports/reports-list";
+import { getRecentReports } from "@/actions/reports";
 
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
+import RecentReports from "./RecentReports";
 
-export default async function HomePage() {
+export default async function RecentReportsLayout() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["reports"],
-    queryFn: getAllReports,
+    queryKey: ["recent-reports"],
+    queryFn: getRecentReports,
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ReportsList />
+      <RecentReports />
     </HydrationBoundary>
   );
 }

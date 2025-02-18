@@ -43,6 +43,22 @@ export const useReports = () => {
     },
   });
 
+  const getRecentReports = useQuery({
+    queryKey: ["recent-reports"],
+    queryFn: async () => {
+      const { data } = await client.get(ENDPOINTS.reports.recentReports);
+      return data;
+    },
+  });
+
+  const getUserReports = useQuery({
+    queryKey: ["user-reports"],
+    queryFn: async () => {
+      const { data } = await client.get(ENDPOINTS.reports.getUserReports);
+      return data;
+    },
+  });
+
   const getReport = (id: string) =>
     useQuery({
       queryKey: ["reports", id],
@@ -61,6 +77,7 @@ export const useReports = () => {
         );
         handleSuccess("Report created successfully");
         queryClient.invalidateQueries({ queryKey: ["reports"] });
+        queryClient.invalidateQueries({ queryKey: ["recent-reports"] });
         return data;
       } catch (error) {
         handleError(error);
@@ -71,6 +88,7 @@ export const useReports = () => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
     },
   });
+
   const generateAiDescription = useMutation({
     mutationFn: async (reportData: {
       imageUrl: string[];
@@ -106,7 +124,6 @@ export const useReports = () => {
     },
   });
 
-  // Update report
   const updateReport = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Report> }) => {
       const response = await client.patch(ENDPOINTS.reports.update(id), data);
@@ -149,7 +166,6 @@ export const useReports = () => {
     },
   });
 
-  // Add evidence mutation
   const addEvidence = useMutation({
     mutationFn: async ({
       reportId,
@@ -199,8 +215,10 @@ export const useReports = () => {
 
   return {
     getReports,
+    getRecentReports,
     getReport,
     createReport,
+    getUserReports,
     updateReport,
     deleteReport,
     voteReport,

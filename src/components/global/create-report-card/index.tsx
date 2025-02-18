@@ -13,12 +13,13 @@ import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 import { SelectComponent } from "../select-component";
 import { SelectItem } from "@/components/ui/select";
-import { uploadFileToImageBB } from "@/lib/utils";
-import axios from "axios";
 import { toast } from "sonner";
 import { handleAPIError } from "@/lib/Error";
 import { useReports } from "@/hooks/api/useReports";
 import { useForm } from "@/hooks";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import { useLocation } from "@/hooks/useLocation";
+import { generateReport } from "@/lib/report";
 
 type Props = {
   onSubmit?: (data: ReportData) => void;
@@ -38,29 +39,14 @@ interface ReportData {
   districtCoordinates: string;
 }
 
-interface Division {
-  division: string;
-  district: string;
-  coordinates: string;
-}
-
-interface District {
-  district: string;
-  division: string;
-  coordinates: string;
-}
-
 const CreateReportCard = ({ onSubmit, user }: Props) => {
   const [video, setVideo] = useState<File | null>(null);
 
-  const userName = user?.user?.name || "Anonymous";
-  const { createReport, generateAiDescription } = useReports();
-  const [divisions, setDivisions] = useState<Division[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [imagePreview, setImagePreview] = useState<string[]>([]);
-  const [uploadingImages, setUploadingImages] = useState<Set<string>>(
-    new Set()
-  );
+  const userName = user?.name || "Anonymous";
+  const { createReport } = useReports();
+  const { imagePreview, uploadingImages, handleImageUpload, removeImage } =
+    useImageUpload();
+  const { divisions, districts, fetchDistricts } = useLocation();
 
   const {
     values: formData,
@@ -79,7 +65,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
       images: [] as string[],
       crimeTime: new Date(),
       postTime: new Date(),
-      userId: user?.user?._id,
+      userId: user?._id,
       divisionCoordinates: "",
       districtCoordinates: "",
     },
@@ -107,11 +93,11 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
             images: [],
             crimeTime: new Date(),
             postTime: new Date(),
-            userId: user?.user?._id,
+            userId: user?._id,
             divisionCoordinates: "",
             districtCoordinates: "",
           });
-          setImagePreview([]);
+          removeImage(0);
         },
         onError: (error) => {
           handleAPIError(error);
@@ -121,87 +107,35 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
   });
 
   useEffect(() => {
-    const fetchDivisions = async () => {
-      try {
-        const { data } = await axios.get(
-          "https://bdapis.com/api/v1.2/divisions"
-        );
-        setDivisions(data.data);
-      } catch (error) {
-        handleAPIError(error);
-      }
-    };
-    fetchDivisions();
-  }, []);
-
-  // Fetch districts when division changes
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      if (!formData.division) return;
-
-      try {
-        const { data } = await axios.get(
-          `https://bdapis.com/api/v1.2/division/${formData.division}`
-        );
-        setDistricts(data.data);
-      } catch (error) {
-        handleAPIError(error);
-      }
-    };
-    fetchDistricts();
+    fetchDistricts(formData.division);
   }, [formData.division]);
-
-  useEffect(() => {
-    return () => {
-      imagePreview.forEach(URL.revokeObjectURL);
-    };
-  }, [imagePreview]);
 
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
-    const newPreviews = files.map(URL.createObjectURL);
-    setUploadingImages(new Set(newPreviews));
-    setImagePreview([...imagePreview, ...newPreviews]);
-    try {
-      const uploadedUrls = await Promise.all(files.map(uploadFileToImageBB));
-      setFormData({
-        ...formData,
-        images: [...(formData.images || []), ...uploadedUrls],
-      });
-    } catch (error) {
-      console.error("Error uploading images:", error);
-      setImagePreview(
-        imagePreview.slice(0, imagePreview.length - files.length)
-      );
-    } finally {
-      setUploadingImages(new Set());
-    }
+
+    const uploadedUrls = await handleImageUpload(files);
+    setFormData({
+      ...formData,
+      images: [...(formData.images || []), ...uploadedUrls],
+    });
   };
 
   const handleAIGenerate = async () => {
     const { images, division, district } = formData;
     setIsSubmitting(true);
-    const data = await generateAiDescription.mutateAsync(
-      {
-        imageUrl: images || [],
-        division,
-        district,
-        crime_time: new Date().toISOString(),
-      },
-      {
-        onSuccess: () => {
-          setIsSubmitting(false);
-        },
-        onError: (error) => {
-          handleAPIError(error);
-          setIsSubmitting(false);
-        },
-      }
-    );
-    setFormData({ ...formData, description: data.data });
+    const data = await generateReport(images || [], division, district);
+    if (data) {
+      const { title, description } = data;
+      setFormData({
+        ...formData,
+        title,
+        description,
+      });
+    }
+    setIsSubmitting(false);
     return;
   };
 
@@ -224,10 +158,10 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
   };
 
   useEffect(() => {
-    if (user?.user?._id) {
+    if (user?._id) {
       setFormData((prevData) => ({
         ...prevData,
-        userId: user.user._id,
+        userId: user._id,
       }));
     }
   }, [user, formData.userId]);
@@ -239,14 +173,14 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
           <div className="flex items-center gap-4">
             <div className="relative w-12 h-12">
               <Image
-                src={user?.user?.profileImage || "/anticrime-logo.png"}
+                src={user?.profileImage || "/anticrime-logo.png"}
                 alt={userName}
                 fill
                 sizes="12px"
                 priority
                 className="rounded-full object-cover ring-2 ring-primary/10"
               />
-              {!user?.user?.isVerified && (
+              {!user?.isVerified && (
                 <div className="absolute -top-1 -right-1 bg-destructive/10 text-destructive p-1 rounded-full">
                   <AlertCircle className="w-3 h-3" />
                 </div>
@@ -375,9 +309,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
                   <button
                     type="button"
                     onClick={() => {
-                      setImagePreview(
-                        imagePreview.filter((_, i) => i !== index)
-                      );
+                      removeImage(index);
                       handleChange(
                         "images",
                         imagePreview.filter((_, i) => i !== index)

@@ -14,6 +14,7 @@ export const ENDPOINTS = {
   },
   reports: {
     list: "/reports",
+    getUserReports: "/reports/user-reports",
     detail: (id: string) => `/reports/${id}`,
     create: "/reports",
     update: (id: string) => `/reports/${id}`,
@@ -21,6 +22,7 @@ export const ENDPOINTS = {
     generateAiDescription: "/reports/analyze",
     upvote: (id: string) => `/reports/${id}/upvote`,
     downvote: (id: string) => `/reports/${id}/downvote`,
+    recentReports: "/reports/recent-reports",
   },
   comments: {
     create: (reportId: string) => `/comments/${reportId}/comment`,

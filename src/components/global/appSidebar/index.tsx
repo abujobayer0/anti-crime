@@ -1,20 +1,15 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Bell, Home, Map, User } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
+
 import Link from "next/link";
 
 const items = [
@@ -26,17 +21,17 @@ const items = [
   {
     title: "Notifications",
     url: "/notifications",
-    icon: Inbox,
+    icon: Bell,
   },
   {
     title: "Heat map",
     url: "/heatmap",
-    icon: Calendar,
+    icon: Map,
   },
   {
     title: "Profile",
     url: "/profile",
-    icon: Settings,
+    icon: User,
   },
 ];
 
