@@ -19,8 +19,6 @@ const Navbar = () => {
   React.useEffect(() => {
     if (debouncedSearch) {
       router.push(`/query?${encodeURIComponent(debouncedSearch)}`);
-    } else {
-      router.push("/");
     }
   }, [debouncedSearch, router]);
 
