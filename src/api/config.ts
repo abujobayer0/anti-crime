@@ -20,6 +20,8 @@ export const ENDPOINTS = {
     update: (id: string) => `/reports/${id}`,
     delete: (id: string) => `/reports/${id}`,
     generateAiDescription: "/reports/analyze",
+    upvote: (id: string) => `/reports/${id}/upvote`,
+    downvote: (id: string) => `/reports/${id}/downvote`,
   },
   comments: {
     create: (reportId: string) => `/comments/${reportId}/comment`,

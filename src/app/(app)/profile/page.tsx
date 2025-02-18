@@ -22,6 +22,7 @@ import {
 import { useUser } from "@/hooks/api/useUser";
 import { useProfile } from "@/hooks/api/useProfile";
 import { uploadFileToImageBB } from "@/lib/utils";
+import Link from "next/link";
 
 const ProfilePage = () => {
   const { data: userData, isLoading } = useUser({ reports: true });
@@ -404,28 +405,22 @@ const ProfilePage = () => {
 
                     {/* Engagement Stats */}
                     <div className="flex items-center gap-6">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-2 hover:bg-green-50 hover:text-green-600"
-                      >
-                        <Check className="w-4 h-4" />
+                      <div className="flex items-center gap-2 text-sm px-3 py-1 bg-green-50 text-green-600 rounded-full">
                         <span className="font-medium">
                           {report.upvotes.length}
                         </span>
-                        <span className="text-muted-foreground">upvotes</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-2 hover:bg-blue-50 hover:text-blue-600"
+                        <span>upvotes</span>
+                      </div>
+                      <Link
+                        href={`/reports/${report._id}`}
+                        className="gap-2 flex items-center p-2 hover:bg-blue-50 hover:text-blue-600"
                       >
                         <MessageSquare className="w-4 h-4" />
                         <span className="font-medium">
                           {report.comments.length}
                         </span>
                         <span className="text-muted-foreground">comments</span>
-                      </Button>
+                      </Link>
                       {report.video && (
                         <div className="flex items-center gap-2 text-sm px-3 py-1 bg-gray-50 rounded-full">
                           <Video className="w-4 h-4" />

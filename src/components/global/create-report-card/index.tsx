@@ -107,7 +107,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
             images: [],
             crimeTime: new Date(),
             postTime: new Date(),
-            userId: "",
+            userId: user?.user?._id,
             divisionCoordinates: "",
             districtCoordinates: "",
           });
@@ -233,9 +233,8 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
   }, [user, formData.userId]);
 
   return (
-    <div className="flex justify-center w-full items-center">
-      <div className="bg-white w-full max-w-screen-lg  rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-border/40">
-        {/* Header Section */}
+    <div className="flex flex-col mt-4 mx-auto justify-center w-full max-w-screen-md  items-center">
+      <div className="bg-white w-full rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-border/40">
         <div className="p-4 border-b border-border/40">
           <div className="flex items-center gap-4">
             <div className="relative w-12 h-12">
@@ -262,9 +261,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
           </div>
         </div>
 
-        {/* Content Section */}
         <div className="p-4 space-y-4">
-          {/* Title Input with error state */}
           <div className="space-y-2">
             <input
               type="text"
@@ -314,7 +311,6 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
             />
           </div>
 
-          {/* Location Selection */}
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2 bg-muted/30 px-3 py-2 rounded-lg">
               <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -360,7 +356,6 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
             </div>
           </div>
 
-          {/* Media Preview Grid */}
           {imagePreview.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {imagePreview.map((preview, index) => (
@@ -397,7 +392,6 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
             </div>
           )}
 
-          {/* Action Buttons */}
           <div className="flex items-center justify-between pt-4 border-t border-border/40">
             <div className="flex gap-2">
               <Button

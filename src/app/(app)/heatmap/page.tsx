@@ -57,6 +57,7 @@ const HeatmapPage = () => {
   useEffect(() => {
     if (reportsData?.data) {
       const fetchData = async () => {
+        setIsLoading(true);
         try {
           const divisionsResponse = await fetch(
             "https://bdapis.com/api/v1.2/divisions"
@@ -84,7 +85,7 @@ const HeatmapPage = () => {
 
       fetchData();
     }
-  }, [reportsData, isLoading]);
+  }, [reportsData]);
 
   // Fetch districts when division changes
   useEffect(() => {
@@ -205,7 +206,7 @@ const HeatmapPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-5">
       <Card className="p-6 relative bg-white">
         <div className="space-y-4">
           <div className="flex items-center justify-between">

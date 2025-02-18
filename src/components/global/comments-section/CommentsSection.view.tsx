@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
 import { MessageCircle, ImagePlus, X } from "lucide-react";
 import CommentItem from "../comments-items";
-import type { Comment } from "../crime-report-card/types";
+import { Comment } from "../crime-report-card/types";
 
 interface ViewProps {
   comments: Comment[];

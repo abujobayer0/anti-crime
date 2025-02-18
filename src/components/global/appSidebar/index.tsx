@@ -42,26 +42,9 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="bg-card backdrop-blur-xl z-50 border-r pt-3">
-      <SidebarContent className="flex bg-card flex-col gap-6">
-        <SidebarGroupLabel>
-          <Link href="/" className="transition-opacity hover:opacity-80">
-            <SidebarGroupLabel className="flex items-center gap-4 px-8 py-2">
-              <Image
-                src="/anticrime-logo.png"
-                width={36}
-                height={36}
-                alt="AntiCrime logo"
-                className="rounded-xl"
-              />
-
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent hidden md:inline-block">
-                AntiCrime
-              </span>
-            </SidebarGroupLabel>
-          </Link>
-        </SidebarGroupLabel>
-        <SidebarGroupContent className="px-4 mt-6">
+    <Sidebar className="backdrop-blur-xl  bg-transparent ">
+      <SidebarContent className="flex bg-transparent flex-col pt-4 gap-6">
+        <SidebarGroupContent className="px-4 mt-16">
           <SidebarMenu className="space-y-2">
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>

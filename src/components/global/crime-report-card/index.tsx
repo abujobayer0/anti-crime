@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Props } from "./types";
+import { Props, User } from "./types";
 import { CommentsSection } from "../comments-section";
 import Image from "next/image";
 import { GlobalPopover } from "../global-popover";
@@ -24,7 +24,7 @@ const CrimeReportCard = ({
   deleteReport,
   updateReport,
   voteReport,
-  user,
+  user: { user },
 }: Props) => {
   const [collapsedDescription, setCollapsedDescription] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -36,6 +36,12 @@ const CrimeReportCard = ({
   const [votes, setVotes] = useState({
     upvotes: report.upvotes.length,
     downvotes: report.downvotes.length,
+    hasUpvoted: report.upvotes
+      .map((vote: User) => vote._id)
+      .includes(user?._id),
+    hasDownvoted: report.downvotes
+      .map((vote: User) => vote._id)
+      .includes(user?._id),
   });
 
   const description =
@@ -44,15 +50,45 @@ const CrimeReportCard = ({
       : report?.description;
 
   const handleVote = (type: "upvote" | "downvote") => {
-    voteReport.mutate({ id: report._id, type });
-    setVotes((prev) => ({
-      ...prev,
-      [type]: prev[type as keyof typeof prev] + 1,
-    }));
+    voteReport({ id: report._id, type });
+
+    setVotes((prev) => {
+      if (type === "upvote") {
+        if (prev.hasUpvoted) {
+          return {
+            ...prev,
+            upvotes: prev.upvotes - 1,
+            hasUpvoted: false,
+          };
+        } else {
+          return {
+            upvotes: prev.upvotes + 1,
+            downvotes: prev.hasDownvoted ? prev.downvotes - 1 : prev.downvotes,
+            hasUpvoted: true,
+            hasDownvoted: false,
+          };
+        }
+      } else {
+        if (prev.hasDownvoted) {
+          return {
+            ...prev,
+            downvotes: prev.downvotes - 1,
+            hasDownvoted: false,
+          };
+        } else {
+          return {
+            downvotes: prev.downvotes + 1,
+            upvotes: prev.hasUpvoted ? prev.upvotes - 1 : prev.upvotes,
+            hasDownvoted: true,
+            hasUpvoted: false,
+          };
+        }
+      }
+    });
   };
 
   return (
-    <div className="flex flex-col max-w-screen-lg relative w-full mx-auto rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-200">
+    <div className="flex flex-col max-w-screen-md relative w-full mx-auto rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-200">
       <div className="flex relative items-center justify-between p-6 border-b border-border/60">
         <div className="flex items-center gap-4">
           <Image
@@ -184,7 +220,6 @@ const CrimeReportCard = ({
             {report.images
               .slice(0, Math.min(6, report.images.length))
               .map((image: string, index: number) => {
-                // Calculate layout classes based on number of images and position
                 const getImageClass = () => {
                   if (report.images.length === 1) return "aspect-video w-full";
                   if (report.images.length === 2) return "aspect-square";
@@ -258,7 +293,7 @@ const CrimeReportCard = ({
                   variant="ghost"
                   size="sm"
                   className={`gap-2 ${
-                    votes.upvotes > 0 ? "text-green-600" : ""
+                    votes.hasUpvoted ? "text-green-600 bg-green-50" : ""
                   }`}
                   onClick={() => handleVote("upvote")}
                 >
@@ -269,7 +304,7 @@ const CrimeReportCard = ({
                   variant="ghost"
                   size="sm"
                   className={`gap-2 ${
-                    votes.downvotes > 0 ? "text-red-600" : ""
+                    votes.hasDownvoted ? "text-red-600 bg-red-50" : ""
                   }`}
                   onClick={() => handleVote("downvote")}
                 >
@@ -285,7 +320,7 @@ const CrimeReportCard = ({
           <CommentsSection
             comments={report?.comments}
             reportId={report._id}
-            userImage={user?.user?.profileImage}
+            userImage={user?.profileImage}
           />
         )}
       </div>

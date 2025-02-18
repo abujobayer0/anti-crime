@@ -13,10 +13,13 @@ export default async function ReportPage({
 }) {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["reports", params.reportId],
-    queryFn: () => getReportById(params.reportId),
-  });
+  // Prefetch both report and comments data
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["reports", params.reportId],
+      queryFn: () => getReportById(params.reportId),
+    }),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

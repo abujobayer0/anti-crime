@@ -24,6 +24,13 @@ export interface Report {
   comments: any[];
 }
 
+interface CommentData {
+  description: string;
+  proofImage: string[];
+  video?: string[];
+  replyTo?: string;
+}
+
 export const useReports = () => {
   const { client, handleError, handleSuccess } = useApi();
   const queryClient = useQueryClient();
@@ -36,7 +43,6 @@ export const useReports = () => {
     },
   });
 
-  // Get single report
   const getReport = (id: string) =>
     useQuery({
       queryKey: ["reports", id],
@@ -150,29 +156,44 @@ export const useReports = () => {
       evidence,
     }: {
       reportId: string;
-      commentId?: string;
-      evidence: {
-        description: string;
-        proofImage: string[];
-        video?: string[];
-        replyTo?: string;
-      };
+      evidence: any;
+    }) => {
+      const { data } = await client.post(
+        `${ENDPOINTS.reports.list}/${reportId}/evidence`,
+        evidence
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+    },
+  });
+
+  const addComment = useMutation({
+    mutationFn: async ({
+      reportId,
+      comment,
+    }: {
+      reportId: string;
+      comment: CommentData;
     }) => {
       const { data } = await client.post(
         `${ENDPOINTS.comments.create(reportId)}`,
         {
-          comment: evidence.description || "",
-          proofImage: evidence.proofImage,
-          video: evidence.video,
+          comment: comment.description || "",
+          proofImage: comment.proofImage,
+          video: comment.video,
           reportId: reportId,
-          replyTo: evidence.replyTo,
+          replyTo: comment.replyTo,
         }
       );
 
-      await queryClient.invalidateQueries({
-        queryKey: ["reports", data.reportId],
-      });
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reports"],
+      });
     },
   });
 
@@ -184,6 +205,7 @@ export const useReports = () => {
     deleteReport,
     voteReport,
     addEvidence,
+    addComment,
     generateAiDescription,
   };
 };

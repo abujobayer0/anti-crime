@@ -4,9 +4,10 @@ import { useReports } from "@/hooks/api/useReports";
 import { ReportsListView } from "./ReportsList.view";
 
 export const ReportsListContainer = () => {
-  const { data: reports, isLoading } = useReports().getReports;
+  const { getReports, deleteReport, updateReport, voteReport } = useReports();
+  const { data: reports, isLoading } = getReports;
+
   const { data: user } = useUser({ reports: false });
-  const { deleteReport, updateReport, voteReport } = useReports();
 
   const handleDelete = (id: string) => {
     deleteReport.mutate(id);
@@ -16,8 +17,8 @@ export const ReportsListContainer = () => {
     updateReport.mutate({ id, data });
   };
 
-  const handleVote = (id: string, type: "upvote" | "downvote") => {
-    voteReport.mutate({ id, type });
+  const handleVote = (props: { id: string; type: "upvote" | "downvote" }) => {
+    voteReport.mutate(props);
   };
 
   return (

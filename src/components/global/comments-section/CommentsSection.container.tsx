@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useReports } from "@/hooks/api/useReports";
 import { uploadFileToImageBB } from "@/lib/utils";
 
-import type { Comment } from "../crime-report-card/types";
 import { CommentsSectionView } from "./CommentsSection.view";
+import { Comment } from "../crime-report-card/types";
 
 interface Props {
   comments: Comment[];
@@ -23,7 +23,7 @@ export const CommentsSectionContainer = ({
   const [newComment, setNewComment] = useState("");
   const [commentImages, setCommentImages] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const { addEvidence: addComment } = useReports();
+  const { addComment } = useReports();
 
   const handleCommentSubmit = async () => {
     if (!newComment && commentImages.length === 0) return;
@@ -36,7 +36,7 @@ export const CommentsSectionContainer = ({
 
       await addComment.mutateAsync({
         reportId,
-        evidence: {
+        comment: {
           description: newComment,
           proofImage: uploadedImages,
         },

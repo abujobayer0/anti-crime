@@ -12,6 +12,16 @@ export const getReportById = async (id: string) => {
 };
 
 export const getReportComments = async (reportId: string) => {
-  const { data } = await client.get(ENDPOINTS.reports.detail(reportId));
-  return data.data.comments;
+  const { data } = await client.get(`${ENDPOINTS.reports.detail(reportId)}`);
+  return data.data;
+};
+
+export const upvoteReport = async (reportId: string) => {
+  const { data } = await client.post(`${ENDPOINTS.reports.upvote(reportId)}`);
+  return data;
+};
+
+export const downvoteReport = async (reportId: string) => {
+  const { data } = await client.post(`${ENDPOINTS.reports.downvote(reportId)}`);
+  return data;
 };

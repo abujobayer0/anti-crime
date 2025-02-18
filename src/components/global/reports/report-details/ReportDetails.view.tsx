@@ -6,7 +6,7 @@ import type { CrimeReport, User } from "../../crime-report-card/types";
 
 interface ViewProps {
   report: CrimeReport;
-  user: { user: User };
+  user: User;
 }
 
 export const ReportDetailsView = ({ report, user }: ViewProps) => {
@@ -85,7 +85,7 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
             <CommentsSection
               comments={report.comments}
               reportId={report._id}
-              userImage={user?.user?.profileImage}
+              userImage={user?.profileImage}
               open={true}
             />
           </div>

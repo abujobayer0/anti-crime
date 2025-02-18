@@ -4,10 +4,10 @@ import type { CrimeReport, User } from "../../crime-report-card/types";
 interface ViewProps {
   reports: CrimeReport[];
   isLoading: boolean;
-  user: { user: User };
+  user: User;
   onDelete: (id: string) => void;
   onUpdate: (id: string, data: any) => void;
-  onVote: (id: string, type: "upvote" | "downvote") => void;
+  onVote: (props: { id: string; type: "upvote" | "downvote" }) => void;
 }
 
 export const ReportsListView = ({
@@ -26,7 +26,7 @@ export const ReportsListView = ({
         <CrimeReportCard
           key={report._id}
           report={report}
-          user={user}
+          user={user as any}
           deleteReport={onDelete}
           updateReport={onUpdate}
           voteReport={onVote}

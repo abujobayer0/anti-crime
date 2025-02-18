@@ -18,7 +18,7 @@ const CommentItem = ({
   const [newReply, setNewReply] = useState<string>("");
   const [replyImages, setReplyImages] = useState<File[]>([]);
   const [isReplyUploading, setIsReplyUploading] = useState<boolean>(false);
-  const { addEvidence: addComment } = useReports();
+  const { addComment } = useReports();
 
   const handleReplyFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -44,7 +44,7 @@ const CommentItem = ({
 
       await addComment.mutateAsync({
         reportId: comment.reportId,
-        evidence: {
+        comment: {
           description: newReply,
           proofImage: uploadedImageUrls,
           replyTo: comment._id,

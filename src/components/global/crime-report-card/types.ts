@@ -1,6 +1,13 @@
 export interface User {
   _id: string;
   name: string;
+  email: string;
+  role: string;
+  bio: string;
+  isBanned: boolean;
+  isDeleted: boolean;
+  password?: string;
+  contact?: string;
   profileImage: string;
   isVerified: boolean;
 }
@@ -27,15 +34,16 @@ export interface CrimeReport {
   districtCoordinates: string[];
   division: string;
   divisionCoordinates: string[];
-  downvotes: string[];
+  downvotes: User[];
   images: string[];
   isDeleted: boolean;
   postTime: string;
   title: string;
   updatedAt: string;
-  upvotes: string[];
+  upvotes: User[];
   userId: User;
   comments: Comment[];
+  __v?: number;
 }
 
 export interface Props {
