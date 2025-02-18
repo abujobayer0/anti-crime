@@ -24,6 +24,13 @@ export interface Report {
   comments: any[];
 }
 
+interface CommentData {
+  description: string;
+  proofImage: string[];
+  video?: string[];
+  replyTo?: string;
+}
+
 export const useReports = () => {
   const { client, handleError, handleSuccess } = useApi();
   const queryClient = useQueryClient();
@@ -36,7 +43,6 @@ export const useReports = () => {
     },
   });
 
-  // Get single report
   const getReport = (id: string) =>
     useQuery({
       queryKey: ["reports", id],
@@ -163,6 +169,34 @@ export const useReports = () => {
     },
   });
 
+  const addComment = useMutation({
+    mutationFn: async ({
+      reportId,
+      comment,
+    }: {
+      reportId: string;
+      comment: CommentData;
+    }) => {
+      const { data } = await client.post(
+        `${ENDPOINTS.comments.create(reportId)}`,
+        {
+          comment: comment.description || "",
+          proofImage: comment.proofImage,
+          video: comment.video,
+          reportId: reportId,
+          replyTo: comment.replyTo,
+        }
+      );
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reports"],
+      });
+    },
+  });
+
   return {
     getReports,
     getReport,
@@ -171,6 +205,7 @@ export const useReports = () => {
     deleteReport,
     voteReport,
     addEvidence,
+    addComment,
     generateAiDescription,
   };
 };

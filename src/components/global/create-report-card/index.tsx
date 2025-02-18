@@ -15,15 +15,14 @@ import { SelectComponent } from "../select-component";
 import { SelectItem } from "@/components/ui/select";
 import { uploadFileToImageBB } from "@/lib/utils";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { handleAPIError } from "@/lib/Error";
 import { useReports } from "@/hooks/api/useReports";
-import { useUser } from "@/hooks/api/useUser";
 import { useForm } from "@/hooks";
 
 type Props = {
   onSubmit?: (data: ReportData) => void;
+  user: any;
 };
 
 interface ReportData {
@@ -51,10 +50,10 @@ interface District {
   coordinates: string;
 }
 
-const CreateReportCard = ({ onSubmit }: Props) => {
+const CreateReportCard = ({ onSubmit, user }: Props) => {
   const [video, setVideo] = useState<File | null>(null);
-  const { data: user } = useUser({ reports: false });
-  const userName = user?.name || "Anonymous";
+
+  const userName = user?.user?.name || "Anonymous";
   const { createReport, generateAiDescription } = useReports();
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
@@ -90,6 +89,7 @@ const CreateReportCard = ({ onSubmit }: Props) => {
       if (!values.division) errors.division = "Division is required";
       if (!values.district) errors.district = "District is required";
       if (!values.description) errors.description = "Description is required";
+      if (!values.userId) errors.userId = "User must be logged in";
       if (!values.images?.length)
         errors.images = "At least one image is required";
       return errors;
@@ -111,6 +111,7 @@ const CreateReportCard = ({ onSubmit }: Props) => {
             divisionCoordinates: "",
             districtCoordinates: "",
           });
+          setImagePreview([]);
         },
         onError: (error) => {
           handleAPIError(error);
@@ -119,7 +120,6 @@ const CreateReportCard = ({ onSubmit }: Props) => {
     },
   });
 
-  // Fetch divisions on component mount
   useEffect(() => {
     const fetchDivisions = async () => {
       try {
@@ -162,16 +162,11 @@ const CreateReportCard = ({ onSubmit }: Props) => {
   ) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
-
     const newPreviews = files.map(URL.createObjectURL);
-
     setUploadingImages(new Set(newPreviews));
-
     setImagePreview([...imagePreview, ...newPreviews]);
-
     try {
       const uploadedUrls = await Promise.all(files.map(uploadFileToImageBB));
-
       setFormData({
         ...formData,
         images: [...(formData.images || []), ...uploadedUrls],
@@ -228,22 +223,30 @@ const CreateReportCard = ({ onSubmit }: Props) => {
     handleChange("districtCoordinates", selectedDistrict?.coordinates || "");
   };
 
+  useEffect(() => {
+    if (user?.user?._id) {
+      setFormData((prevData) => ({
+        ...prevData,
+        userId: user.user._id,
+      }));
+    }
+  }, [user, formData.userId]);
+
   return (
-    <div className="flex justify-center w-full items-center">
-      <div className="bg-white w-full max-w-screen-lg  rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-border/40">
-        {/* Header Section */}
+    <div className="flex flex-col mt-4 mx-auto justify-center w-full max-w-screen-md  items-center">
+      <div className="bg-white w-full rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-border/40">
         <div className="p-4 border-b border-border/40">
           <div className="flex items-center gap-4">
             <div className="relative w-12 h-12">
               <Image
-                src={user?.user?.profileImage}
+                src={user?.user?.profileImage || "/anticrime-logo.png"}
                 alt={userName}
                 fill
                 sizes="12px"
                 priority
                 className="rounded-full object-cover ring-2 ring-primary/10"
               />
-              {!user?.isVerified && (
+              {!user?.user?.isVerified && (
                 <div className="absolute -top-1 -right-1 bg-destructive/10 text-destructive p-1 rounded-full">
                   <AlertCircle className="w-3 h-3" />
                 </div>
@@ -258,9 +261,7 @@ const CreateReportCard = ({ onSubmit }: Props) => {
           </div>
         </div>
 
-        {/* Content Section */}
         <div className="p-4 space-y-4">
-          {/* Title Input with error state */}
           <div className="space-y-2">
             <input
               type="text"
@@ -310,7 +311,6 @@ const CreateReportCard = ({ onSubmit }: Props) => {
             />
           </div>
 
-          {/* Location Selection */}
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2 bg-muted/30 px-3 py-2 rounded-lg">
               <MapPin className="w-4 h-4 text-muted-foreground" />
@@ -356,7 +356,6 @@ const CreateReportCard = ({ onSubmit }: Props) => {
             </div>
           </div>
 
-          {/* Media Preview Grid */}
           {imagePreview.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {imagePreview.map((preview, index) => (
@@ -393,7 +392,6 @@ const CreateReportCard = ({ onSubmit }: Props) => {
             </div>
           )}
 
-          {/* Action Buttons */}
           <div className="flex items-center justify-between pt-4 border-t border-border/40">
             <div className="flex gap-2">
               <Button

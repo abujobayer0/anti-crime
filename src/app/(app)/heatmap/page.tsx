@@ -55,15 +55,16 @@ const HeatmapPage = () => {
   const [mapZoom, setMapZoom] = useState(7);
 
   useEffect(() => {
-    if (reportsData) {
+    if (reportsData?.data) {
       const fetchData = async () => {
+        setIsLoading(true);
         try {
           const divisionsResponse = await fetch(
             "https://bdapis.com/api/v1.2/divisions"
           );
           const divisionsData = await divisionsResponse.json();
 
-          const reportsWithLocation = reportsData?.map((report: any) => {
+          const reportsWithLocation = reportsData?.data?.map((report: any) => {
             return {
               ...report,
               location: {
@@ -205,7 +206,7 @@ const HeatmapPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-5">
       <Card className="p-6 relative bg-white">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
