@@ -1,9 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Report } from "@/types";
+
+interface ProfileData {
+  name: string;
+  email: string;
+  phone: string;
+  bio: string;
+  profileImage: string;
+  isVerified: boolean;
+  role: string;
+  reports: Report[];
+  _id: string;
+}
 
 interface ProfileFormProps {
-  profileData: any;
+  profileData: ProfileData;
   setProfileData: (data: any) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;

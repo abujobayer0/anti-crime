@@ -30,18 +30,20 @@ export const uploadFileToImageBB = async (file: File): Promise<string> => {
     throw new Error("Error uploading file to ImageBB.");
   }
 };
-
 export const cleanUpResponse = (response: string) => {
-  const matched = response.match(/{[\s\S]*}/);
+  try {
+    const matched = response.match(/{[\s\S]*}/);
 
-  if (matched && matched[0]) {
-    try {
+    if (matched && matched[0]) {
       const jsonString = matched[0].trim();
-      return JSON.parse(jsonString);
-    } catch (err) {
-      console.error("Error parsing response as JSON:", err);
-      return null;
+
+      if (jsonString.startsWith("{") && jsonString.endsWith("}")) {
+        return JSON.parse(jsonString);
+      }
     }
+  } catch (err) {
+    console.error("Error parsing response as JSON:", err);
   }
+
   return null;
 };

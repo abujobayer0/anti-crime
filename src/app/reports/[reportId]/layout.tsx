@@ -12,7 +12,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <AppSidebar />
           </SidebarProvider>
         </div>
-
         <div className="w-full mt-14">{children}</div>
       </div>
     </div>

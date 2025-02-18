@@ -59,7 +59,7 @@ export const useReports = () => {
     },
   });
 
-  const getReport = (id: string) =>
+  const useReport = (id: string) =>
     useQuery({
       queryKey: ["reports", id],
       queryFn: async () => {
@@ -216,7 +216,7 @@ export const useReports = () => {
   return {
     getReports,
     getRecentReports,
-    getReport,
+    useReport,
     createReport,
     getUserReports,
     updateReport,

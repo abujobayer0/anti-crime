@@ -1,15 +1,18 @@
 import { MessageCircle, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 
 const RecentReportCard = ({ report }: { report: any }) => {
   return (
-    <div className="flex gap-2 p-2 hover:bg-gray-50 rounded-md ">
+    <div className="flex gap-2 p-2 items-center  hover:bg-gray-50  ">
       <Link href={`/reports/${report?._id}`}>
-        <img
+        <Image
           src={report?.images?.[0] || "/placeholder.jpg"}
           alt="Crime Scene"
-          className="w-12 h-12 rounded-md object-cover"
+          width={56}
+          height={56}
+          className="rounded-md object-cover"
         />
       </Link>
       <div className="flex-1 text-sm">

@@ -39,20 +39,22 @@ const CrimeReportCard = ({
       : report?.description;
 
   return (
-    <div className="flex flex-col max-w-screen-md relative w-full mx-auto rounded-xl bg-white shadow-sm hover:shadow-md transition-all duration-200">
-      <div className="flex relative items-center justify-between p-6 border-b border-border/60">
-        <div className="flex items-center gap-4">
+    <div className="flex flex-col shadow-sm max-w-screen-md relative w-full mx-auto rounded-lg bg-white border  border-border/10 transition-all duration-200">
+      <div className="flex relative items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center gap-3">
           <Image
             src={report?.userId?.profileImage || "/anticrime-logo.png"}
             alt="user"
-            width={48}
+            width={40}
+            height={40}
             priority
-            height={48}
-            className="rounded-full object-cover ring-2 ring-primary/10"
+            className="rounded-full object-cover ring-2 ring-primary/5"
           />
           <div>
-            <div className="text-lg font-semibold">{report?.userId?.name}</div>
-            <p className="text-sm text-muted-foreground">
+            <div className="text-[15px] font-semibold hover:underline cursor-pointer">
+              {report?.userId?.name}
+            </div>
+            <p className="text-[13px] text-gray-500">
               {formatTimeAgo(new Date(report?.postTime))}
             </p>
           </div>
@@ -63,9 +65,9 @@ const CrimeReportCard = ({
             <Button
               variant="ghost"
               size="icon"
-              className="hover:bg-destructive/10"
+              className="hover:bg-gray-100 rounded-full h-9 w-9"
             >
-              <EllipsisVertical className="h-5 w-5 text-muted-foreground" />
+              <EllipsisVertical className="h-5 w-5 text-gray-600" />
             </Button>
           }
           content={
@@ -100,8 +102,8 @@ const CrimeReportCard = ({
         />
       </div>
 
-      <div className="p-6 space-y-6">
-        <div className="space-y-4">
+      <div className="px-4 py-3 space-y-3">
+        <div className="space-y-2">
           {isEditing ? (
             <input
               type="text"
@@ -109,27 +111,27 @@ const CrimeReportCard = ({
               onChange={(e) =>
                 setEditedReport((prev) => ({ ...prev, title: e.target.value }))
               }
-              className="text-2xl font-bold w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+              className="text-xl font-medium w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
             />
           ) : (
             <Link
               href={`/reports/${report._id}`}
-              className="text-2xl font-bold hover:text-primary transition-colors"
+              className="text-xl font-medium hover:underline"
             >
               {report?.title}
             </Link>
           )}
 
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <LocateIcon size={16} />
+          <div className="flex flex-wrap gap-3 text-[13px] text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <LocateIcon size={14} />
               <span>
                 {report?.division}, {report?.district}
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <TimerIcon size={16} />
+            <div className="flex items-center gap-1.5">
+              <TimerIcon size={14} />
               <span>
                 Crime Time:
                 {formatTimeAgo(new Date(report?.crimeTime))}
@@ -138,7 +140,7 @@ const CrimeReportCard = ({
           </div>
         </div>
 
-        <div className="text-gray-700 leading-relaxed">
+        <div className="text-[15px] text-gray-700 leading-relaxed">
           {isEditing ? (
             <textarea
               value={editedReport.description}
@@ -156,7 +158,7 @@ const CrimeReportCard = ({
           {report?.description?.length > 300 && (
             <Button
               variant="link"
-              className="px-0 text-primary"
+              className="px-0 text-primary text-[13px] font-medium"
               onClick={() => setCollapsedDescription((prev) => !prev)}
             >
               {collapsedDescription ? "Show less" : "Show more"}
@@ -168,7 +170,7 @@ const CrimeReportCard = ({
           <div
             className={`grid gap-1 ${
               report.images.length === 1 ? "" : "grid-cols-2"
-            }`}
+            } rounded-lg overflow-hidden`}
           >
             {report.images
               .slice(0, Math.min(6, report.images.length))
@@ -218,7 +220,7 @@ const CrimeReportCard = ({
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-4">
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-4">
           {isEditing ? (
             <div className="flex gap-2">
               <Button
@@ -227,20 +229,20 @@ const CrimeReportCard = ({
                   updateReport({ id: report._id, data: editedReport });
                   setIsEditing(false);
                 }}
-                className="bg-primary text-white hover:bg-primary/90"
+                className="bg-primary text-white hover:bg-primary/90 text-[13px]"
               >
                 Save Changes
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => setIsEditing(false)}
-                className="text-gray-500"
+                className="text-gray-500 text-[13px]"
               >
                 Cancel
               </Button>
             </div>
           ) : (
-            <div className="flex gap-4 justify-between w-full">
+            <div className="flex gap-4 justify-between w-full py-1">
               <VoteButtons
                 initialUpvotes={report.upvotes.length}
                 initialDownvotes={report.downvotes.length}

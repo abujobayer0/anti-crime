@@ -24,7 +24,7 @@ export function SelectComponent({
 }: Props) {
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger>
         <SelectValue placeholder={selectValue} />
       </SelectTrigger>
       <SelectContent>{content}</SelectContent>

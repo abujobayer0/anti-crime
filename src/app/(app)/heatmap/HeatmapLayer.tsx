@@ -32,7 +32,7 @@ interface HeatmapLayerProps {
 
 const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
   const map = useMap();
-  console.log(data);
+
   useEffect(() => {
     if (!map || !data.data.length) return;
 
@@ -46,7 +46,7 @@ const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
       },
       {}
     );
-
+    console.log(locationGroups);
     // Compute heatmap intensity
     const heatmapPoints = Object.values(locationGroups).map((points) => {
       const centerLat =

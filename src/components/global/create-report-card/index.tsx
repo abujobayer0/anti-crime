@@ -40,7 +40,8 @@ interface ReportData {
 }
 
 const CreateReportCard = ({ onSubmit, user }: Props) => {
-  const [video, setVideo] = useState<File | null>(null);
+  // const [video, setVideo] = useState<File | null>(null);
+  const [language, setLanguage] = useState<"EN" | "BN">("EN");
 
   const userName = user?.name || "Anonymous";
   const { createReport } = useReports();
@@ -108,7 +109,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
 
   useEffect(() => {
     fetchDistricts(formData.division);
-  }, [formData.division]);
+  }, [formData.division, fetchDistricts]);
 
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -126,7 +127,12 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
   const handleAIGenerate = async () => {
     const { images, division, district } = formData;
     setIsSubmitting(true);
-    const data = await generateReport(images || [], division, district);
+    const data = await generateReport(
+      images || [],
+      division,
+      district,
+      language
+    );
     if (data) {
       const { title, description } = data;
       setFormData({
@@ -167,18 +173,18 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
   }, [user, formData.userId]);
 
   return (
-    <div className="flex flex-col mt-4 mx-auto justify-center w-full max-w-screen-md  items-center">
-      <div className="bg-white w-full rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-border/40">
-        <div className="p-4 border-b border-border/40">
-          <div className="flex items-center gap-4">
-            <div className="relative w-12 h-12">
+    <div className="flex flex-col mt-4 mx-auto justify-center w-full max-w-screen-md items-center">
+      <div className="bg-white w-full rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-border/10">
+        <div className="p-5 border-b border-border/10">
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10">
               <Image
                 src={user?.profileImage || "/anticrime-logo.png"}
                 alt={userName}
                 fill
-                sizes="12px"
+                sizes="40px"
                 priority
-                className="rounded-full object-cover ring-2 ring-primary/10"
+                className="rounded-full object-cover ring-2 ring-primary/5"
               />
               {!user?.isVerified && (
                 <div className="absolute -top-1 -right-1 bg-destructive/10 text-destructive p-1 rounded-full">
@@ -186,68 +192,27 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
                 </div>
               )}
             </div>
-            <div className="flex-1">
-              <h3 className="font-medium text-foreground">{userName}</h3>
-              <p className="text-sm text-muted-foreground">
-                Share a crime report
-              </p>
-            </div>
+            <input
+              type="text"
+              placeholder={`What crime incident would you like to report, ${userName}?`}
+              value={formData.title}
+              onChange={(e) => handleChange("title", e.target.value)}
+              className="flex-1 px-4 py-2.5 rounded-full border bg-muted/30 hover:bg-muted/50 transition-colors text-gray-800 text-sm focus:outline-none focus:ring-1 focus:ring-primary/20"
+            />
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
-          <div className="space-y-2">
-            <input
-              type="text"
-              placeholder="Enter report title..."
-              value={formData.title}
-              onChange={(e) => handleChange("title", e.target.value)}
-              className={`w-full px-4 py-3 rounded-xl border transition-all text-gray-800 bg-gray-50/50 ${
-                errors.title ? "border-destructive" : "border-gray-200"
-              }`}
-            />
-            {errors.title && (
-              <p className="text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" />
-                {errors.title}
-              </p>
-            )}
-          </div>
+        <div className="p-5 space-y-4">
+          <Textarea
+            placeholder="Describe the crime incident in detail..."
+            value={formData.description}
+            onChange={(e) => handleChange("description", e.target.value)}
+            className="min-h-[120px] bg-transparent border-none focus-visible:ring-0 text-[15px] placeholder:text-muted-foreground/60 "
+          />
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm text-muted-foreground">
-                Description
-              </label>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={handleAIGenerate}
-                disabled={
-                  isSubmitting ||
-                  !formData.images?.length ||
-                  !formData.division ||
-                  !formData.district
-                }
-                className="flex items-center gap-2 text-primary hover:bg-primary/10"
-              >
-                <Sparkles
-                  className={`w-4 h-4 ${isSubmitting ? "animate-spin" : ""}`}
-                />
-                <span>AI Generate</span>
-              </Button>
-            </div>
-            <Textarea
-              placeholder="Describe the crime incident..."
-              value={formData.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              className="min-h-[120px] bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 bg-muted/30 px-3 py-2 rounded-lg">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 bg-muted/20 hover:bg-muted/30 transition-colors px-3 py-2 rounded-full">
+              <MapPin className="w-4 h-4 text-primary/70" />
               <SelectComponent
                 selectValue="Select Division"
                 value={formData.division}
@@ -267,8 +232,8 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
               />
             </div>
 
-            <div className="flex items-center gap-2 bg-muted/30 px-3 py-2 rounded-lg">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 bg-muted/20 hover:bg-muted/30 transition-colors px-3 py-2 rounded-full">
+              <MapPin className="w-4 h-4 text-primary/70" />
               <SelectComponent
                 selectValue="Select District"
                 value={formData.district}
@@ -291,19 +256,17 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
           </div>
 
           {imagePreview.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 rounded-xl overflow-hidden">
               {imagePreview.map((preview, index) => (
                 <div key={preview} className="relative group aspect-square">
                   <img
                     src={preview}
                     alt={`Preview ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg border border-gray-200"
+                    className="w-full h-full object-cover"
                   />
                   {uploadingImages.has(preview) && (
-                    <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center">
-                      <div className="w-16 h-16 relative">
-                        <div className="absolute inset-0 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      </div>
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                     </div>
                   )}
                   <button
@@ -315,7 +278,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
                         imagePreview.filter((_, i) => i !== index)
                       );
                     }}
-                    className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all hover:bg-black/70"
+                    className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all hover:bg-black/80"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -324,16 +287,16 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-4 border-t border-border/40">
-            <div className="flex gap-2">
+          <div className="flex items-center justify-between pt-4 mt-2 border-t border-border/10">
+            <div className="flex gap-1">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-primary hover:bg-primary/5"
+                className="text-muted-foreground hover:bg-muted/30 rounded-xl"
                 onClick={() => document.getElementById("image-input")?.click()}
               >
-                <ImagePlus className="w-4 h-4 mr-2" />
-                Add Photos
+                <ImagePlus className="w-5 h-5 mr-2" />
+                Photos
               </Button>
               <input
                 id="image-input"
@@ -346,32 +309,63 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
               <Button
                 variant="ghost"
                 size="sm"
-                title="Video is not supported yet"
                 disabled
-                className="text-muted-foreground hover:text-primary hover:bg-primary/5"
+                className="text-muted-foreground hover:bg-muted/30 rounded-xl"
                 onClick={() => document.getElementById("video-input")?.click()}
               >
-                <VideoIcon className="w-4 h-4 mr-2" />
-                Add Video
+                <VideoIcon className="w-5 h-5 mr-2" />
+                Video
               </Button>
               <input
                 id="video-input"
                 type="file"
                 accept="video/*"
                 className="hidden"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) {
-                    setVideo(e.target.files[0]);
-                  }
-                }}
+                // onChange={(e) => {
+                //   if (e.target.files?.[0]) {
+                //     setVideo(e.target.files[0]);
+                //   }
+                // }}
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleAIGenerate}
+                disabled={
+                  isSubmitting ||
+                  !formData.images?.length ||
+                  !formData.division ||
+                  !formData.district
+                }
+                className="text-primary hover:bg-primary/10 rounded-xl"
+              >
+                <Sparkles
+                  className={`w-5 h-5 mr-2 ${
+                    isSubmitting ? "animate-spin" : ""
+                  }`}
+                />
+                AI Generate
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  setLanguage((lang) => (lang === "EN" ? "BN" : "EN"))
+                }
+                className="rounded-full px-4"
+              >
+                {language}
+              </Button>
             </div>
+
             <Button
               onClick={handleSubmit}
-              className="bg-primary hover:bg-primary/90"
+              className="bg-primary hover:bg-primary/90 px-6"
               disabled={!formData.description || !formData.images?.length}
             >
-              Post Report
+              Post
             </Button>
           </div>
         </div>

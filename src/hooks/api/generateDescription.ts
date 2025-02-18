@@ -15,7 +15,7 @@ const fetchWithTimeout = (
   ]);
 };
 const generateDescription = async (imageURL: string, prompt: string) => {
-  const imageBase64 = await fetchWithTimeout(imageURL, {}, 10000)
+  const imageBase64 = await fetchWithTimeout(imageURL, {}, 30000)
     .then((res: any) => res.arrayBuffer())
     .then((arrayBuffer) => Base64.fromByteArray(new Uint8Array(arrayBuffer)));
 
@@ -34,7 +34,7 @@ const generateDescription = async (imageURL: string, prompt: string) => {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  //@ts-ignore
+  // @ts-expect-error - Gemini API types are not yet available
   const result = await model.generateContentStream({ contents });
 
   let responseString = "";

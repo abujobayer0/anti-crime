@@ -9,8 +9,8 @@ interface Props {
 }
 
 export const ReportDetailsContainer = ({ reportId }: Props) => {
-  const { getReport } = useReports();
-  const { data: report, isLoading } = getReport(reportId);
+  const { useReport } = useReports();
+  const { data: report, isLoading } = useReport(reportId);
   const { data: user } = useUser();
 
   if (isLoading) return <ReportDetailsSkeleton />;

@@ -18,14 +18,17 @@ export const formatTimeAgo = (date: Date) => {
 export const generateReport = async (
   images: string[],
   division: string,
-  district: string
+  district: string,
+  language: "EN" | "BN"
 ) => {
   const data = await generateDescription(
     images?.[0] || "",
     `write a description for crime report platform post describing the given image.
     Division: ${division}
     District: ${district}
-    give me a json format {title:<title based on the description> description:<description based on the image>} 
+    give me a json format {title:<title based on the description> description:<description based on the image>} ${
+      language === "BN" ? "in bangla" : ""
+    }
     `
   ).catch((err) => {
     handleAPIError(err);

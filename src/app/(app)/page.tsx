@@ -6,6 +6,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
+import { Metadata } from "next";
 
 export default async function HomePage() {
   const queryClient = new QueryClient();
@@ -21,3 +22,12 @@ export default async function HomePage() {
     </HydrationBoundary>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Crime Reports Feed",
+  description: "View and track recent crime reports from your community",
+  openGraph: {
+    title: "Crime Reports Feed | Anti Crime",
+    description: "Stay informed about crime incidents in your area",
+  },
+};

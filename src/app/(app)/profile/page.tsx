@@ -104,9 +104,9 @@ const ProfilePage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="lg:w-1/3 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="flex flex-col  lg:flex-row gap-8">
+        <div className="lg:w-1/3  space-y-6">
+          <div className="bg-card sticky top-16 border border-border/10 rounded-xl shadow-sm p-6">
             <ProfileImage
               profileImage={profileData.profileImage}
               isEditing={isEditing}
@@ -148,7 +148,7 @@ const ProfilePage = () => {
         </div>
 
         <div className="lg:w-2/3 space-y-6">
-          <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm">
+          <div className="flex justify-between sticky top-16 !z-10 backdrop-blur-md items-center bg-white/25 p-4 rounded-xl shadow-sm">
             <h3 className="text-xl font-semibold">My Crime Reports</h3>
             <div className="flex gap-2 items-center">
               <span className="text-sm text-muted-foreground px-3 py-1 bg-gray-100 rounded-full">
