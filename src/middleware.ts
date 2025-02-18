@@ -8,8 +8,6 @@ export function middleware(request: NextRequest) {
 
   const token = request.cookies.get("accessToken")?.value || null;
 
-  console.log("Middleware check:", { path, token });
-
   if (isPublicPath && token) {
     return NextResponse.redirect(new URL("/", request.url));
   }

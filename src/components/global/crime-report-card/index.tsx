@@ -18,7 +18,8 @@ import {
   Edit2,
 } from "lucide-react";
 import { formatTimeAgo } from "@/lib/report";
-
+import { getImageClass } from "@/lib/utils";
+import { DescriptionWithHashtags } from "@/lib/helpers";
 const CrimeReportCard = ({
   report,
   deleteReport,
@@ -39,7 +40,7 @@ const CrimeReportCard = ({
       : report?.description;
 
   return (
-    <div className="flex flex-col shadow-sm max-w-screen-md relative w-full mx-auto rounded-lg bg-white border  border-border/10 transition-all duration-200">
+    <div className="flex flex-col max-w-screen-md relative w-full mx-auto rounded-lg bg-white border  transition-all duration-200">
       <div className="flex relative items-center justify-between px-4 py-3 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <Image
@@ -153,7 +154,7 @@ const CrimeReportCard = ({
               className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none min-h-[150px]"
             />
           ) : (
-            <p>{description}</p>
+            <DescriptionWithHashtags text={description} />
           )}
           {report?.description?.length > 300 && (
             <Button
@@ -175,22 +176,13 @@ const CrimeReportCard = ({
             {report.images
               .slice(0, Math.min(6, report.images.length))
               .map((image: string, index: number) => {
-                const getImageClass = () => {
-                  if (report.images.length === 1) return "aspect-video w-full";
-                  if (report.images.length === 2) return "aspect-square";
-                  if (report.images.length === 3 && index === 0)
-                    return "col-span-2 aspect-[2/1.5]";
-                  if (report.images.length === 4 && index <= 1)
-                    return "aspect-[2/1.5]";
-                  if (report.images.length >= 5 && index === 0)
-                    return "col-span-2 aspect-[2/1.5]";
-                  return "aspect-square";
-                };
-
                 return (
                   <div
                     key={index}
-                    className={`relative overflow-hidden rounded-md ${getImageClass()}`}
+                    className={`relative overflow-hidden rounded-md ${getImageClass(
+                      report.images,
+                      index
+                    )}`}
                   >
                     <Image
                       src={image}

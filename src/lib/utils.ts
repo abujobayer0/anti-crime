@@ -47,3 +47,11 @@ export const cleanUpResponse = (response: string) => {
 
   return null;
 };
+export const getImageClass = (images: string[], index: number) => {
+  if (images.length === 1) return "aspect-video w-full";
+  if (images.length === 2) return "aspect-square";
+  if (images.length === 3 && index === 0) return "col-span-2 aspect-[2/1.5]";
+  if (images.length === 4 && index <= 1) return "aspect-[2/1.5]";
+  if (images.length >= 5 && index === 0) return "col-span-2 aspect-[2/1.5]";
+  return "aspect-square";
+};

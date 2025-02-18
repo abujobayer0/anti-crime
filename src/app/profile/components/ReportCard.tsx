@@ -1,3 +1,4 @@
+import { DescriptionWithHashtags } from "@/lib/helpers";
 import { formatTimeAgo } from "@/lib/report";
 import { MapPin, MessageSquare, Video } from "lucide-react";
 import Image from "next/image";
@@ -55,6 +56,8 @@ const ReportCard = ({ report }: { report: any }) => {
                     src={image}
                     alt={`Crime Report Image ${index + 1}`}
                     fill
+                    loading="lazy"
+                    unoptimized
                     className="object-cover hover:scale-105 transition-transform"
                   />
                 </div>
@@ -82,8 +85,8 @@ const ReportCard = ({ report }: { report: any }) => {
           )}
         </div>
 
-        <div className="mb-6">
-          <p className="text-gray-700 leading-relaxed">{report.description}</p>
+        <div className="mb-6 text-gray-700">
+          <DescriptionWithHashtags text={report.description} />
         </div>
 
         <div className="flex flex-wrap gap-6 items-center text-sm text-muted-foreground mb-6 pb-6 border-b">

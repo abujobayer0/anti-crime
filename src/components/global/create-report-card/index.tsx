@@ -8,6 +8,7 @@ import {
   X,
   MapPin,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
@@ -22,7 +23,6 @@ import { useLocation } from "@/hooks/useLocation";
 import { generateReport } from "@/lib/report";
 
 type Props = {
-  onSubmit?: (data: ReportData) => void;
   user: any;
 };
 
@@ -39,19 +39,23 @@ interface ReportData {
   districtCoordinates: string;
 }
 
-const CreateReportCard = ({ onSubmit, user }: Props) => {
+const CreateReportCard = ({ user }: Props) => {
   // const [video, setVideo] = useState<File | null>(null);
   const [language, setLanguage] = useState<"EN" | "BN">("EN");
 
   const userName = user?.name || "Anonymous";
   const { createReport } = useReports();
-  const { imagePreview, uploadingImages, handleImageUpload, removeImage } =
-    useImageUpload();
+  const {
+    imagePreview,
+    setImagePreview,
+    uploadingImages,
+    handleImageUpload,
+    removeImage,
+  } = useImageUpload();
   const { divisions, districts, fetchDistricts } = useLocation();
 
   const {
     values: formData,
-    errors,
     isSubmitting,
     handleChange,
     handleSubmit,
@@ -85,7 +89,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
       createReport.mutate(values, {
         onSuccess: () => {
           toast.success("Report submitted successfully!");
-          onSubmit?.(values);
+
           setFormData({
             title: "",
             division: "",
@@ -98,6 +102,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
             divisionCoordinates: "",
             districtCoordinates: "",
           });
+          setImagePreview([]);
           removeImage(0);
         },
         onError: (error) => {
@@ -174,7 +179,7 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
 
   return (
     <div className="flex flex-col mt-4 mx-auto justify-center w-full max-w-screen-md items-center">
-      <div className="bg-white w-full rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-border/10">
+      <div className="bg-white w-full rounded-2xl transition-all duration-300 overflow-hidden border ">
         <div className="p-5 border-b border-border/10">
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10">
@@ -266,9 +271,10 @@ const CreateReportCard = ({ onSubmit, user }: Props) => {
                   />
                   {uploadingImages.has(preview) && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                      <Loader2 className="w-8 h-8 text-white animate-spin" />
                     </div>
                   )}
+
                   <button
                     type="button"
                     onClick={() => {

@@ -2,15 +2,7 @@
 
 import React, { useState } from "react";
 
-import {
-  Bell,
-  Home,
-  LogOut,
-  Menu,
-  MessageCircle,
-  Search,
-  User,
-} from "lucide-react";
+import { Bell, Home, LogOut, Menu, Search, User } from "lucide-react";
 import { useAuth } from "@/hooks/api/useAuth";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -25,13 +17,14 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { useUser } from "@/hooks";
 
 const Navbar = () => {
   const { logout: authLogout } = useAuth();
   const router = useRouter();
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-
+  const { data: user } = useUser();
   React.useEffect(() => {
     if (debouncedSearch) {
       router.push(`/query?${encodeURIComponent(debouncedSearch)}`);
@@ -76,7 +69,6 @@ const Navbar = () => {
           {[
             { icon: Home, href: "/" },
             { icon: Bell, href: "/notifications" },
-            { icon: MessageCircle, href: "/messages" },
           ].map((item, index) => (
             <Button
               key={index}
@@ -95,12 +87,12 @@ const Navbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
-              <Avatar>
+              <Avatar className="w-8 h-8">
                 <AvatarImage
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="User"
+                  src={user?.profileImage || ""}
+                  alt={user?.name || ""}
                 />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>

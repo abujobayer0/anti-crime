@@ -22,14 +22,14 @@ export const generateReport = async (
   language: "EN" | "BN"
 ) => {
   const data = await generateDescription(
-    images?.[0] || "",
-    `write a description for crime report platform post describing the given image.
+    images,
+    `write a description for crime report platform post describing the given images or image.
     Division: ${division}
     District: ${district}
     give me a json format {title:<title based on the description> description:<description based on the image>} ${
       language === "BN" ? "in bangla" : ""
     }
-    `
+    give me clean json not any extra text give me only one json`
   ).catch((err) => {
     handleAPIError(err);
   });

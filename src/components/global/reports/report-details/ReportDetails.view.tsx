@@ -5,6 +5,7 @@ import type { CrimeReport, User } from "../../crime-report-card/types";
 import { VoteButtons } from "../../crime-report-card/VoteButtons";
 import { useReports } from "@/hooks";
 import { formatTimeAgo } from "@/lib/report";
+import { DescriptionWithHashtags } from "@/lib/helpers";
 
 interface ViewProps {
   report: CrimeReport;
@@ -59,10 +60,8 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <p className="text-gray-700 leading-relaxed">
-              {report?.description}
-            </p>
+          <div className="bg-white text-gray-700 rounded-xl shadow-sm p-6">
+            <DescriptionWithHashtags text={report?.description} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -77,6 +76,10 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
                   src={image}
                   alt={`Evidence ${index + 1}`}
                   fill
+                  loading="eager"
+                  unoptimized
+                  priority
+                  quality={500}
                   className="object-cover hover:scale-105 transition-all duration-300"
                 />
               </div>

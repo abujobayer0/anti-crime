@@ -5,17 +5,21 @@ import Image from "next/image";
 
 const RecentReportCard = ({ report }: { report: any }) => {
   return (
-    <div className="flex gap-2 p-2 items-center  hover:bg-gray-50  ">
+    <div className="flex gap-2 p-2 items-start  hover:bg-gray-50  ">
       <Link href={`/reports/${report?._id}`}>
         <Image
-          src={report?.images?.[0] || "/placeholder.jpg"}
+          src={report?.images?.[0] || ""}
           alt="Crime Scene"
-          width={56}
-          height={56}
-          className="rounded-md object-cover"
+          width={80}
+          height={80}
+          loading="eager"
+          unoptimized
+          priority
+          quality={100}
+          className="rounded-sm object-cover"
         />
       </Link>
-      <div className="flex-1 text-sm">
+      <div className="flex-1 leading-2 text-sm">
         <Link href={`/reports/${report?._id}`}>
           <h3 className="font-medium line-clamp-1">{report?.title}</h3>
           <p className="text-gray-600 line-clamp-1">{report?.description}</p>

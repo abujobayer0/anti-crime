@@ -43,5 +43,6 @@ export const useImageUpload = () => {
     uploadingImages,
     handleImageUpload,
     removeImage,
+    setImagePreview,
   };
 };
