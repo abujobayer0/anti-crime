@@ -1,8 +1,8 @@
 "use client";
 import { useReports } from "@/hooks/api/useReports";
 import { useUser } from "@/hooks";
+import { ReportDetailsSkeleton } from "./report-details-skeleton";
 import { ReportDetailsView } from "./ReportDetails.view";
-import { ReportDetailsSkeleton } from "../../skeletons/report-details-skeleton";
 
 interface Props {
   reportId: string;

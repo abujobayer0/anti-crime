@@ -83,8 +83,8 @@ const NotificationsPage = () => {
   };
 
   return (
-    <div className="container mx-auto  px-4 py-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg ">
+    <div className=" mx-auto px-4 py-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg">
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
           <h1 className="text-2xl font-bold">Notifications</h1>
           <Button

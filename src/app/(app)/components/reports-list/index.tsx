@@ -1,6 +1,6 @@
 "use client";
 import { useUser } from "@/hooks";
-import CreateReportCard from "../../create-report-card";
+import CreateReportCard from "../../../../components/global/create-report-card";
 import { ReportsListContainer } from "./ReportsList.container";
 
 const ReportsList = () => {

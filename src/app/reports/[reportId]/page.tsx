@@ -1,5 +1,6 @@
 import { getReportById } from "@/actions/reports";
-import ReportDetails from "@/components/global/reports/report-details";
+import ReportDetailsContainer from "@/app/reports/[reportId]/components";
+
 import {
   dehydrate,
   HydrationBoundary,
@@ -14,17 +15,14 @@ export default async function ReportPage({
 }) {
   const queryClient = new QueryClient();
 
-  // Prefetch both report and comments data
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: ["reports", params.reportId],
-      queryFn: () => getReportById(params.reportId),
-    }),
-  ]);
+  await queryClient.prefetchQuery({
+    queryKey: ["reports", params.reportId],
+    queryFn: () => getReportById(params.reportId),
+  });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ReportDetails reportId={params.reportId} />
+      <ReportDetailsContainer reportId={params.reportId} />
     </HydrationBoundary>
   );
 }

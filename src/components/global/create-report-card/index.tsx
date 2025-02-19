@@ -40,7 +40,6 @@ interface ReportData {
 }
 
 const CreateReportCard = ({ user }: Props) => {
-  // const [video, setVideo] = useState<File | null>(null);
   const [language, setLanguage] = useState<"EN" | "BN">("EN");
 
   const userName = user?.name || "Anonymous";

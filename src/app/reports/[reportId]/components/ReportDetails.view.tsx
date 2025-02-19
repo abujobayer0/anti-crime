@@ -1,8 +1,11 @@
 import Image from "next/legacy/image";
 import { LocateIcon, TimerIcon, MessageSquare } from "lucide-react";
-import { CommentsSection } from "../../comments-section";
-import type { CrimeReport, User } from "../../crime-report-card/types";
-import { VoteButtons } from "../../crime-report-card/VoteButtons";
+import { CommentsSection } from "../../../../components/global/comments-section";
+import type {
+  CrimeReport,
+  User,
+} from "../../../../components/global/crime-report-card/types";
+import { VoteButtons } from "../../../../components/global/crime-report-card/VoteButtons";
 import { useReports } from "@/hooks";
 import { formatTimeAgo } from "@/lib/report";
 import { DescriptionWithHashtags } from "@/lib/helpers";

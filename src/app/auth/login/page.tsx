@@ -12,25 +12,26 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
 import { setCredentials } from "@/redux/features/auth/authSlice";
 import Cookies from "js-cookie";
-import { RegistrationSvg } from "@/components/auth/registration-svg";
 import { Eye, EyeOff } from "lucide-react";
+
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
 
 const LoginPage = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{
-    email: string;
-    password: string;
-  }>();
+  } = useForm<LoginFormInputs>();
   const { login } = useAuth();
   const router = useRouter();
   const [error, setError] = useState("");
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async (data: { email: string; password: string }) => {
+  const onSubmit = async (data: LoginFormInputs) => {
     try {
       const result = await login.mutateAsync(data);
       if (result?.data?.accessToken) {
@@ -49,10 +50,9 @@ const LoginPage = () => {
   };
 
   return (
-    (<AuthenticationPageBody
+    <AuthenticationPageBody
       title="Welcome back"
       subtitle="Enter your credentials to access your account"
-      illustration={<RegistrationSvg />}
       form={
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Email Input */}
@@ -75,7 +75,6 @@ const LoginPage = () => {
             )}
           </div>
 
-          {/* Password Input */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label className="text-sm font-medium text-foreground">
@@ -143,7 +142,7 @@ const LoginPage = () => {
           </p>
         </form>
       }
-    />)
+    />
   );
 };
 

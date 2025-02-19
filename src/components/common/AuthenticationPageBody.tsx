@@ -7,7 +7,6 @@ interface Props {
   title: string;
   subtitle: string;
   form: React.ReactNode;
-  illustration: React.ReactNode;
 }
 
 const AuthenticationPageBody = ({ title, subtitle, form }: Props) => {

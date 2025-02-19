@@ -11,7 +11,6 @@ import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
-import { RegistrationSvg } from "@/components/auth/registration-svg";
 import Cookies from "js-cookie";
 import { useAppDispatch } from "@/redux/hooks";
 import { setCredentials } from "@/redux/features/auth/authSlice";
@@ -68,10 +67,9 @@ const RegistrationPage = () => {
   };
 
   return (
-    (<AuthenticationPageBody
+    <AuthenticationPageBody
       title="Create an Account"
       subtitle="Please enter your details to continue"
-      illustration={<RegistrationSvg />}
       form={
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Name Input */}
@@ -244,7 +242,7 @@ const RegistrationPage = () => {
           </p>
         </form>
       }
-    />)
+    />
   );
 };
 

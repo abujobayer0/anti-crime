@@ -10,15 +10,16 @@ import { ProfileImage } from "./components/ProfileImage";
 import { ProfileForm } from "./components/ProfileForm";
 import { ProfileInfo } from "./components/ProfileInfo";
 import Reports from "./components/Reports";
-import ProfilePageSkeleton from "@/components/global/skeletons/profile-page-skeleton";
+
 import { useReports } from "@/hooks";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
 import { Report } from "@/types";
+import ProfilePageSkeleton from "./components/profile-page-skeleton";
 
 const ProfilePage = () => {
   const { data: userData, isLoading } = useUser();
-  const { updateProfile, verifyOTP, sendOTP } = useProfile();
+  const { updateProfile } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [imgUploading, setImgUploading] = useState(false);
   const { getUserReports } = useReports();
@@ -86,11 +87,11 @@ const ProfilePage = () => {
   };
 
   const handleSendOTP = () => {
-    sendOTP.mutate(userData?.phone);
+    // sendOTP.mutate(userData?.phone);
   };
 
   const handleVerifyOTP = (otp: string) => {
-    verifyOTP.mutate({ phone: userData?.phone, otp });
+    // verifyOTP.mutate({ phone: userData?.phone, otp });
   };
 
   if (isLoading || reportsLoading)
@@ -102,7 +103,7 @@ const ProfilePage = () => {
     );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-1/3 space-y-6">
           <div className="bg-card backdrop-blur-lg sticky top-16 border border-border/5 rounded-2xl shadow-sm p-8 transition-all duration-200 hover:shadow-xl">

@@ -1,8 +1,5 @@
 import { Metadata } from "next";
 import React from "react";
-import { AppSidebar } from "@/components/global/appSidebar";
-import Navbar from "@/components/ui/Navbar";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import Layout from "@/components/layout/layout";
 
 export const metadata: Metadata = {

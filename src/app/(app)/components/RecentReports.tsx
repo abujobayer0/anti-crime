@@ -2,10 +2,12 @@
 import React from "react";
 import RecentReportCard from "./RecentReportCard";
 import { useReports } from "@/hooks";
-import RecentReportCardSkeleton from "@/components/global/reports/reports-list/RecentReportsSkeleton";
+import RecentReportCardSkeleton from "@/app/(app)/components/reports-list/RecentReportsSkeleton";
+
 const RecentReports = () => {
   const { getRecentReports } = useReports();
   const { data: recentReports, isLoading } = getRecentReports;
+
   if (isLoading)
     return (
       <div className="space-y-4">

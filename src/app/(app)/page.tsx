@@ -1,5 +1,5 @@
 import { getAllReports } from "@/actions/reports";
-import ReportsList from "@/components/global/reports/reports-list";
+import ReportsList from "@/app/(app)/components/reports-list";
 
 import {
   dehydrate,

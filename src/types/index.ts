@@ -22,6 +22,8 @@ export interface Report {
   postTime: string;
   upvotes: string[];
   downvotes: string[];
+  createdAt: string;
+  updatedAt: string;
   comments: Comment[];
   userId: {
     _id: string;
@@ -41,4 +43,14 @@ export interface Comment {
   };
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Notification {
+  id: string;
+  type: "alert" | "update" | "warning";
+  title: string;
+  message: string;
+  timestamp: Date;
+  isRead: boolean;
+  avatar?: string;
 }
