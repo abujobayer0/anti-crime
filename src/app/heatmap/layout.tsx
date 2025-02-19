@@ -1,3 +1,4 @@
+import Layout from "@/components/layout/layout";
 import { Metadata } from "next";
 import React from "react";
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 const HeatmapLayout = ({ children }: { children: React.ReactNode }) => {
-  return <div>{children}</div>;
+  return <Layout>{children}</Layout>;
 };
 
 export default HeatmapLayout;

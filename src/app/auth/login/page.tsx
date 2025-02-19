@@ -49,7 +49,7 @@ const LoginPage = () => {
   };
 
   return (
-    <AuthenticationPageBody
+    (<AuthenticationPageBody
       title="Welcome back"
       subtitle="Enter your credentials to access your account"
       illustration={<RegistrationSvg />}
@@ -143,7 +143,7 @@ const LoginPage = () => {
           </p>
         </form>
       }
-    />
+    />)
   );
 };
 

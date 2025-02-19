@@ -68,7 +68,7 @@ const RegistrationPage = () => {
   };
 
   return (
-    <AuthenticationPageBody
+    (<AuthenticationPageBody
       title="Create an Account"
       subtitle="Please enter your details to continue"
       illustration={<RegistrationSvg />}
@@ -244,7 +244,7 @@ const RegistrationPage = () => {
           </p>
         </form>
       }
-    />
+    />)
   );
 };
 

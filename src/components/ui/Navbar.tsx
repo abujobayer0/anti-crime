@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/api/useAuth";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { Input } from "./input";
 import { Button } from "./button";
 import {

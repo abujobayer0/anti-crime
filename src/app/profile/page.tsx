@@ -1,21 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
-import { AlertCircle } from "lucide-react";
-
+import { Activity, AlertCircle, Archive } from "lucide-react";
 import { useUser } from "@/hooks/api/useUser";
 import { useProfile } from "@/hooks/api/useProfile";
 import { uploadFileToImageBB } from "@/lib/utils";
-
 import { VerificationSection } from "./components/VerificationSection";
 import { ProfileImage } from "./components/ProfileImage";
 import { ProfileForm } from "./components/ProfileForm";
 import { ProfileInfo } from "./components/ProfileInfo";
-
 import Reports from "./components/Reports";
 import ProfilePageSkeleton from "@/components/global/skeletons/profile-page-skeleton";
 import { useReports } from "@/hooks";
+import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { TabsList } from "@/components/ui/tabs";
+import { Report } from "@/types";
 
 const ProfilePage = () => {
   const { data: userData, isLoading } = useUser();
@@ -104,9 +103,9 @@ const ProfilePage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col  lg:flex-row gap-8">
-        <div className="lg:w-1/3  space-y-6">
-          <div className="bg-card sticky top-16 border border-border/10 rounded-xl shadow-sm p-6">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="lg:w-1/3 space-y-6">
+          <div className="bg-card backdrop-blur-lg sticky top-16 border border-border/5 rounded-2xl shadow-sm p-8 transition-all duration-200 hover:shadow-xl">
             <ProfileImage
               profileImage={profileData.profileImage}
               isEditing={isEditing}
@@ -148,29 +147,84 @@ const ProfilePage = () => {
         </div>
 
         <div className="lg:w-2/3 space-y-6">
-          <div className="flex justify-between sticky top-16 !z-10 backdrop-blur-md items-center bg-white/25 p-4 rounded-xl shadow-sm">
-            <h3 className="text-xl font-semibold">My Crime Reports</h3>
+          <div className="flex justify-between sticky shadow-sm top-16 !z-10 backdrop-blur-xl items-center bg-white/10 p-6 rounded-2xl border border-border/5">
+            <h3 className="text-2xl font-bold">My Crime Reports</h3>
+
             <div className="flex gap-2 items-center">
-              <span className="text-sm text-muted-foreground px-3 py-1 bg-gray-100 rounded-full">
+              <span className="text-sm font-medium px-4 py-2 bg-muted/30 rounded-full">
                 Total Reports: {profileData.reports?.length}
               </span>
             </div>
           </div>
-
-          {profileData.reports?.length > 0 ? (
-            <Reports reports={profileData.reports} />
-          ) : (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-              <div className="max-w-md mx-auto space-y-4">
-                <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto" />
-                <h4 className="text-xl font-semibold">No Crime Reports Yet</h4>
-                <p className="text-muted-foreground">
-                  You haven't submitted any crime reports. When you do, they
-                  will appear here.
-                </p>
-              </div>
-            </div>
-          )}
+          <Tabs
+            defaultValue="active"
+            className="w-full flex flex-col justify-center items-end"
+          >
+            <TabsList className="grid w-[400px] grid-cols-2 p-1 bg-muted/30">
+              <TabsTrigger
+                value="active"
+                className="transition-all duration-200"
+              >
+                <Activity className="w-4 h-4 mr-2" />
+                Active
+              </TabsTrigger>
+              <TabsTrigger
+                value="archived"
+                className="transition-all duration-200"
+              >
+                <Archive className="w-4 h-4 mr-2" />
+                Archived
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="active">
+              {profileData?.reports?.filter(
+                (report: Report) => !report.isDeleted
+              )?.length > 0 ? (
+                <Reports
+                  reports={profileData.reports.filter(
+                    (report: Report) => !report.isDeleted
+                  )}
+                />
+              ) : (
+                <div className="bg-card/30 backdrop-blur-lg rounded-2xl shadow-lg p-12 text-center border border-border/5">
+                  <div className="max-w-md mx-auto space-y-6">
+                    <AlertCircle className="w-16 h-16 text-primary/60 mx-auto" />
+                    <h4 className="text-2xl font-bold text-muted-foreground">
+                      No Crime Reports Yet
+                    </h4>
+                    <p className="text-muted-foreground/80 text-lg">
+                      You haven't submitted any crime reports. When you do, they
+                      will appear here.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="archived">
+              {profileData?.reports?.filter(
+                (report: Report) => report.isDeleted
+              )?.length > 0 ? (
+                <Reports
+                  reports={profileData.reports.filter(
+                    (report: Report) => report.isDeleted
+                  )}
+                />
+              ) : (
+                <div className=" backdrop-blur-lg rounded-2xl  p-12 text-center border border-border/5">
+                  <div className="max-w-md mx-auto space-y-6">
+                    <Archive className="w-16 h-16 text-primary/60 mx-auto" />
+                    <h4 className="text-2xl font-bold text-muted-foreground">
+                      No Archived Reports Yet
+                    </h4>
+                    <p className="text-muted-foreground/80 text-lg">
+                      You haven't archived any crime reports. When you do, they
+                      will appear here.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

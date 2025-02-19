@@ -1,6 +1,4 @@
-import { AppSidebar } from "@/components/global/appSidebar";
-import Navbar from "@/components/ui/Navbar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import Layout from "@/components/layout/layout";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,17 +15,5 @@ export default function ProfileLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="bg-background">
-      <Navbar />
-      <div className="flex">
-        <div>
-          <SidebarProvider>
-            <AppSidebar />
-          </SidebarProvider>
-        </div>
-        <div className="w-full mt-14">{children}</div>
-      </div>
-    </div>
-  );
+  return <Layout>{children}</Layout>;
 }

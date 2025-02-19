@@ -5,7 +5,7 @@ import { useReports } from "@/hooks";
 import { uploadFileToImageBB } from "@/lib/utils";
 import { formatTimeAgo } from "@/lib/report";
 import { ImagePlus, X } from "lucide-react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { useState } from "react";
 
 const CommentItem = ({

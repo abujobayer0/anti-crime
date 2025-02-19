@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { Edit2, Loader2 } from "lucide-react";
 
 interface ProfileImageProps {
@@ -19,7 +19,9 @@ export const ProfileImage = ({
       <Image
         src={profileImage}
         alt="Profile"
-        fill
+        width={128}
+        height={128}
+        objectFit="fill"
         priority
         className="rounded-full object-cover"
       />

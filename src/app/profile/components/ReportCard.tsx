@@ -1,11 +1,27 @@
 import { DescriptionWithHashtags } from "@/lib/helpers";
 import { formatTimeAgo } from "@/lib/report";
-import { MapPin, MessageSquare, Video } from "lucide-react";
-import Image from "next/image";
+import {
+  MapPin,
+  MessageSquare,
+  Video,
+  EllipsisVertical,
+  Archive,
+  RotateCcw,
+} from "lucide-react";
+import Image from "next/legacy/image";
 import Link from "next/link";
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { GlobalPopover } from "@/components/global/global-popover";
 
-const ReportCard = ({ report }: { report: any }) => {
+const ReportCard = ({
+  report,
+  onUpdate,
+}: {
+  report: any;
+  onDelete?: (id: string) => void;
+  onUpdate?: (data: { id: string; data: any }) => void;
+}) => {
   return (
     <div
       key={report._id}
@@ -14,9 +30,11 @@ const ReportCard = ({ report }: { report: any }) => {
       <div className="p-6">
         <div className="flex justify-between items-start mb-6">
           <div className="space-y-2">
-            <h4 className="text-xl font-semibold text-gray-900 hover:text-primary transition-colors">
-              {report.title}
-            </h4>
+            <Link href={`/reports/${report._id}`}>
+              <h4 className="text-xl font-semibold text-gray-900 hover:text-primary transition-colors">
+                {report.title}
+              </h4>
+            </Link>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="w-4 h-4" />
@@ -32,6 +50,58 @@ const ReportCard = ({ report }: { report: any }) => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <GlobalPopover
+              align="end"
+              action={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-gray-100 rounded-full h-9 w-9"
+                >
+                  <EllipsisVertical className="h-5 w-5 text-gray-600" />
+                </Button>
+              }
+              content={
+                <>
+                  {/* {onUpdate && (
+                    <Button
+                      variant="ghost"
+                      className="flex w-full justify-start text-sm gap-2 hover:bg-muted-foreground/10"
+                    >
+                      <Edit2 size={16} /> Edit Report
+                    </Button>
+                  )} */}
+                  {onUpdate &&
+                    (report.isDeleted ? (
+                      <Button
+                        onClick={() =>
+                          onUpdate({
+                            id: report._id,
+                            data: { isDeleted: false },
+                          })
+                        }
+                        variant="ghost"
+                        className="flex w-full justify-start text-sm gap-2  hover:bg-muted-foreground/10"
+                      >
+                        <RotateCcw size={16} /> Undo Archive
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() =>
+                          onUpdate({
+                            id: report._id,
+                            data: { isDeleted: true },
+                          })
+                        }
+                        variant="ghost"
+                        className="flex w-full justify-start text-sm gap-2 hover:bg-muted-foreground/10"
+                      >
+                        <Archive size={16} /> Archive Report
+                      </Button>
+                    ))}
+                </>
+              }
+            />
             {report.isDeleted ? (
               <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">
                 Deleted
@@ -55,7 +125,9 @@ const ReportCard = ({ report }: { report: any }) => {
                   <Image
                     src={image}
                     alt={`Crime Report Image ${index + 1}`}
-                    fill
+                    width={128}
+                    height={128}
+                    objectFit="cover"
                     loading="lazy"
                     unoptimized
                     className="object-cover hover:scale-105 transition-transform"

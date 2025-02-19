@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { LocateIcon, TimerIcon, MessageSquare } from "lucide-react";
 import { CommentsSection } from "../../comments-section";
 import type { CrimeReport, User } from "../../crime-report-card/types";
@@ -75,7 +75,11 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
                 <Image
                   src={image}
                   alt={`Evidence ${index + 1}`}
-                  fill
+                  width={100}
+                  height={100}
+                  layout="fill"
+                  objectFit="cover"
+                  objectPosition="center"
                   loading="eager"
                   unoptimized
                   priority

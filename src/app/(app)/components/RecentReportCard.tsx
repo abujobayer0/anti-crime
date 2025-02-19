@@ -1,7 +1,7 @@
 import { MessageCircle, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 const RecentReportCard = ({ report }: { report: any }) => {
   return (

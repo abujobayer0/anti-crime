@@ -11,7 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { SelectComponent } from "../select-component";
 import { SelectItem } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -186,8 +186,10 @@ const CreateReportCard = ({ user }: Props) => {
               <Image
                 src={user?.profileImage || "/anticrime-logo.png"}
                 alt={userName}
-                fill
+                objectFit="cover"
                 sizes="40px"
+                width={40}
+                height={40}
                 priority
                 className="rounded-full object-cover ring-2 ring-primary/5"
               />

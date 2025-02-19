@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Props } from "./types";
 import { CommentsSection } from "../comments-section";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { GlobalPopover } from "../global-popover";
 import { Button } from "@/components/ui/button";
 import { VoteButtons } from "./VoteButtons";
@@ -187,7 +187,8 @@ const CrimeReportCard = ({
                     <Image
                       src={image}
                       alt={`crime scene ${index + 1}`}
-                      fill
+                      width={100}
+                      height={100}
                       priority
                       quality={500}
                       loading="eager"
@@ -196,7 +197,7 @@ const CrimeReportCard = ({
                       objectFit="cover"
                       objectPosition="center"
                       lazyBoundary="200px"
-                      lazyRoot="200px"
+                      lazyRoot={null}
                       className="object-covoer hover:scale-105 transition-all duration-300"
                     />
                     {index === 5 && report.images.length > 6 && (

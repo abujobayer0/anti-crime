@@ -131,6 +131,7 @@ export const useReports = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({ queryKey: ["user-reports"] });
       queryClient.invalidateQueries({ queryKey: ["reports", variables.id] });
       toast.success("Report updated successfully");
     },
@@ -161,8 +162,14 @@ export const useReports = () => {
       );
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({
+        queryKey: ["reports", variables.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user-reports"],
+      });
     },
   });
 
@@ -206,9 +213,15 @@ export const useReports = () => {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["reports"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["reports", variables.reportId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user-reports"],
       });
     },
   });
