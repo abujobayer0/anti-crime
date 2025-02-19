@@ -67,24 +67,16 @@ const ReportsSkeleton = () => (
   </div>
 );
 
-const ProfilePageSkeleton = ({
-  loading,
-  reportsLoading,
-}: {
-  loading: boolean;
-  reportsLoading: boolean;
-}) => (
+const ProfilePageSkeleton = () => (
   <div className=" mx-auto px-4 py-8">
     <div className="flex flex-col lg:flex-row gap-8">
       <div className="lg:w-1/2 space-y-6">
-        {loading && (
-          <div className="bg-white max-w-md w-full rounded-xl shadow-sm p-6">
-            <ProfileImageSkeleton />
-            <ProfileInfoSkeleton />
-          </div>
-        )}
+        <div className="bg-white max-w-md w-full rounded-xl shadow-sm p-6">
+          <ProfileImageSkeleton />
+          <ProfileInfoSkeleton />
+        </div>
       </div>
-      {reportsLoading && <ReportsSkeleton />}
+      <ReportsSkeleton />
     </div>
   </div>
 );

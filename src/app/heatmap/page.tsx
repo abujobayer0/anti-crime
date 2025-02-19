@@ -63,8 +63,8 @@ const HeatmapPage = () => {
   const [selectedDivision, setSelectedDivision] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const { getReports } = useReports();
-  const { data: reportsData, isLoading: reportsLoading } = getReports;
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: reportsData } = getReports;
+
   const [currentMapCenter, setCurrentMapCenter] = useState<[number, number]>([
     23.8103, 90.4125,
   ]);
@@ -73,7 +73,6 @@ const HeatmapPage = () => {
   useEffect(() => {
     if (reportsData?.data) {
       const fetchData = async () => {
-        setIsLoading(true);
         try {
           const divisionsResponse = await fetch(
             "https://bdapis.com/api/v1.2/divisions"
@@ -94,8 +93,6 @@ const HeatmapPage = () => {
           setDivisions(divisionsData.data);
         } catch (error) {
           console.error("Error fetching data:", error);
-        } finally {
-          setIsLoading(false);
         }
       };
 

@@ -32,4 +32,7 @@ export const ENDPOINTS = {
   comments: {
     create: (reportId: string) => `/comments/${reportId}/comment`,
   },
+  users: {
+    getUser: "/users/get-me",
+  },
 };

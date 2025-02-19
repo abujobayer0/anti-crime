@@ -1,4 +1,4 @@
-import { getAllReports } from "@/actions/reports";
+import { getAllReports, getRecentReports, getUser } from "@/actions/reports";
 import ReportsList from "@/app/(app)/components/reports-list";
 
 import {
@@ -6,7 +6,6 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { Metadata } from "next";
 
 export default async function HomePage() {
   const queryClient = new QueryClient();
@@ -14,6 +13,14 @@ export default async function HomePage() {
   await queryClient.prefetchQuery({
     queryKey: ["reports"],
     queryFn: getAllReports,
+  });
+  await queryClient.prefetchQuery({
+    queryKey: ["recent-reports"],
+    queryFn: getRecentReports,
+  });
+  await queryClient.prefetchQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
   });
 
   return (

@@ -41,6 +41,7 @@ export const useReports = () => {
       const { data } = await client.get(ENDPOINTS.reports.list);
       return data;
     },
+    refetchInterval: 1000 * 30,
   });
 
   const getRecentReports = useQuery({
@@ -49,6 +50,7 @@ export const useReports = () => {
       const { data } = await client.get(ENDPOINTS.reports.recentReports);
       return data;
     },
+    refetchInterval: 1000 * 60,
   });
 
   const getUserReports = useQuery({
@@ -57,6 +59,7 @@ export const useReports = () => {
       const { data } = await client.get(ENDPOINTS.reports.getUserReports);
       return data;
     },
+    refetchInterval: 1000 * 60,
   });
 
   const useReport = (id: string) =>
@@ -66,6 +69,7 @@ export const useReports = () => {
         const { data } = await client.get(ENDPOINTS.reports.detail(id));
         return data.data;
       },
+      refetchInterval: 1000 * 30,
     });
 
   const createReport = useMutation({

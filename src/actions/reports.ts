@@ -1,7 +1,7 @@
 "use client";
 import client from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
-import { Report } from "@/types";
+import { Report, User } from "@/types";
 
 type AsyncFunction<T extends unknown[], R> = (...args: T) => Promise<R>;
 
@@ -37,9 +37,21 @@ export const getReportById = ErrorHandler<[string], Report>(async (id) => {
 
 export const getReportComments = ErrorHandler<[string], Report>(
   async (reportId) => {
-    const { data } = await client.get<{ data: Report }>(
+    const { data } = await client.get<{ data: any }>(
       ENDPOINTS.reports.detail(reportId)
     );
     return data.data;
   }
 );
+
+export const getUser = ErrorHandler<[], User>(async () => {
+  const { data } = await client.get<{ data: User }>(ENDPOINTS.users.getUser);
+  return data.data;
+});
+
+export const getUserReports = ErrorHandler<[], Report[]>(async () => {
+  const { data } = await client.get<{ data: Report[] }>(
+    ENDPOINTS.reports.getUserReports
+  );
+  return data.data;
+});
