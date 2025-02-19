@@ -5,9 +5,14 @@ import { RootState } from "../store";
 // const development = process.env.NEXT_PUBLIC_WORKSPACE;
 // const localUrl = process.env.NEXT_PUBLIC_BASE_API;
 // const liveUrl = process.env.NEXT_PUBLIC_LIVE_API;
-
+export const API_BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_SERVER_URL_DEVELOPMENT
+    : process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_SERVER_URL_PRODUCTION
+    : "";
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5001/api/v1",
+  baseUrl: API_BASE_URL,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;

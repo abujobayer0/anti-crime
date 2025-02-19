@@ -1,4 +1,9 @@
-export const API_BASE_URL = "http://localhost:5001/api/v1";
+export const API_BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_SERVER_URL_DEVELOPMENT
+    : process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_SERVER_URL_PRODUCTION
+    : "";
 
 export const apiConfig = {
   baseURL: API_BASE_URL,
