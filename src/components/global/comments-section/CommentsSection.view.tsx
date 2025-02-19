@@ -73,9 +73,11 @@ export const CommentsSectionView = ({
                       className="relative group max-w-20 aspect-square"
                     >
                       <div className="w-full h-full rounded-lg border border-border p-1 flex items-center justify-center relative overflow-hidden">
-                        <img
+                        <Image
                           src={URL.createObjectURL(image)}
                           alt={`Comment image ${index + 1}`}
+                          width={80}
+                          height={80}
                           className="object-cover w-full h-full rounded-lg transition-transform duration-200 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />

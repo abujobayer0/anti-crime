@@ -69,6 +69,8 @@ const CommentItem = ({
           src={comment.userId?.profileImage || "/anticrime-logo.png"}
           alt={comment.userId?.name || "User"}
           width={32}
+          loading="eager"
+          priority
           height={32}
           className="rounded-full"
         />
@@ -126,9 +128,12 @@ const CommentItem = ({
                 {replyImages.map((image, index) => (
                   <div key={index} className="relative group aspect-square">
                     <div className="w-full h-full rounded-lg border border-border p-1 flex items-center justify-center relative overflow-hidden">
-                      <img
+                      <Image
                         src={URL.createObjectURL(image)}
                         alt={`Reply image ${index + 1}`}
+                        layout="fill"
+                        unoptimized
+                        priority
                         className="object-cover w-full h-full rounded-lg transition-transform duration-200 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />

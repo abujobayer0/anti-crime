@@ -18,7 +18,7 @@ import { Report } from "@/types";
 import ProfilePageSkeleton from "./components/profile-page-skeleton";
 
 const ProfilePage = () => {
-  const { data: userData, isLoading } = useUser();
+  const { data: userData, isPending, isLoading } = useUser();
   const { updateProfile } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [imgUploading, setImgUploading] = useState(false);
@@ -91,13 +91,14 @@ const ProfilePage = () => {
   };
 
   const handleVerifyOTP = (otp: string) => {
+    console.log(otp);
     // verifyOTP.mutate({ phone: userData?.phone, otp });
   };
 
-  if (isLoading || reportsLoading)
+  if (isLoading || reportsLoading || isPending)
     return (
       <ProfilePageSkeleton
-        loading={isLoading}
+        loading={isLoading || isPending}
         reportsLoading={reportsLoading}
       />
     );
@@ -187,15 +188,15 @@ const ProfilePage = () => {
                   )}
                 />
               ) : (
-                <div className="bg-card/30 backdrop-blur-lg rounded-2xl shadow-lg p-12 text-center border border-border/5">
-                  <div className="max-w-md mx-auto space-y-6">
+                <div className=" w-full backdrop-blur-lg rounded-2xl  p-12 text-center border border-border/5">
+                  <div className="mx-auto space-y-6">
                     <AlertCircle className="w-16 h-16 text-primary/60 mx-auto" />
                     <h4 className="text-2xl font-bold text-muted-foreground">
                       No Crime Reports Yet
                     </h4>
                     <p className="text-muted-foreground/80 text-lg">
-                      You haven't submitted any crime reports. When you do, they
-                      will appear here.
+                      You haven&apos;t submitted any crime reports. When you do,
+                      they will appear here.
                     </p>
                   </div>
                 </div>
@@ -211,15 +212,15 @@ const ProfilePage = () => {
                   )}
                 />
               ) : (
-                <div className=" backdrop-blur-lg rounded-2xl  p-12 text-center border border-border/5">
-                  <div className="max-w-md mx-auto space-y-6">
+                <div className="w-full backdrop-blur-lg rounded-2xl p-12 text-center border border-border/5">
+                  <div className="mx-auto space-y-6">
                     <Archive className="w-16 h-16 text-primary/60 mx-auto" />
                     <h4 className="text-2xl font-bold text-muted-foreground">
                       No Archived Reports Yet
                     </h4>
                     <p className="text-muted-foreground/80 text-lg">
-                      You haven't archived any crime reports. When you do, they
-                      will appear here.
+                      You haven&apos;t archived any crime reports. When you do,
+                      they will appear here.
                     </p>
                   </div>
                 </div>

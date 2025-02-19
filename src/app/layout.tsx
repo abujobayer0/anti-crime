@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/provider/QueryProvider";
@@ -12,6 +12,13 @@ const montserrat = Montserrat({
   variable: "--font-montserrat",
 });
 
+export const viewport: Viewport = {
+  themeColor: "dark",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 export const metadata: Metadata = {
   title: {
     default: "Anti Crime - Community Safety Platform",
@@ -56,11 +63,6 @@ export const metadata: Metadata = {
     description:
       "A community-driven platform for reporting and tracking crime incidents to create safer neighborhoods.",
     creator: "@anticrime",
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
   },
   robots: {
     index: true,

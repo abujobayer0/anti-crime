@@ -65,7 +65,17 @@ const Earth: React.FC<EarthProps> = ({
       globe.destroy();
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [
+    baseColor,
+    markerColor,
+    glowColor,
+    dark,
+    diffuse,
+    mapBrightness,
+    mapSamples,
+    scale,
+    theta,
+  ]);
 
   return (
     <div

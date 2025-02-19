@@ -34,6 +34,7 @@ const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
   const map = useMap();
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     if (!map || !data.data.length) return;
 
     // Create heatmap data points
@@ -46,7 +47,7 @@ const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
       },
       {}
     );
-    console.log(locationGroups);
+
     // Compute heatmap intensity
     const heatmapPoints = Object.values(locationGroups).map((points) => {
       const centerLat =

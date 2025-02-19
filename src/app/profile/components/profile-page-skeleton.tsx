@@ -74,7 +74,7 @@ const ProfilePageSkeleton = ({
   loading: boolean;
   reportsLoading: boolean;
 }) => (
-  <div className="container mx-auto px-4 py-8">
+  <div className=" mx-auto px-4 py-8">
     <div className="flex flex-col lg:flex-row gap-8">
       <div className="lg:w-1/2 space-y-6">
         {loading && (

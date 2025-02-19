@@ -10,7 +10,7 @@ interface ViewProps {
   isLoading: boolean;
   user: User;
   onDelete: (id: string) => void;
-  onUpdate: (props: { id: string; data: any }) => void;
+  onUpdate: (props: { id: string; data: CrimeReport }) => void;
   onVote: (props: { id: string; type: "upvote" | "downvote" }) => void;
 }
 
@@ -37,7 +37,7 @@ export const ReportsListView = ({
         <CrimeReportCard
           key={report._id}
           report={report}
-          user={user as any}
+          user={user}
           deleteReport={onDelete}
           updateReport={onUpdate}
           voteReport={onVote}

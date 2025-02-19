@@ -1,16 +1,32 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useMap } from "react-leaflet";
 import type { MapContainerProps } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Card } from "@/components/ui/card";
 import { MapPin, AlertTriangle, Info } from "lucide-react";
 import { SelectComponent } from "@/components/global/select-component";
 import { SelectItem } from "@/components/ui/select";
-import HeatmapLayer from "./HeatmapLayer";
+
 import { Button } from "@/components/ui/button";
 import { useReports } from "@/hooks/api/useReports";
+import dynamic from "next/dynamic";
+
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+
+const HeatmapLayer = dynamic(
+  () => import("@/components/global/heatmap/HeatMap"),
+  { ssr: false }
+);
 
 interface CrimeReport {
   _id: string;

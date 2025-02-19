@@ -174,7 +174,7 @@ const CreateReportCard = ({ user }: Props) => {
         userId: user._id,
       }));
     }
-  }, [user, formData.userId]);
+  }, [user, formData.userId, setFormData]);
 
   return (
     <div className="flex flex-col mt-4 mx-auto justify-center w-full max-w-screen-md items-center">
@@ -188,6 +188,8 @@ const CreateReportCard = ({ user }: Props) => {
                 objectFit="cover"
                 sizes="40px"
                 width={40}
+                unoptimized
+                loading="eager"
                 height={40}
                 priority
                 className="rounded-full object-cover ring-2 ring-primary/5"
@@ -265,9 +267,12 @@ const CreateReportCard = ({ user }: Props) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 rounded-xl overflow-hidden">
               {imagePreview.map((preview, index) => (
                 <div key={preview} className="relative group aspect-square">
-                  <img
+                  <Image
                     src={preview}
                     alt={`Preview ${index + 1}`}
+                    unoptimized
+                    priority
+                    layout="fill"
                     className="w-full h-full object-cover"
                   />
                   {uploadingImages.has(preview) && (

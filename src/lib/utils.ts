@@ -30,6 +30,7 @@ export const uploadFileToImageBB = async (file: File): Promise<string> => {
     throw new Error("Error uploading file to ImageBB.");
   }
 };
+
 export const cleanUpResponse = (response: string) => {
   try {
     const matched = response.match(/{[\s\S]*}/);

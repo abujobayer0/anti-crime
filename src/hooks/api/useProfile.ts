@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/api/client";
 import { toast } from "sonner";
-import { Contact } from "lucide-react";
 
 export const useProfile = () => {
   const queryClient = useQueryClient();

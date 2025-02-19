@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 interface Notification {
   id: string;
@@ -109,7 +110,12 @@ const NotificationsPage = () => {
             >
               <div className="flex items-start gap-3">
                 <Avatar className="w-10 h-10">
-                  <img src={notification.avatar || "/placeholder.svg"} alt="" />
+                  <Image
+                    src={notification.avatar || "/placeholder.svg"}
+                    alt="avater"
+                    width={40}
+                    height={40}
+                  />
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -154,7 +160,7 @@ const NotificationsPage = () => {
                 No notifications
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                You're all caught up! Check back later for updates.
+                You&apos;re all caught up! Check back later for updates.
               </p>
             </div>
           )}
