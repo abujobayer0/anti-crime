@@ -1,12 +1,13 @@
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useReports } from "@/hooks";
 import { uploadFileToImageBB } from "@/lib/utils";
 import { formatTimeAgo } from "@/lib/report";
-import { ImagePlus, X } from "lucide-react";
+import { EllipsisVertical, ImagePlus, X } from "lucide-react";
 import Image from "next/legacy/image";
 import { useState } from "react";
+import Link from "next/link";
 
 const CommentItem = ({
   comment,
@@ -64,32 +65,42 @@ const CommentItem = ({
 
   return (
     <div className="flex gap-3">
-      <Avatar className="h-8 w-8 shrink-0">
-        <Image
-          src={comment.userId?.profileImage || "/anticrime-logo.png"}
-          alt={comment.userId?.name || "User"}
-          width={32}
-          loading="eager"
-          priority
-          height={32}
-          className="rounded-full"
-        />
-      </Avatar>
+      <Link href={`/profile/${comment.userId?._id}`}>
+        <Avatar className="h-8 w-8 hover:opacity-80 shrink-0">
+          <AvatarImage
+            src={comment.userId?.profileImage || "/anticrime-logo.png"}
+            alt={comment.userId?.name || "User"}
+            width={32}
+            height={32}
+            className="rounded-full"
+          />
+        </Avatar>
+      </Link>
       <div className="flex-1 space-y-2">
-        <div className="bg-gray-50 rounded-2xl px-4 py-3 space-y-2">
-          <div className="flex items-center gap-2">
-            <p className="font-semibold text-sm">{comment.userId?.name}</p>
-            <span className="text-xs text-muted-foreground">
-              {formatTimeAgo(new Date(comment.createdAt))}
-            </span>
+        <div className=" w-fit bg-gray-50 rounded-2xl px-4 py-3 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <Link href={`/profile/${comment.userId?._id}`}>
+              <p className="font-semibold hover:underline text-sm">
+                {comment.userId?.name}
+              </p>
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 -mr-2 hover:bg-gray-100"
+            >
+              <EllipsisVertical className="h-4 w-4" />
+            </Button>
           </div>
-          <p className="text-sm leading-relaxed">{comment.comment}</p>
+          <p className="text-sm leading-relaxed break-words">
+            {comment.comment}
+          </p>
           {comment.proofImage && comment.proofImage.length > 0 && (
             <div className="grid grid-cols-2 gap-2 pt-2">
               {comment.proofImage.map((image: string, index: number) => (
                 <Image
                   key={`${comment._id}-image-${index}`}
-                  src={image}
+                  src={image || ""}
                   alt="Evidence"
                   priority
                   loading="eager"
@@ -103,10 +114,13 @@ const CommentItem = ({
           )}
         </div>
 
-        <div className="flex gap-4 text-sm text-muted-foreground px-2">
+        <div className="flex gap-4 text-sm items-center text-muted-foreground px-2">
+          <span className="text-xs text-muted-foreground hover:underline cursor-pointer">
+            {formatTimeAgo(new Date(comment.createdAt))}
+          </span>
           {level < 2 && (
             <button
-              className="hover:text-primary font-medium"
+              className="hover:text-primary font-medium hover:underline"
               onClick={() => setReplyingTo(comment._id)}
             >
               Reply
@@ -129,7 +143,7 @@ const CommentItem = ({
                   <div key={index} className="relative group aspect-square">
                     <div className="w-full h-full rounded-lg border border-border p-1 flex items-center justify-center relative overflow-hidden">
                       <Image
-                        src={URL.createObjectURL(image)}
+                        src={URL.createObjectURL(image) || ""}
                         alt={`Reply image ${index + 1}`}
                         layout="fill"
                         unoptimized

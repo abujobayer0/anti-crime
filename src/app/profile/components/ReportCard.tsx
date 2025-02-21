@@ -123,7 +123,7 @@ const ReportCard = ({
                   className="relative w-32 h-32 rounded-lg overflow-hidden"
                 >
                   <Image
-                    src={image}
+                    src={image || ""}
                     alt={`Crime Report Image ${index + 1}`}
                     width={128}
                     height={128}

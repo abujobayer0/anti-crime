@@ -28,5 +28,6 @@ export const config = {
     "/heatmap",
     "/reports/:path*",
     "/profile",
+    "/profile/:path*",
   ],
 };

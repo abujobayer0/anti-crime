@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Activity, AlertCircle, Archive } from "lucide-react";
+import { Activity, AlertCircle, Archive, Camera } from "lucide-react";
 import { useUser } from "@/hooks/api/useUser";
 import { useProfile } from "@/hooks/api/useProfile";
 import { uploadFileToImageBB } from "@/lib/utils";
@@ -16,12 +16,14 @@ import { ProfileForm } from "./ProfileForm";
 import { ProfileInfo } from "./ProfileInfo";
 import { VerificationSection } from "./VerificationSection";
 import Reports from "./Reports";
+import Image from "next/image";
 
 const ProfilePage = () => {
   const { data: userData, isPending, isLoading } = useUser();
   const { updateProfile } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [imgUploading, setImgUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
   const { getUserReports } = useReports();
   const { data: reports, isLoading: reportsLoading } = getUserReports;
   const [profileData, setProfileData] = useState({
@@ -30,6 +32,7 @@ const ProfilePage = () => {
     phone: "",
     bio: "I am a concerned citizen helping to make our community safer.",
     profileImage: "/anticrime-logo.png",
+    coverImage: "/default-cover.jpg",
     isVerified: false,
     role: "",
     reports: [],
@@ -41,6 +44,7 @@ const ProfilePage = () => {
   const [otpSent, setOtpSent] = useState(false);
 
   useEffect(() => {
+    if (isPending || isLoading) return;
     if (userData || reports?.data) {
       setProfileData((prev) => ({
         ...prev,
@@ -49,13 +53,14 @@ const ProfilePage = () => {
         phone: userData.contact || "",
         isVerified: userData.isVerified,
         profileImage: userData.profileImage || "",
+        coverImage: userData.coverImage || "/anticrime-logo.png",
         bio: userData.bio || "",
         reports: reports?.data || [],
         role: userData.role || "",
         _id: userData._id,
       }));
     }
-  }, [userData, reports?.data]);
+  }, [userData, reports?.data, isLoading, isLoading]);
 
   const handleProfileUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -86,6 +91,16 @@ const ProfilePage = () => {
     }
   };
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverUploading(true);
+      const url = await uploadFileToImageBB(file);
+      setProfileData({ ...profileData, coverImage: url });
+      setCoverUploading(false);
+    }
+  };
+
   const handleSendOTP = () => {
     // sendOTP.mutate(userData?.phone);
   };
@@ -102,6 +117,40 @@ const ProfilePage = () => {
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-1/3 space-y-6">
           <div className="bg-card backdrop-blur-lg sticky top-16 border border-border/5 rounded-2xl shadow-sm p-8 transition-all duration-200 hover:shadow-xl">
+            <div className="relative w-full h-48 -mt-8 -mx-8 mb-8 rounded-t-2xl overflow-hidden group">
+              <Image
+                src={profileData.coverImage || ""}
+                alt="Cover"
+                fill
+                className="w-full h-full object-cover"
+                priority
+                layout="fill"
+              />
+              {isEditing && (
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleCoverUpload}
+                      disabled={coverUploading}
+                    />
+                    <div className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg">
+                      {coverUploading ? (
+                        "Uploading..."
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          <Camera className="w-4 h-4" />
+                          Change Cover
+                        </span>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              )}
+            </div>
+
             <ProfileImage
               profileImage={profileData.profileImage}
               isEditing={isEditing}

@@ -9,6 +9,7 @@ import { VoteButtons } from "../../../../components/global/crime-report-card/Vot
 import { useReports } from "@/hooks";
 import { formatTimeAgo } from "@/lib/report";
 import { DescriptionWithHashtags } from "@/lib/helpers";
+import Link from "next/link";
 
 interface ViewProps {
   report: CrimeReport;
@@ -28,17 +29,21 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
         <div className="flex-1 space-y-6">
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <div className="flex items-center gap-4">
-              <Image
-                src={report?.userId?.profileImage || "/anticrime-logo.png"}
-                alt="User"
-                width={48}
-                height={48}
-                className="rounded-full ring-2 ring-primary/10"
-              />
+              <Link href={`/profile/${report?.userId?._id}`}>
+                <Image
+                  src={report?.userId?.profileImage || "/anticrime-logo.png"}
+                  alt="User"
+                  width={48}
+                  height={48}
+                  className="rounded-full hover:opacity-80 ring-2 ring-primary/10"
+                />
+              </Link>
               <div>
-                <h2 className="text-lg font-semibold">
-                  {report?.userId?.name}
-                </h2>
+                <Link href={`/profile/${report?.userId?._id}`}>
+                  <h2 className="text-lg hover:underline font-semibold">
+                    {report?.userId?.name}
+                  </h2>
+                </Link>
                 <p className="text-sm text-muted-foreground">
                   {formatTimeAgo(new Date(report?.crimeTime))}
                 </p>
@@ -76,7 +81,7 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
                 }`}
               >
                 <Image
-                  src={image}
+                  src={image || ""}
                   alt={`Evidence ${index + 1}`}
                   width={100}
                   height={100}

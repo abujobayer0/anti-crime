@@ -11,3 +11,16 @@ export const useUser = () => {
     },
   });
 };
+
+export const useUserProfile = (userId: string) => {
+  return useQuery({
+    queryKey: ["user-profile", userId],
+    queryFn: async () => {
+      const { data } = await apiClient.get(
+        ENDPOINTS.users.getUserProfile(userId)
+      );
+
+      return data.data;
+    },
+  });
+};

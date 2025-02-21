@@ -43,18 +43,22 @@ const CrimeReportCard = ({
     <div className="flex flex-col max-w-screen-md relative w-full mx-auto rounded-lg bg-white border  transition-all duration-200">
       <div className="flex relative items-center justify-between px-4 py-3 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <Image
-            src={report?.userId?.profileImage || "/anticrime-logo.png"}
-            alt="user"
-            width={40}
-            height={40}
-            priority
-            className="rounded-full object-cover ring-2 ring-primary/5"
-          />
+          <Link href={`/profile/${report?.userId?._id}`}>
+            <Image
+              src={report?.userId?.profileImage || "/anticrime-logo.png"}
+              alt="user"
+              width={40}
+              height={40}
+              priority
+              className="rounded-full hover:opacity-80 object-cover ring-2 ring-primary/5"
+            />
+          </Link>
           <div>
-            <div className="text-[15px] font-semibold hover:underline cursor-pointer">
-              {report?.userId?.name}
-            </div>
+            <Link href={`/profile/${report?.userId?._id}`}>
+              <div className="text-[15px] font-semibold hover:underline cursor-pointer">
+                {report?.userId?.name}
+              </div>
+            </Link>
             <p className="text-[13px] text-gray-500">
               {formatTimeAgo(new Date(report?.postTime))}
             </p>

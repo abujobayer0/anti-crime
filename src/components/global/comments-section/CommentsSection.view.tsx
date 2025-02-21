@@ -50,7 +50,7 @@ export const CommentsSectionView = ({
           <div className="flex gap-3 space-y-3 bg-gray-50/50 rounded-xl p-3 border border-gray-100">
             <Avatar className="h-8 w-8">
               <Image
-                src={userImage}
+                src={userImage || ""}
                 alt="Current user"
                 width={32}
                 height={32}
@@ -74,7 +74,7 @@ export const CommentsSectionView = ({
                     >
                       <div className="w-full h-full rounded-lg border border-border p-1 flex items-center justify-center relative overflow-hidden">
                         <Image
-                          src={URL.createObjectURL(image)}
+                          src={URL.createObjectURL(image) || ""}
                           alt={`Comment image ${index + 1}`}
                           width={80}
                           height={80}

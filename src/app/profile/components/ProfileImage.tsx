@@ -17,7 +17,7 @@ export const ProfileImage = ({
   return (
     <div className="relative w-32 h-32 mx-auto mb-4">
       <Image
-        src={profileImage}
+        src={profileImage || ""}
         alt="Profile"
         width={128}
         height={128}

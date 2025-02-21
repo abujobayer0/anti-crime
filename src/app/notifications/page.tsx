@@ -111,7 +111,7 @@ const NotificationsPage = () => {
               <div className="flex items-start gap-3">
                 <Avatar className="w-10 h-10">
                   <Image
-                    src={notification.avatar || "/placeholder.svg"}
+                    src={notification.avatar || "/anticrime-logo.png"}
                     alt="avater"
                     width={40}
                     height={40}

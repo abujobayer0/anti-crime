@@ -62,6 +62,17 @@ export const useReports = () => {
     refetchInterval: 1000 * 60,
   });
 
+  const getProfileReports = (userId: string) =>
+    useQuery({
+      queryKey: ["profile-reports", userId],
+      queryFn: async () => {
+        const { data } = await client.get(
+          ENDPOINTS.reports.getProfileReports(userId)
+        );
+        return data;
+      },
+    });
+
   const useReport = (id: string) =>
     useQuery({
       queryKey: ["reports", id],
@@ -241,6 +252,7 @@ export const useReports = () => {
     voteReport,
     addEvidence,
     addComment,
+    getProfileReports,
     generateAiDescription,
   };
 };

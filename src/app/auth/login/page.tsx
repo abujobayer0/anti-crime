@@ -8,10 +8,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
 import { useAuth } from "@/hooks/api/useAuth";
-import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/features/auth/authSlice";
-import Cookies from "js-cookie";
 import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormInputs {
@@ -26,24 +22,12 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const { login } = useAuth();
-  const router = useRouter();
   const [error, setError] = useState("");
-  const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      const result = await login.mutateAsync(data);
-      if (result?.data?.accessToken) {
-        dispatch(
-          setCredentials({
-            user: result.data.user,
-            token: result.data.accessToken,
-          })
-        );
-        Cookies.set("accessToken", result.data.accessToken);
-        router.push("/");
-      }
+      await login.mutateAsync(data);
     } catch (err: any) {
       setError(err.data?.message || "Something went wrong!");
     }

@@ -55,3 +55,11 @@ export const getUserReports = ErrorHandler<[], Report[]>(async () => {
   );
   return data.data;
 });
+export const getProfileReports = ErrorHandler<[string], Report[]>(
+  async (userId) => {
+    const { data } = await client.get<{ data: Report[] }>(
+      ENDPOINTS.reports.getProfileReports(userId)
+    );
+    return data.data;
+  }
+);

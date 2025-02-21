@@ -8,12 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import AuthenticationPageBody from "@/components/common/AuthenticationPageBody";
-import { useRegisterMutation } from "@/redux/features/auth/authApi";
-import { useRouter } from "next/navigation";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
-import Cookies from "js-cookie";
-import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/features/auth/authSlice";
+import { useAuth } from "@/hooks";
 interface RegistrationFormData {
   name: string;
   email: string;
@@ -30,10 +26,9 @@ const RegistrationPage = () => {
     formState: { errors },
   } = useForm<RegistrationFormData>();
 
-  const [registerUser, { isLoading }] = useRegisterMutation();
-  const router = useRouter();
+  const { register: registerUser } = useAuth();
   const [error, setError] = useState("");
-  const dispatch = useAppDispatch();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -42,25 +37,13 @@ const RegistrationPage = () => {
       setError("Passwords do not match");
       return;
     }
-
     try {
-      const result = await registerUser({
+      await registerUser.mutateAsync({
         name: data.name,
         email: data.email,
         password: data.password,
-        phone: data.phone,
-      }).unwrap();
-
-      if (result?.success) {
-        dispatch(
-          setCredentials({
-            user: result.data.user,
-            token: result.data.accessToken,
-          })
-        );
-        Cookies.set("accessToken", result.data.accessToken);
-        router.push("/");
-      }
+        contact: data.phone,
+      });
     } catch (err: any) {
       setError(err.data?.message || "Registration failed");
     }
@@ -72,7 +55,6 @@ const RegistrationPage = () => {
       subtitle="Please enter your details to continue"
       form={
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Name Input */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Full Name
@@ -94,7 +76,6 @@ const RegistrationPage = () => {
             )}
           </div>
 
-          {/* Email Input */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Email address
@@ -116,7 +97,6 @@ const RegistrationPage = () => {
             )}
           </div>
 
-          {/* Phone Input */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Phone Number
@@ -138,7 +118,6 @@ const RegistrationPage = () => {
             )}
           </div>
 
-          {/* Password Input */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Password
@@ -175,7 +154,6 @@ const RegistrationPage = () => {
             )}
           </div>
 
-          {/* Confirm Password Input */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Confirm Password
@@ -213,7 +191,6 @@ const RegistrationPage = () => {
             )}
           </div>
 
-          {/* Error Message */}
           {error && (
             <p className="flex items-center gap-2 text-sm text-destructive">
               <AlertCircle className="w-4 h-4" />
@@ -221,16 +198,14 @@ const RegistrationPage = () => {
             </p>
           )}
 
-          {/* Submit Button */}
           <Button
             type="submit"
             className="w-full h-11 bg-primary hover:bg-primary/90"
-            disabled={isLoading}
+            disabled={registerUser.isPending}
           >
-            {isLoading ? "Creating account..." : "Create account"}
+            {registerUser.isPending ? "Creating account..." : "Create account"}
           </Button>
 
-          {/* Login Link */}
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link
