@@ -8,13 +8,15 @@ import { EllipsisVertical, ImagePlus, X } from "lucide-react";
 import Image from "next/legacy/image";
 import { useState } from "react";
 import Link from "next/link";
-
+import { User } from "@/types";
 const CommentItem = ({
   comment,
   level = 0,
+  sessionUser,
 }: {
   comment: any;
   level?: number;
+  sessionUser: User;
 }) => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [newReply, setNewReply] = useState<string>("");
@@ -65,7 +67,13 @@ const CommentItem = ({
 
   return (
     <div className="flex gap-3">
-      <Link href={`/profile/${comment.userId?._id}`}>
+      <Link
+        href={
+          sessionUser?._id === comment.userId?._id
+            ? "/profile"
+            : `/profile/${comment.userId?._id}`
+        }
+      >
         <Avatar className="h-8 w-8 hover:opacity-80 shrink-0">
           <AvatarImage
             src={comment.userId?.profileImage || "/anticrime-logo.png"}
@@ -79,7 +87,13 @@ const CommentItem = ({
       <div className="flex-1 space-y-2">
         <div className=" w-fit bg-gray-50 rounded-2xl px-4 py-3 space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <Link href={`/profile/${comment.userId?._id}`}>
+            <Link
+              href={
+                sessionUser?._id === comment.userId?._id
+                  ? "/profile"
+                  : `/profile/${comment.userId?._id}`
+              }
+            >
               <p className="font-semibold hover:underline text-sm">
                 {comment.userId?.name}
               </p>
@@ -202,7 +216,12 @@ const CommentItem = ({
         {comment.replyTo && comment.replyTo.length > 0 && (
           <div className="mt-4 space-y-4 ml-8 relative before:absolute before:left-[-16px] before:top-0 before:h-full before:w-[2px] before:bg-gray-100">
             {comment.replyTo.map((reply: any) => (
-              <CommentItem key={reply._id} comment={reply} level={level + 1} />
+              <CommentItem
+                key={reply._id}
+                comment={reply}
+                level={level + 1}
+                sessionUser={sessionUser}
+              />
             ))}
           </div>
         )}

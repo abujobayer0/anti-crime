@@ -1,6 +1,6 @@
 "use client";
 
-import { useReports, useUser, useUserProfile } from "@/hooks";
+import { useReports, useUserProfile } from "@/hooks";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

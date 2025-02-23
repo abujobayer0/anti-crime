@@ -2,7 +2,10 @@ import generateDescription from "@/hooks/api/generateDescription";
 import { handleAPIError } from "./Error";
 import { cleanUpResponse } from "./utils";
 
-export const formatTimeAgo = (date: Date) => {
+export const formatTimeAgo = (
+  date: Date,
+  options: { details?: boolean } = {}
+) => {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const minutes = Math.floor(diff / 60000);

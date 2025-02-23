@@ -5,12 +5,14 @@ import { uploadFileToImageBB } from "@/lib/utils";
 
 import { CommentsSectionView } from "./CommentsSection.view";
 import { Comment } from "../crime-report-card/types";
+import { User } from "@/types";
 
 interface Props {
   comments: Comment[];
   reportId: string;
   userImage?: string;
   open?: boolean;
+  sessionUser: User;
 }
 
 export const CommentsSectionContainer = ({
@@ -18,6 +20,7 @@ export const CommentsSectionContainer = ({
   reportId,
   userImage = "/anticrime-logo.png",
   open = false,
+  sessionUser,
 }: Props) => {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -69,6 +72,7 @@ export const CommentsSectionContainer = ({
       commentImages={commentImages}
       isUploading={isUploading}
       userImage={userImage}
+      sessionUser={sessionUser}
       onToggleComments={() => setShowComments(!showComments)}
       onCommentChange={setNewComment}
       onCommentSubmit={handleCommentSubmit}

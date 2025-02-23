@@ -5,7 +5,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { MessageCircle, ImagePlus, X } from "lucide-react";
 import CommentItem from "../comments-items";
 import { Comment } from "../crime-report-card/types";
-
+import { User } from "@/types";
 interface ViewProps {
   comments: Comment[];
   showComments: boolean;
@@ -18,6 +18,7 @@ interface ViewProps {
   onCommentSubmit: () => void;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveImage: (index: number) => void;
+  sessionUser: User;
 }
 
 export const CommentsSectionView = ({
@@ -27,6 +28,7 @@ export const CommentsSectionView = ({
   commentImages,
   isUploading,
   userImage,
+  sessionUser,
   onToggleComments,
   onCommentChange,
   onCommentSubmit,
@@ -119,7 +121,11 @@ export const CommentsSectionView = ({
 
           <div className="space-y-4">
             {comments?.map((comment) => (
-              <CommentItem key={comment._id} comment={comment} />
+              <CommentItem
+                key={comment._id}
+                comment={comment}
+                sessionUser={sessionUser}
+              />
             ))}
           </div>
         </div>

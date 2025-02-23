@@ -1,15 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat } from "next/font/google";
+import { Montserrat, Poppins } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/provider/QueryProvider";
 
 import { Toaster } from "sonner";
 import ReduxProvider from "@/provider/ReduxProvider";
 
-const montserrat = Montserrat({
+const montserrat = Poppins({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-montserrat",
+  weight: "400",
 });
 
 export const viewport: Viewport = {

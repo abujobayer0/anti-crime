@@ -23,7 +23,11 @@ export const ReportsListContainer = () => {
 
   return (
     <ReportsListView
-      reports={reports?.data}
+      reports={
+        reports?.data?.sort(
+          (a: any, b: any) => (b.algorithmScore || 0) - (a.algorithmScore || 0)
+        ) || []
+      }
       isLoading={isLoading}
       user={user}
       onDelete={handleDelete}

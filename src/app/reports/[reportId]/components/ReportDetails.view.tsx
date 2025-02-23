@@ -29,7 +29,13 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
         <div className="flex-1 space-y-6">
           <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
             <div className="flex items-center gap-4">
-              <Link href={`/profile/${report?.userId?._id}`}>
+              <Link
+                href={
+                  user?._id === report?.userId?._id
+                    ? "/profile"
+                    : `/profile/${report?.userId?._id}`
+                }
+              >
                 <Image
                   src={report?.userId?.profileImage || "/anticrime-logo.png"}
                   alt="User"
@@ -39,7 +45,13 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
                 />
               </Link>
               <div>
-                <Link href={`/profile/${report?.userId?._id}`}>
+                <Link
+                  href={
+                    user?._id === report?.userId?._id
+                      ? "/profile"
+                      : `/profile/${report?.userId?._id}`
+                  }
+                >
                   <h2 className="text-lg hover:underline font-semibold">
                     {report?.userId?.name}
                   </h2>
@@ -118,6 +130,7 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
             <CommentsSection
               comments={report.comments}
               reportId={report._id}
+              sessionUser={user}
               userImage={user?.profileImage}
               open={true}
             />

@@ -1,16 +1,6 @@
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: string;
-  bio: string;
-  isBanned: boolean;
-  isDeleted: boolean;
-  password?: string;
-  contact?: string;
-  profileImage: string;
-  isVerified: boolean;
-}
+import { User as GlobalUser } from "@/types";
+
+export type User = GlobalUser;
 
 export interface Comment {
   _id: string;
@@ -22,7 +12,7 @@ export interface Comment {
   replyTo: Comment[];
   reportId: string;
   updatedAt: string;
-  userId: User;
+  userId: GlobalUser;
 }
 
 export interface CrimeReport {
@@ -48,8 +38,8 @@ export interface CrimeReport {
 
 export interface Props {
   report: CrimeReport;
-  deleteReport: any;
-  updateReport: any;
-  voteReport: any;
-  user: User;
+  deleteReport: (id: string) => void;
+  updateReport: (data: { id: string; data: any }) => void;
+  voteReport: (data: { id: string; type: "upvote" | "downvote" }) => void;
+  user: GlobalUser;
 }

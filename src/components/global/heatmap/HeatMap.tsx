@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import L from "leaflet";
 import "leaflet.heat";
 import { useMap } from "react-leaflet";
+import { formatDate } from "date-fns";
 
 interface Report {
   _id: string;
@@ -15,6 +16,7 @@ interface Report {
   userId: {
     name: string;
   };
+  images: string[];
 }
 
 interface HeatmapData {
@@ -57,7 +59,8 @@ const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
       const intensity = Math.min(points.length * 20, 100);
       return [centerLat, centerLng, intensity];
     });
-
+    console.log(heatmapPoints, "heatmapPoints");
+    console.log(locationGroups, "locationGroups");
     // Create heatmap layer
     const heatLayer = (L as any).heatLayer(heatmapPoints, {
       radius: 35,
@@ -79,7 +82,7 @@ const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
     // Ensure markers are displayed
     const markerGroup = L.layerGroup();
 
-    data.data.forEach(({ lat, lng, report }) => {
+    Object.values(locationGroups).forEach((points) => {
       const customIcon = L.divIcon({
         className: "custom-div-icon",
         html: `
@@ -108,37 +111,58 @@ const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
         iconAnchor: [16, 16],
       });
 
-      const marker = L.marker([lat, lng], { icon: customIcon }).bindPopup(
-        `
-        <div class="p-4 max-w-[320px]">
-          <h3 class="font-bold text-lg mb-3 text-gray-900">${report.title}</h3>
-          <p class="text-sm text-gray-600 mb-3 leading-relaxed">
-            ${
-              report.description.length > 150
-                ? report.description.slice(0, 150) + "..."
-                : report.description
-            }
-          </p>
-          <div class="space-y-1.5 text-sm text-gray-500">
-            <div class="flex items-center gap-2">
-              <span>${report.time}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span>Reported by ${report.userId.name}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span>${report.location}</span>
-            </div>
+      const popupContent = `
+        <div class="p-2 max-w-[320px]">
+          <h3 class="font-bold text-lg mb-3 uppercase text-gray-900">${
+            points[0].report.location
+          }</h3>
+          <div class="space-y-3 overflow-y-auto max-h-[300px]">
+          
+            ${points
+              .map(
+                (point) => `
+              
+              <div class="border-b pb-2 flex gap-2">
+              <div class="flex items-center gap-2">
+                <img src="${point.report.images[0] || ""}" alt="${
+                  point.report.userId.name
+                }" class="w-24 h-16">
+                </div>
+                  <div class="flex flex-col gap-1">
+
+                <h4 class="font-semibold leading-relaxed text-gray-900">${
+                  point.report.title
+                }</h4>
+                <p class="text-sm !m-0 text-gray-600">
+                  ${
+                    point.report.description.length > 50
+                      ? point.report.description.slice(0, 50) + "..."
+                      : point.report.description
+                  }
+                </p>
+                <div class="text-xs text-gray-500">${formatDate(
+                  new Date(point.report.time),
+                  "MMM d, yyyy h:mm a"
+                )}</div>
+                <a href="/reports/${
+                  point.report._id
+                }" class="text-blue-600 text-xs hover:underline">
+                  View Details
+                </a>
+              </div>
+              </div>
+            `
+              )
+              .join("")}
           </div>
-          <a href="/reports/${
-            report._id
-          }" class="inline-flex items-center justify-center w-full mt-4 px-4 py-2.5 bg-primary !text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors duration-200">
-            View Details
-          </a>
         </div>
-      `,
-        { className: "modern-popup rounded-lg shadow-xl" }
-      );
+      `;
+
+      const marker = L.marker([points[0].lat, points[0].lng], {
+        icon: customIcon,
+      }).bindPopup(popupContent, {
+        className: "modern-popup rounded-lg shadow-xl",
+      });
 
       markerGroup.addLayer(marker);
     });

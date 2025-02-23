@@ -42,6 +42,7 @@ interface CrimeReport {
   userId: {
     name: string;
   };
+  images: string[];
 }
 
 const MapController = ({ coordinates }: { coordinates: [number, number] }) => {
@@ -144,6 +145,7 @@ const HeatmapPage = () => {
       value: 1,
       report: {
         title: report.title,
+        images: report.images,
         description: report.description.substring(0, 100) + "...",
         time: new Date(report.crimeTime).toLocaleString(),
         location: `${report.district}, ${report.division}`,

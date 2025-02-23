@@ -37,4 +37,7 @@ export const ENDPOINTS = {
     getUser: "/users/get-me",
     getUserProfile: (userId: string) => `/users/${userId}`,
   },
+  search: {
+    search: `/reports/query`,
+  },
 };

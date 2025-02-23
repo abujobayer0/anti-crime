@@ -2,6 +2,7 @@
 import client from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 import { Report, User } from "@/types";
+import { redirect } from "next/navigation";
 
 type AsyncFunction<T extends unknown[], R> = (...args: T) => Promise<R>;
 
@@ -55,6 +56,7 @@ export const getUserReports = ErrorHandler<[], Report[]>(async () => {
   );
   return data.data;
 });
+
 export const getProfileReports = ErrorHandler<[string], Report[]>(
   async (userId) => {
     const { data } = await client.get<{ data: Report[] }>(

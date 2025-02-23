@@ -14,6 +14,7 @@ export interface Report {
   title: string;
   description: string;
   location: string;
+  type?: "report" | "user";
   district: string;
   division: string;
   images: string[];

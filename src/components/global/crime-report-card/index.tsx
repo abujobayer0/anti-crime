@@ -43,7 +43,13 @@ const CrimeReportCard = ({
     <div className="flex flex-col max-w-screen-md relative w-full mx-auto rounded-lg bg-white border  transition-all duration-200">
       <div className="flex relative items-center justify-between px-4 py-3 border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <Link href={`/profile/${report?.userId?._id}`}>
+          <Link
+            href={
+              user?._id === report?.userId?._id
+                ? "/profile"
+                : `/profile/${report?.userId?._id}`
+            }
+          >
             <Image
               src={report?.userId?.profileImage || "/anticrime-logo.png"}
               alt="user"
@@ -54,7 +60,13 @@ const CrimeReportCard = ({
             />
           </Link>
           <div>
-            <Link href={`/profile/${report?.userId?._id}`}>
+            <Link
+              href={
+                user?._id === report?.userId?._id
+                  ? "/profile"
+                  : `/profile/${report?.userId?._id}`
+              }
+            >
               <div className="text-[15px] font-semibold hover:underline cursor-pointer">
                 {report?.userId?.name}
               </div>
@@ -256,6 +268,7 @@ const CrimeReportCard = ({
           <CommentsSection
             comments={report?.comments}
             reportId={report._id}
+            sessionUser={user}
             userImage={user?.profileImage}
           />
         )}

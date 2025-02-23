@@ -5,23 +5,22 @@ import { Activity, AlertCircle, Archive, Camera } from "lucide-react";
 import { useUser } from "@/hooks/api/useUser";
 import { useProfile } from "@/hooks/api/useProfile";
 import { uploadFileToImageBB } from "@/lib/utils";
-
 import { useReports } from "@/hooks";
 import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { TabsList } from "@/components/ui/tabs";
 import { Report } from "@/types";
-import ProfilePageSkeleton from "./profile-page-skeleton";
 import { ProfileImage } from "./ProfileImage";
 import { ProfileForm } from "./ProfileForm";
 import { ProfileInfo } from "./ProfileInfo";
 import { VerificationSection } from "./VerificationSection";
-import Reports from "./Reports";
 import Image from "next/image";
+import ReportCard from "./ReportCard";
 
 const ProfilePage = () => {
   const { data: userData, isPending, isLoading } = useUser();
   const { updateProfile } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
+  const { updateReport } = useReports();
   const [imgUploading, setImgUploading] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const { getUserReports } = useReports();
@@ -110,54 +109,71 @@ const ProfilePage = () => {
     // verifyOTP.mutate({ phone: userData?.phone, otp });
   };
 
-  if (isLoading || reportsLoading || isPending) return <ProfilePageSkeleton />;
-
   return (
-    <div className=" mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="lg:w-1/3 space-y-6">
-          <div className="bg-card backdrop-blur-lg sticky top-16 border border-border/5 rounded-2xl shadow-sm p-8 transition-all duration-200 hover:shadow-xl">
-            <div className="relative w-full h-48 -mt-8 -mx-8 mb-8 rounded-t-2xl overflow-hidden group">
-              <Image
-                src={profileData.coverImage || ""}
-                alt="Cover"
-                fill
-                className="w-full h-full object-cover"
-                priority
-                layout="fill"
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+      <div className="relative w-full h-[300px] lg:h-[400px]">
+        <Image
+          src={profileData.coverImage || ""}
+          alt="Cover"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-background" />
+
+        {isEditing && (
+          <div className="absolute bottom-4 right-4">
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleCoverUpload}
+                disabled={coverUploading}
               />
-              {isEditing && (
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <label className="cursor-pointer">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleCoverUpload}
-                      disabled={coverUploading}
-                    />
-                    <div className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg">
-                      {coverUploading ? (
-                        "Uploading..."
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          <Camera className="w-4 h-4" />
-                          Change Cover
-                        </span>
-                      )}
-                    </div>
-                  </label>
+              <div className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full transition-all">
+                {coverUploading ? (
+                  "Uploading..."
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Camera className="w-4 h-4" />
+                    Change Cover
+                  </span>
+                )}
+              </div>
+            </label>
+          </div>
+        )}
+      </div>
+
+      <div className="container max-w-7xl mx-auto px-4">
+        <div className="relative -mt-24 mb-8 flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col items-center lg:items-start">
+            <div className="relative">
+              <ProfileImage
+                profileImage={profileData.profileImage}
+                isEditing={isEditing}
+                imgUploading={imgUploading}
+                onImageUpload={handleImageUpload}
+                size="xl"
+              />
+              {profileData.isVerified && (
+                <div className="absolute -right-2 -bottom-2 bg-primary rounded-full p-1.5">
+                  <div className="bg-white rounded-full p-0.5">
+                    <svg
+                      className="w-4 h-4 text-primary"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                    </svg>
+                  </div>
                 </div>
               )}
             </div>
+          </div>
 
-            <ProfileImage
-              profileImage={profileData.profileImage}
-              isEditing={isEditing}
-              imgUploading={imgUploading}
-              onImageUpload={handleImageUpload}
-            />
-
+          <div className="flex-1 space-y-4">
             {isEditing ? (
               <ProfileForm
                 profileData={profileData}
@@ -172,102 +188,110 @@ const ProfilePage = () => {
                 onEdit={() => setIsEditing(true)}
               />
             )}
-
-            {!isEditing && !profileData.isVerified && (
-              <VerificationSection
-                isVerifying={isVerifying}
-                otp={otp}
-                otpSent={otpSent}
-                onOtpChange={(value) => setOtp(value)}
-                onVerifyOTP={() => handleVerifyOTP(otp)}
-                onSendOTP={handleSendOTP}
-                onCancel={() => {
-                  setIsVerifying(false);
-                  setOtpSent(false);
-                  setOtp("");
-                }}
-              />
-            )}
           </div>
         </div>
 
-        <div className="lg:w-2/3 space-y-6">
-          <div className="flex justify-between sticky shadow-sm top-16 !z-10 backdrop-blur-xl items-center bg-white/10 p-6 rounded-2xl border border-border/5">
-            <h3 className="text-2xl font-bold">My Crime Reports</h3>
+        {/* Verification Section */}
+        {!isEditing && !profileData.isVerified && (
+          <div className="mb-8">
+            <VerificationSection
+              isVerifying={isVerifying}
+              otp={otp}
+              otpSent={otpSent}
+              onOtpChange={(value) => setOtp(value)}
+              onVerifyOTP={() => handleVerifyOTP(otp)}
+              onSendOTP={handleSendOTP}
+              onCancel={() => {
+                setIsVerifying(false);
+                setOtpSent(false);
+                setOtp("");
+              }}
+            />
+          </div>
+        )}
 
-            <div className="flex gap-2 items-center">
-              <span className="text-sm font-medium px-4 py-2 bg-muted/30 rounded-full">
-                Total Reports: {profileData.reports?.length}
+        {/* Reports Section */}
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card/50 backdrop-blur-xl p-6 rounded-2xl border border-border/10">
+            <div className="space-y-1">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Crime Reports
+              </h3>
+              <p className="text-muted-foreground">
+                Manage and track your submitted reports
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium px-4 py-1.5 bg-primary/10 rounded-full">
+                {profileData.reports?.length} Reports
               </span>
             </div>
           </div>
-          <Tabs
-            defaultValue="active"
-            className="w-full flex flex-col justify-center items-end"
-          >
-            <TabsList className="grid w-[400px] grid-cols-2 p-1 bg-muted/30">
+
+          <Tabs defaultValue="active" className="w-full">
+            <TabsList className="w-full sm:w-[400px] grid grid-cols-2 p-1 bg-card/50 rounded-full">
               <TabsTrigger
                 value="active"
-                className="transition-all duration-200"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full transition-all duration-300"
               >
                 <Activity className="w-4 h-4 mr-2" />
-                Active
+                Active Reports
               </TabsTrigger>
               <TabsTrigger
                 value="archived"
-                className="transition-all duration-200"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full transition-all duration-300"
               >
                 <Archive className="w-4 h-4 mr-2" />
                 Archived
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="active">
-              {profileData?.reports?.filter(
-                (report: Report) => !report.isDeleted
-              )?.length > 0 ? (
-                <Reports
-                  reports={profileData.reports.filter(
-                    (report: Report) => !report.isDeleted
-                  )}
-                />
-              ) : (
-                <div className=" w-full backdrop-blur-lg rounded-2xl  p-12 text-center border border-border/5">
-                  <div className="mx-auto space-y-6">
-                    <AlertCircle className="w-16 h-16 text-primary/60 mx-auto" />
-                    <h4 className="text-2xl font-bold text-muted-foreground">
-                      No Crime Reports Yet
-                    </h4>
-                    <p className="text-muted-foreground/80 text-lg">
-                      You haven&apos;t submitted any crime reports. When you do,
-                      they will appear here.
-                    </p>
+
+            <TabsContent value="active" className="mt-6">
+              <div className="grid grid-cols-1 w-full md:grid-cols-2 gap-6">
+                {profileData?.reports?.filter(
+                  (report: Report) => !report.isDeleted
+                )?.length > 0 ? (
+                  profileData.reports
+                    .filter((report: Report) => !report.isDeleted)
+                    .map((report: Report) => (
+                      <ReportCard
+                        key={report._id}
+                        report={report}
+                        onUpdate={updateReport.mutate}
+                      />
+                    ))
+                ) : (
+                  <div className="col-span-full">
+                    <EmptyState
+                      icon={<AlertCircle className="w-12 h-12" />}
+                      title="No Active Reports"
+                      description="You haven't submitted any crime reports yet. When you do, they will appear here."
+                    />
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </TabsContent>
-            <TabsContent value="archived">
-              {profileData?.reports?.filter(
-                (report: Report) => report.isDeleted
-              )?.length > 0 ? (
-                <Reports
-                  reports={profileData.reports.filter(
-                    (report: Report) => report.isDeleted
-                  )}
-                />
-              ) : (
-                <div className="w-full backdrop-blur-lg rounded-2xl p-12 text-center border border-border/5">
-                  <div className="mx-auto space-y-6">
-                    <Archive className="w-16 h-16 text-primary/60 mx-auto" />
-                    <h4 className="text-2xl font-bold text-muted-foreground">
-                      No Archived Reports Yet
-                    </h4>
-                    <p className="text-muted-foreground/80 text-lg">
-                      You haven&apos;t archived any crime reports. When you do,
-                      they will appear here.
-                    </p>
+
+            <TabsContent value="archived" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {profileData?.reports?.filter(
+                  (report: Report) => report.isDeleted
+                )?.length > 0 ? (
+                  profileData.reports
+                    .filter((report: Report) => report.isDeleted)
+                    .map((report: Report) => (
+                      <ReportCard key={report._id} report={report} />
+                    ))
+                ) : (
+                  <div className="col-span-full">
+                    <EmptyState
+                      icon={<Archive className="w-12 h-12" />}
+                      title="No Archived Reports"
+                      description="You haven't archived any reports yet. Archived reports will appear here."
+                    />
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </TabsContent>
           </Tabs>
         </div>
@@ -275,5 +299,26 @@ const ProfilePage = () => {
     </div>
   );
 };
+
+// New EmptyState component
+const EmptyState = ({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) => (
+  <div className="w-full backdrop-blur-xl rounded-3xl p-12 text-center border border-border/10 bg-gradient-to-b from-card/50 to-card/30">
+    <div className="mx-auto space-y-6">
+      <div className="text-primary mx-auto opacity-60 w-fit">{icon}</div>
+      <h4 className="text-2xl font-bold text-muted-foreground">{title}</h4>
+      <p className="text-muted-foreground/80 text-lg max-w-md mx-auto">
+        {description}
+      </p>
+    </div>
+  </div>
+);
 
 export default ProfilePage;

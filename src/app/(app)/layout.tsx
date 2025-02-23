@@ -9,21 +9,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="bg-background">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="flex">
-        <div>
+      <div className="flex flex-col lg:flex-row pt-16">
+        <div className="hidden lg:block w-64 shrink-0">
           <SidebarProvider>
             <AppSidebar />
           </SidebarProvider>
         </div>
 
-        <div className="w-full mt-14">{children}</div>
+        <main className="flex-1 min-w-0">
+          <div className="container mx-auto p-4 lg:p-6">{children}</div>
+        </main>
 
-        <div className="w-full max-w-md h-screen overflow-y-scroll sticky top-0 right-0 md:block hidden  p-4">
-          <h2 className="text-xl font-semibold mt-14 mb-4">Recent Reports</h2>
-          <RecentReportsLayout />
-        </div>
+        <aside className="hidden xl:block w-80 shrink-0 border-l border-gray-200 min-h-[calc(100vh-4rem)] sticky top-16">
+          <div className="p-4">
+            <h2 className="text-xl font-semibold mb-4">Recent Reports</h2>
+            <RecentReportsLayout />
+          </div>
+        </aside>
       </div>
     </div>
   );
