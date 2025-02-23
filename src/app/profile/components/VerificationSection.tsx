@@ -21,10 +21,15 @@ export const VerificationSection = ({
   onCancel,
 }: VerificationSectionProps) => {
   return (
-    <div className="mt-4">
+    <div className="mt-4 w-full">
       {!isVerifying ? (
-        <Button onClick={onSendOTP} variant="default" className="w-full">
-          Verify Phone Number
+        <Button
+          disabled
+          onClick={onSendOTP}
+          variant="default"
+          className="w-full"
+        >
+          Verify
         </Button>
       ) : (
         <div className="space-y-4">

@@ -1,84 +1,40 @@
+"use client";
+
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Edit2, Mail, Phone, Shield, AlertCircle, MapPin } from "lucide-react";
 
-const ProfileImageSkeleton = () => (
-  <div className="relative w-32 h-32 mx-auto mb-4">
-    <Skeleton className="w-full h-full rounded-full" />
-    <div className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full">
-      <Edit2 className="w-4 h-4" />
-    </div>
-  </div>
-);
+const ProfilePageSkeleton = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-background/80 p-6">
+      <div className="relative w-full h-[300px] lg:h-[400px] bg-muted animate-pulse rounded-lg" />
 
-const ProfileInfoSkeleton = () => (
-  <div className="space-y-4 w-full">
-    <Skeleton className="w-48 h-6 mx-auto" />
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <Mail className="w-4 h-4 text-muted-foreground" />
-        <Skeleton className="w-40 h-4" />
-      </div>
-      <div className="flex items-center gap-2">
-        <Phone className="w-4 h-4 text-muted-foreground" />
-        <Skeleton className="w-32 h-4" />
-      </div>
-      <div className="flex items-center gap-2 text-primary">
-        <Shield className="w-4 h-4" />
-        <Skeleton className="w-20 h-4" />
-      </div>
-      <div className="flex items-center gap-2 text-destructive">
-        <AlertCircle className="w-4 h-4" />
-        <Skeleton className="w-24 h-4" />
-      </div>
-    </div>
-    <Skeleton className="w-full h-10" />
-  </div>
-);
+      <div className="container max-w-7xl mx-auto px-4 -mt-20">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col items-center lg:items-start">
+            <Skeleton className="w-32 h-32 rounded-full border-4 border-background" />
+          </div>
 
-const ReportCardSkeleton = () => (
-  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <Skeleton className="w-64 h-6 mb-4" />
-    <div className="flex items-center gap-4 mb-4">
-      <div className="flex items-center gap-2">
-        <MapPin className="w-4 h-4 text-muted-foreground" />
-        <Skeleton className="w-32 h-4" />
-      </div>
-      <Skeleton className="w-20 h-4 bg-gray-100 rounded-full" />
-    </div>
-    <div className="flex gap-4 mb-6">
-      <Skeleton className="w-32 h-32 rounded-lg" />
-      <Skeleton className="w-32 h-32 rounded-lg" />
-    </div>
-    <Skeleton className="w-full h-20 mb-6" />
-    <div className="flex items-center gap-6">
-      <Skeleton className="w-20 h-6 bg-green-50 rounded-full" />
-      <Skeleton className="w-20 h-6 bg-blue-50 rounded-full" />
-      <Skeleton className="w-20 h-6 bg-gray-50 rounded-full" />
-    </div>
-  </div>
-);
+          <div className="flex-1 space-y-4">
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-6 w-1/3" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
 
-const ReportsSkeleton = () => (
-  <div className="grid w-full gap-6">
-    {[...Array(3)].map((_, index) => (
-      <ReportCardSkeleton key={index} />
-    ))}
-  </div>
-);
+        <div className="mt-8">
+          <Skeleton className="h-12 w-full rounded-lg" />
+        </div>
 
-const ProfilePageSkeleton = () => (
-  <div className=" mx-auto px-4 py-8">
-    <div className="flex flex-col lg:flex-row gap-8">
-      <div className="lg:w-1/2 space-y-6">
-        <div className="bg-white max-w-md w-full rounded-xl shadow-sm p-6">
-          <ProfileImageSkeleton />
-          <ProfileInfoSkeleton />
+        <div className="mt-8 space-y-4">
+          <Skeleton className="h-10 w-full rounded-lg" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Skeleton className="h-32 w-full rounded-lg" />
+            <Skeleton className="h-32 w-full rounded-lg" />
+          </div>
         </div>
       </div>
-      <ReportsSkeleton />
     </div>
-  </div>
-);
+  );
+};
 
 export default ProfilePageSkeleton;

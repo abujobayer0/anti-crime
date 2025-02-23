@@ -12,6 +12,7 @@ export const useProfile = () => {
         contact: profileData.contact,
         bio: profileData.bio,
         profileImage: profileData.profileImage,
+        coverImage: profileData.coverImage,
       });
       return data;
     },

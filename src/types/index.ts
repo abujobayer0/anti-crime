@@ -7,6 +7,7 @@ export interface User {
   isVerified: boolean;
   profileImage?: string;
   bio?: string;
+  coverImage?: string;
 }
 
 export interface Report {

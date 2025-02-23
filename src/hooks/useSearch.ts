@@ -3,13 +3,18 @@ import { useDebounce } from "./useDebounce";
 import apiClient from "@/api/client";
 import { ENDPOINTS } from "@/api/config";
 
+function sanitizeQuery(query: string) {
+  return encodeURIComponent(query.trim().replace(/[<>%$\/]/g, ""));
+}
+
 export function useSearch(query: string) {
   const [results, setResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const debouncedQuery = useDebounce(query, 300);
+  const sanitizedQuery = sanitizeQuery(debouncedQuery);
 
   useEffect(() => {
-    if (debouncedQuery.trim() === "") {
+    if (sanitizedQuery === "") {
       setResults([]);
       return;
     }
@@ -20,7 +25,7 @@ export function useSearch(query: string) {
       setIsLoading(true);
       try {
         const response = await apiClient.get(
-          `${ENDPOINTS.search.search}?searchTerm=${debouncedQuery}`
+          `${ENDPOINTS.search.search}?searchTerm=${sanitizedQuery}`
         );
 
         if (isMounted) {
@@ -30,10 +35,9 @@ export function useSearch(query: string) {
         console.error("Search error:", error);
         if (isMounted) {
           setResults([]);
-          setIsLoading(false);
         }
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
 
@@ -42,7 +46,7 @@ export function useSearch(query: string) {
     return () => {
       isMounted = false;
     };
-  }, [debouncedQuery]);
+  }, [sanitizedQuery]);
 
   return { results, isLoading };
 }

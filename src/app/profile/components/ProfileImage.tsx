@@ -27,7 +27,7 @@ export const ProfileImage = ({
         className={`${sizeClasses[size]} relative rounded-full overflow-hidden border-4 border-background shadow-xl`}
       >
         <Image
-          src={profileImage || "/default-avatar.png"}
+          src={profileImage || "/anticrime-logo.png"}
           alt="Profile"
           layout="fill"
           className="object-cover"

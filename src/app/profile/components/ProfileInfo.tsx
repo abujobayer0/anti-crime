@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 interface ProfileInfoProps {
   profileData: any;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 export const ProfileInfo = ({ profileData, onEdit }: ProfileInfoProps) => {
@@ -12,12 +12,14 @@ export const ProfileInfo = ({ profileData, onEdit }: ProfileInfoProps) => {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold">{profileData.name}</h2>
-          <button
-            onClick={onEdit}
-            className="text-sm px-4 py-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
-          >
-            Edit Profile
-          </button>
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className="text-sm px-4 py-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+            >
+              Edit Profile
+            </button>
+          )}
         </div>
         <p className="text-muted-foreground">{profileData.bio}</p>
       </div>
@@ -29,7 +31,7 @@ export const ProfileInfo = ({ profileData, onEdit }: ProfileInfoProps) => {
         </div>
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">Phone</p>
-          <p className="font-medium">{profileData.phone || "Not provided"}</p>
+          <p className="font-medium">{profileData.contact || "Not provided"}</p>
         </div>
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">Role</p>

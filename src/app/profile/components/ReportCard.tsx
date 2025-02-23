@@ -17,10 +17,12 @@ import { GlobalPopover } from "@/components/global/global-popover";
 const ReportCard = ({
   report,
   onUpdate,
+  isPreview,
 }: {
   report: any;
   onDelete?: (id: string) => void;
   onUpdate?: (data: { id: string; data: any }) => void;
+  isPreview?: boolean;
 }) => {
   return (
     <div
@@ -49,69 +51,63 @@ const ReportCard = ({
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <GlobalPopover
-              align="end"
-              action={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-gray-100 rounded-full h-9 w-9"
-                >
-                  <EllipsisVertical className="h-5 w-5 text-gray-600" />
-                </Button>
-              }
-              content={
-                <>
-                  {/* {onUpdate && (
-                    <Button
-                      variant="ghost"
-                      className="flex w-full justify-start text-sm gap-2 hover:bg-muted-foreground/10"
-                    >
-                      <Edit2 size={16} /> Edit Report
-                    </Button>
-                  )} */}
-                  {onUpdate &&
-                    (report.isDeleted ? (
-                      <Button
-                        onClick={() =>
-                          onUpdate({
-                            id: report._id,
-                            data: { isDeleted: false },
-                          })
-                        }
-                        variant="ghost"
-                        className="flex w-full justify-start text-sm gap-2  hover:bg-muted-foreground/10"
-                      >
-                        <RotateCcw size={16} /> Undo Archive
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() =>
-                          onUpdate({
-                            id: report._id,
-                            data: { isDeleted: true },
-                          })
-                        }
-                        variant="ghost"
-                        className="flex w-full justify-start text-sm gap-2 hover:bg-muted-foreground/10"
-                      >
-                        <Archive size={16} /> Archive Report
-                      </Button>
-                    ))}
-                </>
-              }
-            />
-            {report.isDeleted ? (
-              <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">
-                Deleted
-              </span>
-            ) : (
-              <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs">
-                Active
-              </span>
-            )}
-          </div>
+          {!isPreview && (
+            <div className="flex items-center gap-2">
+              <GlobalPopover
+                align="end"
+                action={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hover:bg-gray-100 rounded-full h-9 w-9"
+                  >
+                    <EllipsisVertical className="h-5 w-5 text-gray-600" />
+                  </Button>
+                }
+                content={
+                  <>
+                    {onUpdate &&
+                      (report.isDeleted ? (
+                        <Button
+                          onClick={() =>
+                            onUpdate({
+                              id: report._id,
+                              data: { isDeleted: false },
+                            })
+                          }
+                          variant="ghost"
+                          className="flex w-full justify-start text-sm gap-2  hover:bg-muted-foreground/10"
+                        >
+                          <RotateCcw size={16} /> Undo Archive
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() =>
+                            onUpdate({
+                              id: report._id,
+                              data: { isDeleted: true },
+                            })
+                          }
+                          variant="ghost"
+                          className="flex w-full justify-start text-sm gap-2 hover:bg-muted-foreground/10"
+                        >
+                          <Archive size={16} /> Archive Report
+                        </Button>
+                      ))}
+                  </>
+                }
+              />
+              {report.isDeleted ? (
+                <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs">
+                  Deleted
+                </span>
+              ) : (
+                <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs">
+                  Active
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex gap-4 mb-6">
@@ -157,7 +153,7 @@ const ReportCard = ({
           )}
         </div>
 
-        <div className="mb-6 text-gray-700">
+        <div className="mb-6 text-gray-700 line-clamp-6">
           <DescriptionWithHashtags text={report.description} />
         </div>
 

@@ -15,7 +15,8 @@ import { ProfileInfo } from "./ProfileInfo";
 import { VerificationSection } from "./VerificationSection";
 import Image from "next/image";
 import ReportCard from "./ReportCard";
-
+import ProfilePageSkeleton from "./profile-page-skeleton";
+import EmptyState from "./EmptyState";
 const ProfilePage = () => {
   const { data: userData, isPending, isLoading } = useUser();
   const { updateProfile } = useProfile();
@@ -31,7 +32,7 @@ const ProfilePage = () => {
     phone: "",
     bio: "I am a concerned citizen helping to make our community safer.",
     profileImage: "/anticrime-logo.png",
-    coverImage: "/default-cover.jpg",
+    coverImage: "/anticrime-logo.png",
     isVerified: false,
     role: "",
     reports: [],
@@ -52,7 +53,7 @@ const ProfilePage = () => {
         phone: userData.contact || "",
         isVerified: userData.isVerified,
         profileImage: userData.profileImage || "",
-        coverImage: userData.coverImage || "/anticrime-logo.png",
+        coverImage: userData.coverImage || "",
         bio: userData.bio || "",
         reports: reports?.data || [],
         role: userData.role || "",
@@ -71,6 +72,7 @@ const ProfilePage = () => {
         bio: profileData.bio,
         profileImage: profileData.profileImage,
         id: profileData._id,
+        coverImage: profileData.coverImage,
       },
       {
         onSuccess: () => {
@@ -109,11 +111,12 @@ const ProfilePage = () => {
     // verifyOTP.mutate({ phone: userData?.phone, otp });
   };
 
+  if (reportsLoading || isLoading) return <ProfilePageSkeleton />;
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
       <div className="relative w-full h-[300px] lg:h-[400px]">
         <Image
-          src={profileData.coverImage || ""}
+          src={profileData.coverImage}
           alt="Cover"
           fill
           className="object-cover"
@@ -122,7 +125,7 @@ const ProfilePage = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-background" />
 
         {isEditing && (
-          <div className="absolute bottom-4 right-4">
+          <div className="absolute bottom-40 right-4 z-50">
             <label className="cursor-pointer">
               <input
                 type="file"
@@ -131,7 +134,7 @@ const ProfilePage = () => {
                 onChange={handleCoverUpload}
                 disabled={coverUploading}
               />
-              <div className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full transition-all">
+              <div className="bg-black/10 hover:bg-black/20 backdrop-blur-md text-white px-4 py-2 rounded-full transition-all">
                 {coverUploading ? (
                   "Uploading..."
                 ) : (
@@ -191,7 +194,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Verification Section */}
         {!isEditing && !profileData.isVerified && (
           <div className="mb-8">
             <VerificationSection
@@ -210,7 +212,6 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {/* Reports Section */}
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card/50 backdrop-blur-xl p-6 rounded-2xl border border-border/10">
             <div className="space-y-1">
@@ -299,26 +300,5 @@ const ProfilePage = () => {
     </div>
   );
 };
-
-// New EmptyState component
-const EmptyState = ({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) => (
-  <div className="w-full backdrop-blur-xl rounded-3xl p-12 text-center border border-border/10 bg-gradient-to-b from-card/50 to-card/30">
-    <div className="mx-auto space-y-6">
-      <div className="text-primary mx-auto opacity-60 w-fit">{icon}</div>
-      <h4 className="text-2xl font-bold text-muted-foreground">{title}</h4>
-      <p className="text-muted-foreground/80 text-lg max-w-md mx-auto">
-        {description}
-      </p>
-    </div>
-  </div>
-);
 
 export default ProfilePage;
