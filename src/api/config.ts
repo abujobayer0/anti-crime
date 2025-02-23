@@ -32,6 +32,8 @@ export const ENDPOINTS = {
   },
   comments: {
     create: (reportId: string) => `/comments/${reportId}/comment`,
+    update: (id: string) => `/comments/${id}/update`,
+    delete: (id: string) => `/comments/${id}/delete`,
   },
   users: {
     getUser: "/users/get-me",

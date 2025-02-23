@@ -44,11 +44,6 @@ const ReportCard = ({
                   {report.district}, {report.division}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="inline-block px-2 py-1 bg-gray-100 rounded-full text-xs">
-                  ID: {report._id}
-                </span>
-              </div>
             </div>
           </div>
           {!isPreview && (

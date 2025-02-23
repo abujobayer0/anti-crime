@@ -259,6 +259,7 @@ const ProfilePage = () => {
                         key={report._id}
                         report={report}
                         onUpdate={updateReport.mutate}
+                        isPreview={false}
                       />
                     ))
                 ) : (
@@ -281,7 +282,12 @@ const ProfilePage = () => {
                   profileData.reports
                     .filter((report: Report) => report.isDeleted)
                     .map((report: Report) => (
-                      <ReportCard key={report._id} report={report} />
+                      <ReportCard
+                        key={report._id}
+                        onUpdate={updateReport.mutate}
+                        report={report}
+                        isPreview={false}
+                      />
                     ))
                 ) : (
                   <div className="col-span-full">

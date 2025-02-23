@@ -241,10 +241,44 @@ export const useReports = () => {
     },
   });
 
+  const updateComment = useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<CommentData>;
+    }) => {
+      const response = await client.patch(ENDPOINTS.comments.update(id), {
+        comment: data.description,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reports"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user-reports"],
+      });
+    },
+  });
+
+  const deleteComment = useMutation({
+    mutationFn: async (id: string) => {
+      await client.delete(ENDPOINTS.comments.delete(id));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["reports"] });
+      queryClient.invalidateQueries({ queryKey: ["user-reports"] });
+    },
+  });
   return {
     getReports,
     getRecentReports,
     useReport,
+    updateComment,
+    deleteComment,
     createReport,
     getUserReports,
     updateReport,

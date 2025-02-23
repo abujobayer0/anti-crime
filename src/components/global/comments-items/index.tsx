@@ -1,14 +1,14 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useReports } from "@/hooks";
-import { uploadFileToImageBB } from "@/lib/utils";
 import { formatTimeAgo } from "@/lib/report";
-import { EllipsisVertical, ImagePlus, X } from "lucide-react";
+import { EllipsisVertical, ImagePlus, Trash2, X, Edit2 } from "lucide-react";
 import Image from "next/legacy/image";
 import { useState } from "react";
 import Link from "next/link";
 import { User } from "@/types";
+import { GlobalPopover } from "../global-popover";
+import useComment from "@/hooks/useComment";
 const CommentItem = ({
   comment,
   level = 0,
@@ -22,7 +22,14 @@ const CommentItem = ({
   const [newReply, setNewReply] = useState<string>("");
   const [replyImages, setReplyImages] = useState<File[]>([]);
   const [isReplyUploading, setIsReplyUploading] = useState<boolean>(false);
-  const { addComment } = useReports();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedComment, setEditedComment] = useState(comment.comment);
+
+  const {
+    handleDeleteComment,
+    handleEditSubmit,
+    handleReplySubmit: handleReplySubmitFn,
+  } = useComment();
 
   const handleReplyFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -37,24 +44,13 @@ const CommentItem = ({
   const handleReplySubmit = async () => {
     if (!newReply && replyImages.length === 0) return;
     setIsReplyUploading(true);
-
     try {
-      const uploadedImageUrls = await Promise.all(
-        replyImages.map(async (image) => {
-          const imageUrl = await uploadFileToImageBB(image);
-          return imageUrl;
-        })
+      await handleReplySubmitFn(
+        replyImages,
+        newReply,
+        comment.reportId,
+        comment._id
       );
-
-      await addComment.mutateAsync({
-        reportId: comment.reportId,
-        comment: {
-          description: newReply,
-          proofImage: uploadedImageUrls,
-          replyTo: comment._id,
-        },
-      });
-
       setReplyingTo(null);
       setNewReply("");
       setReplyImages([]);
@@ -98,17 +94,75 @@ const CommentItem = ({
                 {comment.userId?.name}
               </p>
             </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 -mr-2 hover:bg-gray-100"
-            >
-              <EllipsisVertical className="h-4 w-4" />
-            </Button>
+            {comment.userId?._id === sessionUser?._id && (
+              <GlobalPopover
+                align="end"
+                action={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 -mr-2 hover:bg-gray-100"
+                  >
+                    <EllipsisVertical className="h-4 w-4" />
+                  </Button>
+                }
+                content={
+                  <>
+                    <Button
+                      variant="ghost"
+                      className="flex w-full justify-start text-sm gap-2"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      <Edit2 size={16} /> Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="flex w-full justify-start text-sm gap-2"
+                      onClick={async () =>
+                        await handleDeleteComment(comment._id)
+                      }
+                    >
+                      <Trash2 size={16} /> Delete
+                    </Button>
+                  </>
+                }
+              />
+            )}
           </div>
-          <p className="text-sm leading-relaxed break-words">
-            {comment.comment}
-          </p>
+          {isEditing ? (
+            <div className="space-y-3">
+              <Textarea
+                value={editedComment}
+                onChange={(e) => setEditedComment(e.target.value)}
+                className="text-sm min-h-[60px] bg-white border-gray-200 focus:border-primary/30 focus:ring-primary/20"
+              />
+              <div className="flex gap-2 justify-end">
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    await handleEditSubmit(comment._id, editedComment);
+                    setIsEditing(false);
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditedComment(comment.comment);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm leading-relaxed break-words">
+              {comment.comment}
+            </p>
+          )}
           {comment.proofImage && comment.proofImage.length > 0 && (
             <div className="grid grid-cols-2 gap-2 pt-2">
               {comment.proofImage.map((image: string, index: number) => (
