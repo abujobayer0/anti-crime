@@ -46,13 +46,3 @@ export interface Comment {
   createdAt: string;
   updatedAt: string;
 }
-
-export interface Notification {
-  id: string;
-  type: "alert" | "update" | "warning";
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  avatar?: string;
-}

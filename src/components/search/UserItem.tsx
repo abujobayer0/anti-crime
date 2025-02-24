@@ -1,12 +1,14 @@
 import { CommandItem } from "../ui/command";
 import { FollowButton } from "../ui/follow-button";
-import { Report } from "@/types";
+import { Report, User } from "@/types";
 const UserItem = ({
   item,
   onSelect,
+  session,
 }: {
   item: any;
   onSelect: (item: Report) => void;
+  session: User;
 }) => {
   return (
     <CommandItem
@@ -23,7 +25,12 @@ const UserItem = ({
         <h1 className="font-medium">{item.name}</h1>
         <p className="text-sm text-muted-foreground">{item.email}</p>
       </div>
-      <FollowButton isFollowing={item.isFollowing} className="h-8 px-3" />
+      {item._id === session._id && (
+        <p className="text-sm text-muted-foreground">You</p>
+      )}
+      {item._id !== session._id && (
+        <FollowButton isFollowing={item.isFollowing} className="h-8 px-3" />
+      )}
     </CommandItem>
   );
 };

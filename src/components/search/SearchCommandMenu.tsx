@@ -6,7 +6,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
-import { Report } from "@/types";
+import { Report, User } from "@/types";
 import QuickActions from "./QuickActions";
 import UserItem from "./UserItem";
 import ReportItem from "./ReportItem";
@@ -17,6 +17,7 @@ interface SearchCommandMenuProps {
   onOpenChange: (open: boolean) => void;
   onSelect: (item: Report) => void;
   query: string;
+  session: User;
   setQuery: (query: string) => void;
 }
 
@@ -25,6 +26,7 @@ export function SearchCommandMenu({
   onOpenChange,
   onSelect,
   query,
+  session,
   setQuery,
 }: SearchCommandMenuProps) {
   const { results, isLoading } = useSearch(query);
@@ -49,6 +51,7 @@ export function SearchCommandMenu({
                 />
               ) : result.type === "user" ? (
                 <UserItem
+                  session={session}
                   key={result.data._id}
                   item={result.data}
                   onSelect={onSelect}

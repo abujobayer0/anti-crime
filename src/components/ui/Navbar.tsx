@@ -287,6 +287,7 @@ const Navbar = () => {
         query={query}
         setQuery={setQuery}
         onOpenChange={setOpenSearch}
+        session={user}
         onSelect={(item) => {
           setOpenSearch(false);
           if (item.type === "report") {

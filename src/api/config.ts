@@ -30,6 +30,12 @@ export const ENDPOINTS = {
     downvote: (id: string) => `/reports/${id}/downvote`,
     recentReports: "/reports/recent-reports",
   },
+  notifications: {
+    list: "/notifications",
+    read: (id: string) => `/notifications/read/${id}`,
+    markAllAsRead: "/notifications/mark-all-read",
+    remove: (id: string) => `/notifications/${id}`,
+  },
   comments: {
     create: (reportId: string) => `/comments/${reportId}/comment`,
     update: (id: string) => `/comments/${id}/update`,

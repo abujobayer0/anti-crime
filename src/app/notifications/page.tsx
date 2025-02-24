@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, Shield, AlertTriangle, MoreHorizontal } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -11,76 +11,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-
-interface Notification {
-  id: string;
-  type: "alert" | "update" | "warning";
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  avatar?: string;
-}
+import { useNotifications } from "@/hooks/api/useNotifications";
+import { formatDate } from "date-fns";
+import { getNotificationIcon } from "@/hooks/useNotificatoins";
+import { Notification } from "@/types/notification.types";
+import NotificationItem from "./components/NotificationItem";
 
 const NotificationsPage = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "alert",
-      title: "New Crime Report",
-      message: "A new crime has been reported in Gulshan-1.",
-      timestamp: new Date("2024-03-20T10:30:00"),
-      isRead: false,
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: "2",
-      type: "update",
-      title: "Evidence Added",
-      message: "New evidence has been added to your crime report #CR-2024-001.",
-      timestamp: new Date("2024-03-19T15:45:00"),
-      isRead: true,
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: "3",
-      type: "warning",
-      title: "Security Alert",
-      message: "Multiple incidents reported in Dhanmondi area.",
-      timestamp: new Date("2024-03-19T09:15:00"),
-      isRead: false,
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const {
+    getNotifications,
+    markAllAsRead,
+    markNotificationAsRead,
+    removeNotification,
+  } = useNotifications();
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "alert":
-        return <Bell className="w-5 h-5 text-blue-500" />;
-      case "update":
-        return <Shield className="w-5 h-5 text-green-500" />;
-      case "warning":
-        return <AlertTriangle className="w-5 h-5 text-orange-500" />;
-      default:
-        return <Bell className="w-5 h-5 text-blue-500" />;
+  const { data, isLoading } = getNotifications;
+
+  useEffect(() => {
+    if (data) {
+      setNotifications(data.data);
     }
-  };
+  }, [data]);
 
   const markAsRead = (id: string) => {
+    markNotificationAsRead.mutateAsync(id);
     setNotifications((prev) =>
       prev.map((notif) =>
-        notif.id === id ? { ...notif, isRead: true } : notif
+        notif._id === id ? { ...notif, isRead: true } : notif
       )
     );
   };
 
-  const formatTimestamp = (date: Date) => {
-    return new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
-      Math.ceil(
-        (date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-      ),
-      "day"
-    );
+  const handleRemoveNotification = (id: string) => {
+    removeNotification.mutateAsync(id);
   };
 
   return (
@@ -90,68 +54,25 @@ const NotificationsPage = () => {
           <h1 className="text-2xl font-bold">Notifications</h1>
           <Button
             variant="ghost"
-            onClick={() =>
+            onClick={() => {
+              markAllAsRead.mutateAsync();
               setNotifications((prev) =>
                 prev.map((n) => ({ ...n, isRead: true }))
-              )
-            }
+              );
+            }}
           >
             Mark all as read
           </Button>
         </div>
 
         <div className="divide-y dark:divide-gray-700">
-          {notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                !notification.isRead ? "bg-blue-50 dark:bg-blue-900/20" : ""
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <Avatar className="w-10 h-10">
-                  <Image
-                    src={notification.avatar || "/anticrime-logo.png"}
-                    alt="avater"
-                    width={40}
-                    height={40}
-                  />
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {notification.title}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                    {notification.message}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {getNotificationIcon(notification.type)}
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      {formatTimestamp(notification.timestamp)}
-                    </span>
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">More options</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => markAsRead(notification.id)}
-                    >
-                      Mark as read
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      Remove this notification
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          ))}
+          {!isLoading &&
+            notifications?.map((notification) => (
+              <NotificationItem
+                key={notification._id}
+                notification={notification}
+              />
+            ))}
 
           {notifications.length === 0 && (
             <div className="text-center py-12">
