@@ -1,12 +1,29 @@
 <div align="center">
-  <h1>🛡️ **Anti-Crime Platform**</h1>
-  <p class="text-lg text-gray-600">A community-driven crime reporting and tracking platform</p>
+  <img src="public/anticrime-logo.png" alt="Anti-Crime Logo" width="200" height="200" />
+  
+  # Anti-Crime Platform
+  
+  <p>
+    <strong>A community-driven crime reporting and tracking platform powered by AI</strong>
+  </p>
+  
+  <p>
+    <a href="#-features">Features</a> •
+    <a href="#%EF%B8%8F-tech-stack">Tech Stack</a> •
+    <a href="#-getting-started">Quick Start</a> •
+    <a href="#-contributing">Contributing</a>
+  </p>
 
-  <p class="text-xl mt-4">
-    <a href="#features" class="text-blue-600 hover:text-blue-800">Features</a> •
-    <a href="#tech-stack" class="text-blue-600 hover:text-blue-800">Tech Stack</a> •
-    <a href="#getting-started" class="text-blue-600 hover:text-blue-800">Getting Started</a> •
-    <a href="#environment-variables" class="text-blue-600 hover:text-blue-800">Environment Setup</a> •
+  <p>
+    <a href="https://github.com/abujobayer0/anti-crime/stargazers">
+      <img src="https://img.shields.io/github/stars/abujobayer0/anti-crime?style=for-the-badge" alt="GitHub Stars" />
+    </a>
+    <a href="https://github.com/abujobayer0/anti-crime/network/members">
+      <img src="https://img.shields.io/github/forks/abujobayer0/anti-crime?style=for-the-badge" alt="GitHub Forks" />
+    </a>
+    <a href="https://github.com/abujobayer0/anti-crime/issues">
+      <img src="https://img.shields.io/github/issues/abujobayer0/anti-crime?style=for-the-badge" alt="GitHub Issues" />
+    </a>
   </p>
 </div>
 
@@ -15,6 +32,28 @@
 **Anti-Crime** is a modern, AI-powered web platform designed to empower communities to report, track, and visualize criminal activities. With real-time insights and AI-driven analysis, the platform transforms crime data into actionable information, helping users make their neighborhoods safer.
 
 ## ✨ **Features**
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="public/assets/ai.png" width="64" height="64" alt="AI"><br>
+        <strong>AI-Powered Reports</strong><br>
+        Generate detailed reports using AI
+      </td>
+      <td align="center">
+        <img src="public/assets/heatmap.png" width="64" height="64" alt="Heatmap"><br>
+        <strong>Crime Heatmap</strong><br>
+        Visualize crime hotspots
+      </td>
+      <td align="center">
+        <img src="public/assets/realtime.png" width="64" height="64" alt="Real-time"><br>
+        <strong>Real-Time Updates</strong><br>
+        Stay informed instantly
+      </td>
+    </tr>
+  </table>
+</div>
 
 - **AI-Powered Report Generation**: Harnessing the power of Google's **Gemini AI**, automatically generate detailed crime reports from uploaded images.
 - **Interactive Crime Heatmap**: Visualize crime hotspots and track patterns in your area.
@@ -26,6 +65,17 @@
 - **Mobile Optimized**: Fully responsive for a seamless experience on any device.
 
 ## 🛠️ **Tech Stack**
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="https://nextjs.org/favicon.ico" width="32" height="32"><br>Next.js</td>
+      <td align="center"><img src="https://www.typescriptlang.org/favicon-32x32.png" width="32" height="32"><br>TypeScript</td>
+      <td align="center"><img src="https://tailwindcss.com/favicon-32x32.png" width="32" height="32"><br>Tailwind</td>
+      <td align="center"><img src="https://ui.shadcn.com/favicon.ico" width="32" height="32"><br>shadcn/ui</td>
+    </tr>
+  </table>
+</div>
 
 - **Framework**: [Next.js 15.1.7 (App Router)](https://nextjs.org/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
@@ -97,6 +147,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 <div align="center">
-  Developed by ❤️ <a href="https://github.com/abujobayer0">Abu Talha Md Jobayer</a>
+  <p>
+    <sub>Built with ❤️ by <a href="https://github.com/abujobayer0">Abu Talha Md Jobayer</a></sub>
+  </p>
+  
+  <p>
+    <a href="https://github.com/abujobayer0">
+      <img src="https://img.shields.io/badge/Follow_@abujobayer0-000000?style=for-the-badge&logo=github&logoColor=white" alt="Follow" />
+    </a>
+  </p>
 </div>
 ```
