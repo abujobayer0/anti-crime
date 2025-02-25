@@ -37,17 +37,17 @@
   <table>
     <tr>
       <td align="center">
-        <img src="public/assets/ai.png" width="64" height="64" alt="AI"><br>
+        <img src="public/ai-report-generate.png" width="64" height="64" alt="AI"><br>
         <strong>AI-Powered Reports</strong><br>
         Generate detailed reports using AI
       </td>
       <td align="center">
-        <img src="public/assets/heatmap.png" width="64" height="64" alt="Heatmap"><br>
+        <img src="public/heatmap.png" width="64" height="64" alt="Heatmap"><br>
         <strong>Crime Heatmap</strong><br>
         Visualize crime hotspots
       </td>
       <td align="center">
-        <img src="public/assets/realtime.png" width="64" height="64" alt="Real-time"><br>
+        <img src="public/realtime-update.png" width="64" height="64" alt="Real-time"><br>
         <strong>Real-Time Updates</strong><br>
         Stay informed instantly
       </td>
@@ -71,7 +71,7 @@
     <tr>
       <td align="center"><img src="https://nextjs.org/favicon.ico" width="32" height="32"><br>Next.js</td>
       <td align="center"><img src="https://www.typescriptlang.org/favicon-32x32.png" width="32" height="32"><br>TypeScript</td>
-      <td align="center"><img src="https://tailwindcss.com/favicon-32x32.png" width="32" height="32"><br>Tailwind</td>
+      <td align="center"><img src="https://tailwindcss.com/_next/static/media/tailwindcss-mark.d52e9897.svg" width="32" height="32"><br>Tailwind</td>
       <td align="center"><img src="https://ui.shadcn.com/favicon.ico" width="32" height="32"><br>shadcn/ui</td>
     </tr>
   </table>
