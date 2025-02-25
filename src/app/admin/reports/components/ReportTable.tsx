@@ -58,7 +58,7 @@ const ReportTable = ({ searchQuery }: { searchQuery: string }) => {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {filteredReports?.map((report: any) => (
         <Card
           key={report._id}
@@ -98,18 +98,14 @@ const ReportTable = ({ searchQuery }: { searchQuery: string }) => {
               </span>
             </div>
           </CardContent>
-          <CardFooter className="p-6 pt-4 flex justify-between items-center border-t border-gray-200">
-            <Badge
-              className={`px-3 py-1 rounded-full text-white ${getStatusColor(
-                report.status
-              )}`}
-            >
-              {report.status}
-            </Badge>
-            <div className="flex items-center gap-2">
+          <CardFooter className="p-4 pt-4 flex justify-between items-center border-t border-gray-200">
+            <p className="text-sm text-gray-500">
+              Author:{" "}
               <span className="text-sm text-gray-500">
                 {report.userId.email}
               </span>
+            </p>
+            <div className="flex items-center gap-2">
               <Button
                 variant="destructive"
                 size="sm"

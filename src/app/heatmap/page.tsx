@@ -221,79 +221,75 @@ const HeatmapPage = () => {
   };
 
   return (
-    <div className="space-y-6 p-5">
-      <Card className="p-6 relative bg-white">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Crime Heatmap
-              </h2>
-              <p className="text-muted-foreground">
-                Visualize crime density across different areas of Bangladesh
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="outline" className="gap-2">
-                <AlertTriangle className="w-4 h-4" />
-                <span>High Risk Areas</span>
-              </Button>
-              <Button variant="outline" className="gap-2">
-                <Info className="w-4 h-4" />
-                <span>Legend</span>
-              </Button>
-            </div>
+    <div className="space-y-6 px-4 py-6">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="p-4">
+            <h2 className="text-2xl font-bold text-gray-900">Crime Heatmap</h2>
+            <p className="text-muted-foreground">
+              Visualize crime density across different areas of Bangladesh
+            </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center relative z-40 gap-2 bg-muted/30 px-3 py-2 rounded-lg">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-              <SelectComponent
-                selectValue="Select Division"
-                value={selectedDivision}
-                onValueChange={handleDivisionChange}
-                content={
-                  <>
-                    <SelectItem value="all">All Divisions</SelectItem>
-                    {divisions.map((div) => (
-                      <SelectItem
-                        key={div.division}
-                        value={div.division.toLowerCase()}
-                      >
-                        {div.division}
-                      </SelectItem>
-                    ))}
-                  </>
-                }
-              />
-            </div>
-
-            <div className="flex items-center relative z-40 gap-2 bg-muted/30 px-3 py-2 rounded-lg">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-              <SelectComponent
-                selectValue="Select District"
-                value={selectedDistrict}
-                onValueChange={handleDistrictChange}
-                disabled={!selectedDivision || selectedDivision === "all"}
-                content={
-                  <>
-                    <SelectItem value="all">All Districts</SelectItem>
-                    {districts.map((dist) => (
-                      <SelectItem
-                        key={dist.district}
-                        value={dist.district.toLowerCase()}
-                      >
-                        {dist.district}
-                      </SelectItem>
-                    ))}
-                  </>
-                }
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              <span>High Risk Areas</span>
+            </Button>
+            <Button variant="outline" className="gap-2">
+              <Info className="w-4 h-4" />
+              <span>Legend</span>
+            </Button>
           </div>
         </div>
-      </Card>
+
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center relative z-40 gap-2 bg-muted/30 px-3 py-2 rounded-lg">
+            <MapPin className="w-4 h-4 text-muted-foreground" />
+            <SelectComponent
+              selectValue="Select Division"
+              value={selectedDivision}
+              onValueChange={handleDivisionChange}
+              content={
+                <>
+                  <SelectItem value="all">All Divisions</SelectItem>
+                  {divisions.map((div) => (
+                    <SelectItem
+                      key={div.division}
+                      value={div.division.toLowerCase()}
+                    >
+                      {div.division}
+                    </SelectItem>
+                  ))}
+                </>
+              }
+            />
+          </div>
+
+          <div className="flex items-center relative z-40 gap-2 bg-muted/30 px-3 py-2 rounded-lg">
+            <MapPin className="w-4 h-4 text-muted-foreground" />
+            <SelectComponent
+              selectValue="Select District"
+              value={selectedDistrict}
+              onValueChange={handleDistrictChange}
+              disabled={!selectedDivision || selectedDivision === "all"}
+              content={
+                <>
+                  <SelectItem value="all">All Districts</SelectItem>
+                  {districts.map((dist) => (
+                    <SelectItem
+                      key={dist.district}
+                      value={dist.district.toLowerCase()}
+                    >
+                      {dist.district}
+                    </SelectItem>
+                  ))}
+                </>
+              }
+            />
+          </div>
+        </div>
+      </div>
 
       <Card className="relative overflow-hidden rounded-xl shadow-sm border border-border/40">
         <div className="absolute top-4 right-4 z-[1000] space-x-2">

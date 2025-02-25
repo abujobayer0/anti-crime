@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+  poweredByHeader: false,
+  compress: true,
   images: {
     domains: [
       "st4.depositphotos.com",

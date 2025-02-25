@@ -22,17 +22,20 @@ export const generateReport = async (
   images: string[],
   division: string,
   district: string,
-  language: "EN" | "BN"
+  language: "EN" | "BN",
+  customPrompt?: string
 ) => {
   const data = await generateDescription(
     images,
-    `write a description for crime report platform post describing the given images or image.
-    Division: ${division}
-    District: ${district}
+    `${
+      customPrompt
+        ? customPrompt
+        : `write a description for crime report platform post describing the given images or image. Division: ${division} District: ${district}`
+    }
     give me a json format {title:<title based on the description> description:<description based on the image>} ${
       language === "BN" ? "in bangla" : ""
     }
-    give me clean json not any extra text give me only one json`
+      give me clean json not any extra text give me only one json`
   ).catch((err) => {
     handleAPIError(err);
   });

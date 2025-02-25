@@ -56,6 +56,8 @@ export const CommentsSectionView = ({
                 alt="Current user"
                 width={32}
                 height={32}
+                layout="fill"
+                objectFit="cover"
                 className="rounded-full"
               />
             </Avatar>
