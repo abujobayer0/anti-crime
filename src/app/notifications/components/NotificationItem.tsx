@@ -25,7 +25,7 @@ const NotificationItem = ({ notification }: { notification: Notification }) => {
       <div className="flex items-start gap-3">
         <Avatar className="w-10 h-10">
           <Image
-            src={"/anticrime-logo.png"}
+            src={notification.sender.profileImage || "/anticrime-logo.png"}
             alt="avater"
             width={40}
             height={40}

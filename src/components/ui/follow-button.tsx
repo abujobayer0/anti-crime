@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPlus2, UserMinus2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FollowButtonProps {
   isFollowing?: boolean;
-  onFollow?: () => Promise<void>;
-  onUnfollow?: () => Promise<void>;
+  onFollow?: () => void;
+  onUnfollow?: () => void;
   className?: string;
 }
 
@@ -19,7 +19,11 @@ export function FollowButton({
   className,
 }: FollowButtonProps) {
   const [isPending, setIsPending] = useState(false);
-  const [following, setFollowing] = useState(isFollowing);
+  const [following, setFollowing] = useState(false);
+
+  useEffect(() => {
+    setFollowing(isFollowing);
+  }, [isFollowing]);
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -27,10 +31,11 @@ export function FollowButton({
     try {
       setIsPending(true);
       if (following) {
-        await onUnfollow?.();
+        onUnfollow?.();
       } else {
-        await onFollow?.();
+        onFollow?.();
       }
+
       setFollowing(!following);
     } catch (error) {
       console.error("Failed to update follow status:", error);

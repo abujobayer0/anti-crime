@@ -36,6 +36,13 @@ export const ENDPOINTS = {
     markAllAsRead: "/notifications/mark-all-read",
     remove: (id: string) => `/notifications/${id}`,
   },
+  followers: {
+    list: "/followers",
+    follow: (userId: string) => `/followers/follow/${userId}`,
+    unfollow: (userId: string) => `/followers/unfollow/${userId}`,
+    checkFollowStatus: (userId: string) =>
+      `/followers/check-follow-status/${userId}`,
+  },
   comments: {
     create: (reportId: string) => `/comments/${reportId}/comment`,
     update: (id: string) => `/comments/${id}/update`,

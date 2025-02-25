@@ -7,7 +7,10 @@ export type NotificationType =
 
 export interface Notification {
   recipient: string;
-  sender: string;
+  sender: {
+    profileImage: string;
+    username: string;
+  };
   type: NotificationType;
   title: string;
   isDeleted: boolean;

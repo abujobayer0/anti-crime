@@ -1,30 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, MoreHorizontal } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { useNotifications } from "@/hooks/api/useNotifications";
-import { formatDate } from "date-fns";
-import { getNotificationIcon } from "@/hooks/useNotificatoins";
-import { Notification } from "@/types/notification.types";
 import NotificationItem from "./components/NotificationItem";
+import { useNotifications } from "@/hooks/api/useNotifications";
+import { Notification } from "@/types/notification.types";
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const {
-    getNotifications,
-    markAllAsRead,
-    markNotificationAsRead,
-    removeNotification,
-  } = useNotifications();
+  const { getNotifications, markAllAsRead } = useNotifications();
 
   const { data, isLoading } = getNotifications;
 
@@ -33,19 +18,6 @@ const NotificationsPage = () => {
       setNotifications(data.data);
     }
   }, [data]);
-
-  const markAsRead = (id: string) => {
-    markNotificationAsRead.mutateAsync(id);
-    setNotifications((prev) =>
-      prev.map((notif) =>
-        notif._id === id ? { ...notif, isRead: true } : notif
-      )
-    );
-  };
-
-  const handleRemoveNotification = (id: string) => {
-    removeNotification.mutateAsync(id);
-  };
 
   return (
     <div className=" mx-auto px-4 py-6">

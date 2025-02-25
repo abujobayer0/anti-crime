@@ -11,16 +11,22 @@ import ReportCard from "@/app/profile/components/ReportCard";
 import ProfilePageSkeleton from "../../components/profile-page-skeleton";
 import { FollowButton } from "@/components/ui/follow-button";
 import EmptyState from "../../components/EmptyState";
-
+interface PreviewPageProps {
+  user: User;
+  reports: { data: Report[] };
+  loading: boolean;
+  followStatus: { data: { isFollowing: boolean } };
+  follow: () => void;
+  unfollow: () => void;
+}
 const PreviewPage = ({
   user,
   reports,
   loading,
-}: {
-  user: User;
-  reports: { data: Report[] };
-  loading: boolean;
-}) => {
+  followStatus,
+  follow,
+  unfollow,
+}: PreviewPageProps) => {
   if (loading) return <ProfilePageSkeleton />;
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
@@ -66,9 +72,9 @@ const PreviewPage = ({
             <div className="flex items-center justify-between">
               <ProfileInfo profileData={user} />
               <FollowButton
-                isFollowing={false}
-                onFollow={async () => {}}
-                onUnfollow={async () => {}}
+                isFollowing={followStatus?.data.isFollowing}
+                onFollow={follow}
+                onUnfollow={unfollow}
               />
             </div>
           </div>
