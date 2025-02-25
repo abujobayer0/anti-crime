@@ -13,7 +13,7 @@ import {
 
 import { baseApi } from "./api/baseApi";
 import authReducer from "./features/auth/authSlice";
-
+import notificationReducer from "./features/notification/notificationSlice";
 // Fallback storage if localStorage is not available
 const createNoopStorage = () => ({
   getItem() {
@@ -40,6 +40,7 @@ export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     [baseApi.reducerPath]: baseApi.reducer,
+    notifications: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -22,7 +22,6 @@ export const useNotifications = () => {
       return data;
     },
     onSuccess: () => {
-      handleSuccess("Notification marked as read");
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
     onError: (error) => {

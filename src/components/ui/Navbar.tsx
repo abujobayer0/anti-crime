@@ -121,8 +121,8 @@ const Navbar = () => {
                     <Image
                       src={user?.profileImage || "/anticrime-logo.png"}
                       alt={user?.name || "User"}
-                      width={32}
-                      height={32}
+                      layout="fill"
+                      objectFit="cover"
                       className="rounded-full"
                     />
                   </Avatar>
@@ -225,8 +225,8 @@ const Navbar = () => {
                   <Image
                     src={user?.profileImage || "/placeholder-avatar.png"}
                     alt={user?.name || "User"}
-                    width={40}
-                    height={40}
+                    layout="fill"
+                    objectFit="cover"
                     className="rounded-full"
                   />
                 </Avatar>

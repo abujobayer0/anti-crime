@@ -9,16 +9,16 @@ import {
 export const getNotificationIcon = (type: string) => {
   switch (type) {
     case "upvote":
-      return <ThumbsUp className="w-5 h-5 text-green-500" />;
+      return <ThumbsUp className="w-4 h-4 text-green-500" />;
     case "downvote":
-      return <ThumbsDown className="w-5 h-5 text-red-500" />;
+      return <ThumbsDown className="w-4 h-4 text-red-500" />;
     case "comment":
-      return <MessageCircle className="w-5 h-5 text-blue-500" />;
+      return <MessageCircle className="w-4 h-4 text-blue-500" />;
     case "reply":
-      return <MessageCircle className="w-5 h-5 text-blue-500" />;
+      return <MessageCircle className="w-4 h-4 text-blue-500" />;
     case "follow":
-      return <UserPlus className="w-5 h-5 text-orange-500" />;
+      return <UserPlus className="w-4 h-4 text-orange-500" />;
     default:
-      return <Bell className="w-5 h-5 text-blue-500" />;
+      return <Bell className="w-4 h-4 text-blue-500" />;
   }
 };

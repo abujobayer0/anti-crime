@@ -1,3 +1,6 @@
+import { User } from "@/components/global/crime-report-card/types";
+import { Report } from "@/hooks";
+
 export type NotificationType =
   | "upvote"
   | "downvote"
@@ -7,16 +10,13 @@ export type NotificationType =
 
 export interface Notification {
   recipient: string;
-  sender: {
-    profileImage: string;
-    username: string;
-  };
+  sender: User;
   type: NotificationType;
   title: string;
   isDeleted: boolean;
   message: string;
-  relatedReport?: string;
-  relatedComment?: string;
+  relatedReport?: Report;
+  relatedComment?: Comment;
   isRead: boolean;
   createdAt: Date;
   _id: string;

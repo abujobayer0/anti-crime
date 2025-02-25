@@ -12,12 +12,15 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
-
 import Link from "next/link";
-
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/hooks/api/useUser";
+import { useSelector } from "react-redux";
+import { useUnreadNotificationCount } from "@/hooks/api/useUnreadNotification";
+import { RootState } from "@/redux/store";
+import Image from "next/image";
+import { Avatar } from "@/components/ui/avatar";
 
 const mainNavigation = [
   {
@@ -43,26 +46,30 @@ const quickActions = [
   },
 ];
 
-const communitySection = [
-  {
-    title: "Notifications",
-    url: "/notifications",
-    icon: Bell,
-    description: "View alerts and updates",
-    badge: "3",
-  },
-  {
-    title: "My Profile",
-    url: "/profile",
-    icon: User,
-    description: "Manage your account settings",
-  },
-];
-
 export function AppSidebar() {
   const pathname = usePathname();
   const { data: user } = useUser();
+  useUnreadNotificationCount();
 
+  const unreadCount = useSelector(
+    (state: RootState) => state.notifications.unreadCount
+  );
+
+  const communitySection = [
+    {
+      title: "Notifications",
+      url: "/notifications",
+      icon: Bell,
+      description: "View alerts and updates",
+      badge: unreadCount,
+    },
+    {
+      title: "My Profile",
+      url: "/profile",
+      icon: User,
+      description: "Manage your account settings",
+    },
+  ];
   return (
     <Sidebar className="backdrop-blur-xl bg-white/50 border-r border-border/40">
       <SidebarContent className="flex flex-col h-full pt-4 gap-6">
@@ -159,7 +166,15 @@ export function AppSidebar() {
             <SidebarGroup>
               <div className="flex items-center gap-3 px-3 py-2">
                 <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-5 h-5 text-primary" />
+                  <Avatar className="w-9 h-9">
+                    <Image
+                      src={user.profileImage}
+                      alt={user.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-full"
+                    />
+                  </Avatar>
                 </div>
                 <div className="hidden md:block min-w-0">
                   <p className="text-sm font-medium truncate">{user.name}</p>

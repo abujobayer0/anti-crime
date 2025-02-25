@@ -13,8 +13,23 @@ import { MoreHorizontal } from "lucide-react";
 import { formatDate } from "date-fns";
 import { getNotificationIcon } from "@/hooks/useNotificatoins";
 import { useNotifications } from "@/hooks/api/useNotifications";
+import Link from "next/link";
 const NotificationItem = ({ notification }: { notification: Notification }) => {
   const { markNotificationAsRead, removeNotification } = useNotifications();
+
+  const href =
+    notification.type === "comment"
+      ? `/reports/${notification.relatedReport?._id}`
+      : notification.type === "reply"
+      ? `/reports/${notification.relatedReport?._id}`
+      : notification.type === "upvote"
+      ? `/reports/${notification.relatedReport?._id}`
+      : notification.type === "downvote"
+      ? `/reports/${notification.relatedReport?._id}`
+      : notification.type === "follow"
+      ? `/profile/${notification.sender?._id}`
+      : "";
+
   return (
     <div
       key={notification._id}
@@ -27,14 +42,19 @@ const NotificationItem = ({ notification }: { notification: Notification }) => {
           <Image
             src={notification.sender.profileImage || "/anticrime-logo.png"}
             alt="avater"
-            width={40}
-            height={40}
+            layout="fill"
+            objectFit="cover"
           />
         </Avatar>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {notification.title}
-          </p>
+          <Link
+            href={href}
+            onClick={() => markNotificationAsRead.mutate(notification._id)}
+          >
+            <p className="text-sm hover:underline font-medium text-gray-900 dark:text-gray-100">
+              {notification.title}
+            </p>
+          </Link>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {notification.message}
           </p>
