@@ -1,11 +1,11 @@
-import CrimeReportCard from "../../../../components/global/crime-report-card";
+import CrimeReportCard from "@/components/global/crime-report-card";
 import type {
   CrimeReport,
   User,
-} from "../../../../components/global/crime-report-card/types";
-import CrimeReportCardSkeleton from "../../../../components/global/skeletons/report-skeleton";
+} from "@/components/global/crime-report-card/types";
+import CrimeReportCardSkeleton from "@/components/global/skeletons/report-skeleton";
 
-interface ViewProps {
+export interface ViewProps {
   reports: CrimeReport[];
   isLoading: boolean;
   user: User;
