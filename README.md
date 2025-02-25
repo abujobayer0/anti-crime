@@ -147,14 +147,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 <div align="center">
-  <p>
-    <sub>Built with ❤️ by <a href="https://github.com/abujobayer0">Abu Talha Md Jobayer</a></sub>
-  </p>
-  
-  <p>
-    <a href="https://github.com/abujobayer0">
-      <img src="https://img.shields.io/badge/Follow_@abujobayer0-000000?style=for-the-badge&logo=github&logoColor=white" alt="Follow" />
-    </a>
-  </p>
+
+## 👨‍💻 Author
+
+**Abu Talha Md Jobayer**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/abujobayer0)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/abutalhamdjobayer/)
+
+<p align="center">⭐ Star this repository if you find it helpful!</p>
+
 </div>
-```
