@@ -3,10 +3,11 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-
   const isPublicPath = ["/auth/login", "/auth/registration"].includes(path);
+  const isProtectedPath = path.startsWith("/admin");
 
   const token = request.cookies.get("accessToken")?.value || null;
+  const role = request.cookies.get("role")?.value || null;
 
   if (isPublicPath && token) {
     return NextResponse.redirect(new URL("/", request.url));
@@ -14,6 +15,10 @@ export function middleware(request: NextRequest) {
 
   if (!isPublicPath && !token) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+
+  if (isProtectedPath && role !== "admin") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
@@ -29,5 +34,7 @@ export const config = {
     "/reports/:path*",
     "/profile",
     "/profile/:path*",
+    "/settings",
+    "/admin/:path*",
   ],
 };

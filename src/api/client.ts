@@ -24,6 +24,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       Cookies.remove("accessToken");
+      Cookies.remove("role");
       window.location.href = "/auth/login";
     }
     return Promise.reject(error);

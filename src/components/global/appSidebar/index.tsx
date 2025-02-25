@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Home, Map, User, Shield } from "lucide-react";
+import { Bell, Home, Map, User, Shield, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -54,7 +54,7 @@ export function AppSidebar() {
   const unreadCount = useSelector(
     (state: RootState) => state.notifications.unreadCount
   );
-
+  const isAdmin = user?.role === "admin";
   const communitySection = [
     {
       title: "Notifications",
@@ -67,9 +67,25 @@ export function AppSidebar() {
       title: "My Profile",
       url: "/profile",
       icon: User,
+      description: "View your profile",
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: Settings,
       description: "Manage your account settings",
     },
   ];
+
+  const adminSection = [
+    {
+      title: "Admin",
+      url: "/admin",
+      description: "Manage your admin settings",
+      icon: Shield,
+    },
+  ];
+
   return (
     <Sidebar className="backdrop-blur-xl bg-white/50 border-r border-border/40">
       <SidebarContent className="flex flex-col h-full pt-4 gap-6">
@@ -148,7 +164,7 @@ export function AppSidebar() {
                       <span className="font-medium hidden md:inline-block">
                         {item.title}
                       </span>
-                      {item.badge && (
+                      {item.badge && item.badge !== 0 && (
                         <span className="ml-auto bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">
                           {item.badge}
                         </span>
@@ -160,7 +176,34 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroup>
         </SidebarGroupContent>
-
+        {isAdmin && (
+          <SidebarGroupContent className="px-4">
+            <SidebarGroup>
+              <SidebarGroupLabel>Admin</SidebarGroupLabel>
+              <SidebarMenu className="space-y-1">
+                {adminSection.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild tooltip={item.description}>
+                      <Link
+                        href={item.url}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
+                          pathname === item.url
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                        }`}
+                      >
+                        <item.icon className="w-5 h-5 shrink-0" />
+                        <span className="font-medium hidden md:inline-block">
+                          {item.title}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroup>
+          </SidebarGroupContent>
+        )}
         {user && (
           <SidebarGroupContent className="mt-auto px-4 pb-4 border-t border-border/40 pt-4">
             <SidebarGroup>

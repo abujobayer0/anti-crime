@@ -30,6 +30,8 @@ import { useAuth } from "@/hooks";
 import { useUser } from "@/hooks/api/useUser";
 
 import { SearchCommandMenu } from "@/components/search/SearchCommandMenu";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +41,9 @@ const Navbar = () => {
   const router = useRouter();
   const { logout } = useAuth();
   const { data: user } = useUser();
-
+  const unreadCount = useSelector(
+    (state: RootState) => state.notifications.unreadCount
+  );
   // Add keyboard shortcut for search
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -109,7 +113,9 @@ const Navbar = () => {
               className="relative hover:bg-primary/5"
             >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+              {unreadCount !== 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+              )}
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

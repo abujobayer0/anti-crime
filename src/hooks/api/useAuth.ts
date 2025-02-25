@@ -44,6 +44,7 @@ export const useAuth = () => {
 
       dispatch(setCredentials(userData));
       Cookies.set("accessToken", data.data.accessToken, { expires: 7 });
+      Cookies.set("role", userData.user.role, { expires: 7 });
       queryClient.setQueryData(["user"], data.data.result);
       router.push("/");
       toast.success("Login successful");
@@ -75,6 +76,7 @@ export const useAuth = () => {
 
       dispatch(setCredentials(userData));
       Cookies.set("accessToken", data.data.accessToken, { expires: 7 });
+      Cookies.set("role", userData.user.role, { expires: 7 });
       queryClient.setQueryData(["user"], data.data.result);
       router.push("/");
       toast.success("Registration successful");
@@ -87,6 +89,7 @@ export const useAuth = () => {
   const logout = useMutation({
     mutationFn: async () => {
       Cookies.remove("accessToken");
+      Cookies.remove("role");
       return null;
     },
     onSuccess: () => {
