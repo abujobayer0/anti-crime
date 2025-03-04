@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Ban, CheckCircle } from "lucide-react";
 import {
   Table,
@@ -13,89 +13,68 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+
 interface User {
-  id: number;
+  _id: string;
   name: string;
   email: string;
-  status: "Active" | "Banned";
-  reports: number;
+  isBanned: boolean;
+  isVerified: boolean;
   role: "admin" | "user";
+  profileImage: string;
+  bio: string;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+  __v: number;
 }
 
-const initialUsers: User[] = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    status: "Active",
-    reports: 10,
-    role: "admin",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    status: "Active",
-    reports: 5,
-    role: "user",
-  },
-  {
-    id: 3,
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    status: "Banned",
-    reports: 2,
-    role: "user",
-  },
-  {
-    id: 4,
-    name: "Alice Brown",
-    email: "alice@example.com",
-    status: "Active",
-    reports: 1,
-    role: "user",
-  },
-  {
-    id: 5,
-    name: "Charlie Davis",
-    email: "charlie@example.com",
-    status: "Active",
-    reports: 3,
-    role: "user",
-  },
-];
+const UserList = ({
+  searchQuery,
+  users,
+  updateUserStatus,
+}: {
+  searchQuery: string;
+  users: User[];
+  updateUserStatus: (userId: string, user: { isBanned: boolean }) => void;
+}) => {
+  const [usersList, setUsersList] = useState<User[]>(users);
 
-const UserList = ({ searchQuery }: { searchQuery: string }) => {
-  const [users, setUsers] = useState<User[]>(initialUsers);
   const { toast } = useToast();
 
-  const filteredUsers = users.filter(
+  const filteredUsers = usersList?.filter(
     (user) =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleUserStatus = (userId: number) => {
-    setUsers(
+  const toggleUserStatus = (userId: string) => {
+    setUsersList(
       users.map((user) =>
-        user.id === userId
-          ? { ...user, status: user.status === "Active" ? "Banned" : "Active" }
+        user._id === userId
+          ? {
+              ...user,
+              isBanned: !user.isBanned,
+            }
           : user
       )
     );
 
-    const updatedUser = users.find((user) => user.id === userId);
+    const updatedUser = users.find((user) => user._id === userId);
     if (updatedUser) {
+      updateUserStatus(userId, { isBanned: !updatedUser.isBanned });
       toast({
-        title: `User ${
-          updatedUser.status === "Active" ? "Banned" : "Unbanned"
-        }`,
+        title: `User ${!updatedUser.isBanned ? "Banned" : "Unbanned"}`,
         description: `${updatedUser.name} has been ${
-          updatedUser.status === "Active" ? "banned" : "unbanned"
+          !updatedUser.isBanned ? "banned" : "unbanned"
         }.`,
       });
     }
   };
+
+  useEffect(() => {
+    setUsersList(users);
+  }, [users]);
 
   return (
     <Table>
@@ -110,11 +89,11 @@ const UserList = ({ searchQuery }: { searchQuery: string }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {filteredUsers.map((user) => (
-          <TableRow key={user.id}>
+        {filteredUsers?.map((user) => (
+          <TableRow key={user._id}>
             <TableCell>{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
-            <TableCell>{user.reports}</TableCell>
+            <TableCell>{user.isVerified ? "Verified" : "Unverified"}</TableCell>
             <TableCell>
               {user.role === "admin" ? (
                 <Badge variant="default">Admin</Badge>
@@ -122,14 +101,14 @@ const UserList = ({ searchQuery }: { searchQuery: string }) => {
                 <Badge variant="secondary">User</Badge>
               )}
             </TableCell>
-            <TableCell>{user.status}</TableCell>
+            <TableCell>{user.isBanned ? "Banned" : "Active"}</TableCell>
             <TableCell>
               <Button
-                variant={user.status === "Active" ? "destructive" : "default"}
-                onClick={() => toggleUserStatus(user.id)}
+                variant={!user.isBanned ? "destructive" : "default"}
+                onClick={() => toggleUserStatus(user._id)}
                 className="w-28"
               >
-                {user.status === "Active" ? (
+                {!user.isBanned ? (
                   <>
                     <Ban className="mr-2 h-4 w-4" /> Ban
                   </>

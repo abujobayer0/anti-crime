@@ -5,9 +5,19 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import AdminStats from "./AdminStats";
 import UserList from "./UserList";
+import { getBannedUsers, useUpdateUser } from "@/hooks/api/useUser";
 
 export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: bannedUsers } = getBannedUsers();
+  const { mutate: updateUserMutation } = useUpdateUser();
+
+  const updateUserStatus = async (
+    userId: string,
+    userData: { isBanned: boolean }
+  ) => {
+    updateUserMutation({ userId, user: userData });
+  };
 
   return (
     <main className="flex-1 overflow-y-auto p-8">
@@ -24,7 +34,11 @@ export default function AdminDashboard() {
           />
         </div>
       </div>
-      <UserList searchQuery={searchQuery} />
+      <UserList
+        users={bannedUsers}
+        searchQuery={searchQuery}
+        updateUserStatus={updateUserStatus}
+      />
     </main>
   );
 }

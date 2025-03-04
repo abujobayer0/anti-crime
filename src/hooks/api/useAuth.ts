@@ -90,6 +90,7 @@ export const useAuth = () => {
     mutationFn: async () => {
       Cookies.remove("accessToken");
       Cookies.remove("role");
+      Cookies.remove("isBanned");
       return null;
     },
     onSuccess: () => {

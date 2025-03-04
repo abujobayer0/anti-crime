@@ -8,11 +8,14 @@ export function middleware(request: NextRequest) {
 
   const token = request.cookies.get("accessToken")?.value || null;
   const role = request.cookies.get("role")?.value || null;
+  const isBanned = request.cookies.get("isBanned")?.value || null;
 
   if (isPublicPath && token) {
     return NextResponse.redirect(new URL("/", request.url));
   }
-
+  if (isBanned) {
+    return NextResponse.redirect(new URL("/banned", request.url));
+  }
   if (!isPublicPath && !token) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
@@ -29,6 +32,7 @@ export const config = {
     "/",
     "/auth/login",
     "/auth/registration",
+    "/banned",
     "/notifications",
     "/heatmap",
     "/reports/:path*",

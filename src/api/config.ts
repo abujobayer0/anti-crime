@@ -50,6 +50,9 @@ export const ENDPOINTS = {
   },
   users: {
     getUser: "/users/get-me",
+    getAllUsers: "/users",
+    getBannedUsers: "/users/get-banned-users",
+    updateUser: (userId: string) => `/users/${userId}`,
     getUserProfile: (userId: string) => `/users/${userId}`,
   },
   search: {

@@ -2,12 +2,15 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  contact?: string;
-  role: "user" | "admin";
+  isBanned: boolean;
   isVerified: boolean;
-  profileImage?: string;
-  bio?: string;
-  coverImage?: string;
+  role: "admin" | "user";
+  profileImage: string;
+  bio: string;
+  createdAt: string;
+  updatedAt: string;
+  isDeleted: boolean;
+  __v: number;
 }
 
 export interface Report {

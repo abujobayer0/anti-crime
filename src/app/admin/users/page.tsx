@@ -1,15 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import UserTable from "./components/UsersTable";
-import PaginationComponent from "./components/Pagination";
+import { User } from "@/types";
+import { getAllUsers, useUpdateUser } from "@/hooks/api/useUser";
+
 const UsersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const totalPages = 10;
+  const [users, setUsers] = useState<User[]>([]);
+  const { data: usersData } = getAllUsers();
+  const { mutate: updateUserStatus } = useUpdateUser();
+
+  const handleUpdateUserStatus = (
+    userId: string,
+    user: { isBanned: boolean }
+  ) => {
+    updateUserStatus({ userId, user });
+  };
+
+  useEffect(() => {
+    if (usersData) {
+      setUsers(usersData);
+    }
+  }, [usersData]);
 
   return (
     <main className="flex-1 overflow-y-auto p-8">
@@ -27,18 +42,10 @@ const UsersPage = () => {
       </div>
       <UserTable
         searchQuery={searchQuery}
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        onPageChange={setCurrentPage}
-        onItemsPerPageChange={setItemsPerPage}
+        setUsers={setUsers}
+        users={users}
+        handleUpdateUserStatus={handleUpdateUserStatus}
       />
-      <div className="mt-4 flex items-center w-full justify-between">
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          setCurrentPage={setCurrentPage}
-        />
-      </div>
     </main>
   );
 };
