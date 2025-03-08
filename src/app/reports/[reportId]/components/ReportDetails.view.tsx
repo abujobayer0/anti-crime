@@ -40,6 +40,7 @@ export const ReportDetailsView = ({ report, user }: ViewProps) => {
                   src={report?.userId?.profileImage || "/anticrime-logo.png"}
                   alt="User"
                   width={48}
+                  objectFit="cover"
                   height={48}
                   className="rounded-full hover:opacity-80 ring-2 ring-primary/10"
                 />

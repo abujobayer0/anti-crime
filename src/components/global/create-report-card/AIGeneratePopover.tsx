@@ -69,8 +69,15 @@ const AIGeneratePopover = () => {
               <Sparkles className="h-4 w-4 text-primary animate-pulse" />
               AI Report Generation
             </h3>
+            <label htmlFor="autoMode" className="text-xs">
+              auto
+            </label>
             <Switch
+              id="autoMode"
+              className="relative cursor-pointer"
+              name="autoMode"
               checked={isAutoMode}
+              title="auto mode"
               onCheckedChange={setIsAutoMode}
               disabled={isSubmitting}
             />

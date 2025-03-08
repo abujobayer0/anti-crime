@@ -43,6 +43,16 @@ export const useReports = () => {
     },
     refetchInterval: 1000 * 30,
   });
+  const getAlgorithmicReports = useQuery({
+    queryKey: ["algorithmic-reports"],
+    queryFn: async () => {
+      const { data } = await client.get(
+        ENDPOINTS.reports.getAlgorithmicReports
+      );
+      return data;
+    },
+    refetchInterval: 1000 * 30,
+  });
 
   const getRecentReports = useQuery({
     queryKey: ["recent-reports"],
@@ -287,6 +297,7 @@ export const useReports = () => {
     addEvidence,
     addComment,
     getProfileReports,
+    getAlgorithmicReports,
     generateAiDescription,
   };
 };

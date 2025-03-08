@@ -34,6 +34,8 @@ export interface CrimeReport {
   userId: User;
   comments: Comment[];
   __v?: number;
+  algorithmScore?: number;
+  crimeType?: string;
 }
 
 export interface Props {

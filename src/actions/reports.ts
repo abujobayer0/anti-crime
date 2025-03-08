@@ -24,6 +24,10 @@ export const getAllReports = ErrorHandler<[], Report[]>(async () => {
   return data;
 });
 
+export const getAlgorithmicReports = async () => {
+  const { data } = await client.get(ENDPOINTS.reports.getAlgorithmicReports);
+  return data;
+};
 export const getRecentReports = ErrorHandler<[], Report[]>(async () => {
   const { data } = await client.get<Report[]>(ENDPOINTS.reports.recentReports);
   return data;

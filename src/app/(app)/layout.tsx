@@ -11,23 +11,25 @@ export default function RootLayout({
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="flex flex-col lg:flex-row pt-16">
+      <div className="flex relative pt-16">
         <div className="hidden lg:block w-64 shrink-0">
           <SidebarProvider>
             <AppSidebar />
           </SidebarProvider>
         </div>
 
-        <main className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0">
           <div className="container mx-auto p-4 lg:p-6">{children}</div>
-        </main>
+        </div>
 
-        <aside className="hidden xl:block w-80 shrink-0 border-l border-gray-200 min-h-[calc(100vh-4rem)] sticky top-16">
-          <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Recent Reports</h2>
-            <RecentReportsLayout />
-          </div>
-        </aside>
+        <div className="relative w-80 hidden xl:block shrink-0">
+          <aside className="sticky top-16 border-l border-gray-200 h-[calc(100vh-4rem)]">
+            <div className="p-4 h-full overflow-y-auto">
+              <h2 className="text-xl font-semibold mb-4">Recent Reports</h2>
+              <RecentReportsLayout />
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );

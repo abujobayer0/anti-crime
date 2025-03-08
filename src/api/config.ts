@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   },
   reports: {
     list: "/reports",
+    getAlgorithmicReports: "/reports/algorithmic-reports",
     getUserReports: "/reports/user-reports",
     getProfileReports: (userId: string) => `/reports/profile-reports/${userId}`,
     detail: (id: string) => `/reports/${id}`,

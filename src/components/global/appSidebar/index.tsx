@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Home, Map, User, Shield, Settings } from "lucide-react";
+import { Bell, Home, Map, User, Shield, Settings, Flame } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -32,6 +32,12 @@ const mainNavigation = [
     title: "Crime Map",
     url: "/heatmap",
     icon: Map,
+    description: "",
+  },
+  {
+    title: "Most Discussed",
+    url: "/hot/reports",
+    icon: Flame,
     description: "",
   },
 ];

@@ -194,7 +194,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {!isEditing && !profileData.isVerified && (
+        {/* {!isEditing && !profileData.isVerified && (
           <div className="mb-8">
             <VerificationSection
               isVerifying={isVerifying}
@@ -210,7 +210,7 @@ const ProfilePage = () => {
               }}
             />
           </div>
-        )}
+        )} */}
 
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card/50 backdrop-blur-xl p-6 rounded-2xl border border-border/10">

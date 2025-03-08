@@ -31,7 +31,9 @@ export const ProfileInfo = ({ profileData, onEdit }: ProfileInfoProps) => {
         </div>
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">Phone</p>
-          <p className="font-medium">{profileData.contact || "Not provided"}</p>
+          <p className="font-medium">
+            {profileData.phone || profileData.contract || "Not provided"}
+          </p>
         </div>
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground">Role</p>
