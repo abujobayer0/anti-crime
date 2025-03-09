@@ -16,6 +16,9 @@ export const ENDPOINTS = {
   auth: {
     login: "/auth/login",
     register: "/auth/register",
+    reset: "/auth/reset-link",
+    forgetPassword: "/auth/forgot-password",
+    changePassword: "/auth/change-password",
   },
   reports: {
     list: "/reports",

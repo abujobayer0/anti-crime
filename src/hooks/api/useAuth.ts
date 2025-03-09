@@ -53,6 +53,47 @@ export const useAuth = () => {
       toast.error(error.response?.data?.message || "Login failed");
     },
   });
+  const reset = useMutation({
+    mutationFn: async (credentials: { email: string }) => {
+      const { data } = await apiClient.post(ENDPOINTS.auth.reset, credentials);
+      return data;
+    },
+
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+
+  const forgotPassword = useMutation({
+    mutationFn: async (credentials: {
+      email: string;
+      newPassword: string;
+      token: string;
+    }) => {
+      const { data } = await apiClient.post(
+        ENDPOINTS.auth.forgetPassword,
+        credentials
+      );
+      return data;
+    },
+
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+
+  const changePassword = useMutation({
+    mutationFn: async (credentials: {
+      currentPassword: string;
+      newPassword: string;
+    }) => {
+      const { data } = await apiClient.post(
+        ENDPOINTS.auth.changePassword,
+        credentials
+      );
+      return data;
+    },
+  });
 
   const register = useMutation({
     mutationFn: async (credentials: RegisterCredentials) => {
@@ -105,5 +146,8 @@ export const useAuth = () => {
     login,
     register,
     logout,
+    reset,
+    changePassword,
+    forgotPassword,
   };
 };

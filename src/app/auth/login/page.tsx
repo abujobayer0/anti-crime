@@ -65,10 +65,10 @@ const LoginPage = () => {
                 Password
               </Label>
               <Link
-                href="/auth/forgot-password"
+                href="/auth/reset"
                 className="text-sm text-primary hover:text-primary/90 transition-colors"
               >
-                Forgot password?
+                Reset password?
               </Link>
             </div>
             <div className="relative">

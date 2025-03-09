@@ -3,7 +3,12 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const isPublicPath = ["/auth/login", "/auth/registration"].includes(path);
+  const isPublicPath = [
+    "/auth/login",
+    "/auth/registration",
+    "/auth/reset",
+    "/auth/forgot-password",
+  ].includes(path);
   const isProtectedPath = path.startsWith("/admin");
 
   const token = request.cookies.get("accessToken")?.value || null;
@@ -32,6 +37,8 @@ export const config = {
     "/",
     "/auth/login",
     "/auth/registration",
+    "/auth/reset",
+    "/auth/forgot-password",
     "/banned",
     "/notifications",
     "/heatmap",
