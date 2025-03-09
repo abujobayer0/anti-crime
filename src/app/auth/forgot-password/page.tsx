@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ interface ForgotPasswordFormInputs {
   token: string;
 }
 
-const ForgotPasswordPage = () => {
+const ForgotPasswordPageContent = () => {
   const searchParams = useSearchParams();
 
   const {
@@ -48,7 +48,6 @@ const ForgotPasswordPage = () => {
 
     if (token) {
       setValue("token", token);
-      // You could add token validation logic here
       validateToken(token);
     } else {
       setTokenValid(false);
@@ -59,16 +58,7 @@ const ForgotPasswordPage = () => {
   }, [searchParams, setValue]);
 
   const validateToken = async (token: string) => {
-    // This would normally validate the token with your backend
     try {
-      // Example validation logic - replace with actual API call
-      // const response = await validateTokenAPI(token);
-      // if (!response.valid) {
-      //   setTokenValid(false);
-      //   setError("This password reset link has expired or is invalid.");
-      // }
-
-      // For demo, we'll assume the token is valid if it exists and looks like JWT
       if (token && token.split(".").length === 3) {
         setTokenValid(true);
       } else {
@@ -301,6 +291,13 @@ const ForgotPasswordPage = () => {
         </>
       }
     />
+  );
+};
+const ForgotPasswordPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ForgotPasswordPageContent />
+    </Suspense>
   );
 };
 
