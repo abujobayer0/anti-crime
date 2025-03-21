@@ -37,7 +37,6 @@ const SearchFilter = ({
   uniqueCrimeTypes,
   resetFilters,
 }: any) => {
-  // Count active filters
   const activeFilterCount = Object.entries(filter).filter(
     ([key, value]) => value && key !== "sortBy" && key !== "searchQuery"
   ).length;
@@ -124,7 +123,7 @@ const SearchFilter = ({
                   <div className="flex flex-col space-y-1.5">
                     <label className="text-sm text-gray-500">Division</label>
                     <Select
-                      value={filter.division}
+                      value={filter.division || " "}
                       onValueChange={(value) =>
                         setFilter({
                           ...filter,
@@ -137,12 +136,9 @@ const SearchFilter = ({
                         <SelectValue placeholder="All Divisions" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Divisions</SelectItem>
+                        <SelectItem value={" "}>All Divisions</SelectItem>
                         {divisions.map((div: any) => (
-                          <SelectItem
-                            key={div.id}
-                            value={div.name.toLowerCase()}
-                          >
+                          <SelectItem key={div.id} value={div}>
                             {div.name.charAt(0).toUpperCase() +
                               div.name.slice(1)}
                           </SelectItem>
@@ -154,24 +150,24 @@ const SearchFilter = ({
                   <div className="flex flex-col space-y-1.5">
                     <label className="text-sm text-gray-500">District</label>
                     <Select
-                      value={filter.district}
+                      value={filter.district || " "}
                       onValueChange={(value) =>
                         setFilter({ ...filter, district: value })
                       }
-                      disabled={!filter.division}
+                      disabled={!filter.division?.name}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="All Districts" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Districts</SelectItem>
+                        <SelectItem value={" "}>All Districts</SelectItem>
                         {districts.map((dist: any) => (
                           <SelectItem
-                            key={dist.district}
-                            value={dist.district.toLowerCase()}
+                            key={dist.id}
+                            value={dist.name.toLowerCase()}
                           >
-                            {dist.district.charAt(0).toUpperCase() +
-                              dist.district.slice(1)}
+                            {dist.name.charAt(0).toUpperCase() +
+                              dist.name.slice(1)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -190,7 +186,7 @@ const SearchFilter = ({
                         <SelectValue placeholder="All Types" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value=" ">All Types</SelectItem>
                         {uniqueCrimeTypes.map((type: any) => (
                           <SelectItem key={type} value={type}>
                             {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -258,10 +254,10 @@ const SearchFilter = ({
               <div className="flex items-center">
                 <MapPin size={16} className="text-gray-500 mr-1" />
                 <p className="text-sm text-gray-700">
-                  {filter.division ? (
+                  {filter.division?.name ? (
                     <span className="font-medium">
-                      {filter.division.charAt(0).toUpperCase() +
-                        filter.division.slice(1)}
+                      {filter.division.name.charAt(0).toUpperCase() +
+                        filter.division.name.slice(1)}
                       {filter.district
                         ? ` › ${
                             filter.district.charAt(0).toUpperCase() +

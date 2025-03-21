@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useReports } from "@/hooks/api/useReports";
-import { fallbackCoordinates } from "@/utils/trending.reports";
+import { processReports } from "@/utils/trending.reports";
 import Error from "./Error";
 import AnalyticsHeader from "./Analytics.Header";
 import SearchFilter from "./Search.Filter";
@@ -10,40 +10,15 @@ import GridLayout from "./Grid.Layout";
 import MapLayout from "./Map.Layout";
 import { CrimeReport } from "@/components/global/crime-report-card/types";
 import Loading from "./Loading";
+import { useLocation } from "@/hooks/useLocation";
 
-interface Report {
-  title?: string;
-  description?: string;
-  division?: string;
-  district?: string;
-  crimeType?: string;
-  postTime?: string;
-  crimeTime?: string;
-  districtCoordinates?: string[];
-  algorithmScore?: number;
-  severity?: number;
-  upvotes?: any[];
-  comments?: any[];
-  location?: {
-    lat: number;
-    lng: number;
-  };
-}
-
-interface Statistics {
-  totalReports: number;
-  crimeTypes: Record<string, number>;
-  recentTrend: number;
-}
-
-interface Filter {
-  division: string;
-  district: string;
-  timeRange: "all" | "week" | "month" | "quarter";
-  sortBy: "algorithmScore" | "recent" | "engagement" | "severity";
-  searchQuery: string;
-  crimeType: string;
-}
+import {
+  Filter,
+  Statistics,
+  Report,
+  ViewType,
+  DEFAULT_FILTER,
+} from "@/types/trending.type";
 
 export default function CrimeReportsViewer() {
   const { getAlgorithmicReports } = useReports();
@@ -53,21 +28,9 @@ export default function CrimeReportsViewer() {
     error,
   } = getAlgorithmicReports || {};
 
-  const [view, setView] = useState<"grid" | "map">("grid");
-  const [filter, setFilter] = useState<Filter>({
-    division: "",
-    district: "",
-    timeRange: "all",
-    sortBy: "algorithmScore",
-    searchQuery: "",
-    crimeType: "",
-  });
-  const [divisions, setDivisions] = useState<{ id: string; name: string }[]>(
-    []
-  );
-  const [districts, setDistricts] = useState<{ id: string; name: string }[]>(
-    []
-  );
+  const [view, setView] = useState<ViewType>("grid");
+  const [filter, setFilter] = useState<Filter>(DEFAULT_FILTER);
+  const { divisions, districts, fetchDistricts } = useLocation();
   const [reportsWithLocation, setReportsWithLocation] = useState<Report[]>([]);
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
@@ -78,95 +41,15 @@ export default function CrimeReportsViewer() {
   });
 
   useEffect(() => {
-    const fetchDivisions = async () => {
-      try {
-        const response = await fetch(
-          "https://bdapi.vercel.app/api/v.1/division"
-        );
-        if (!response.ok) {
-          console.error(`API responded with status: ${response.status}`);
-          return;
-        }
-        const data = await response.json();
-        setDivisions(data.data);
-      } catch (error) {
-        console.error("Error fetching divisions:", error);
-        setTimeout(fetchDivisions, 3000);
-      }
-    };
-
-    fetchDivisions();
-  }, []);
-
-  // Fetch districts when division changes with error handling
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      if (!filter.division) return;
-
-      try {
-        const response = await fetch(
-          `https://bdapi.vercel.app/api/v.1/district/${filter.division}`
-        );
-        if (!response.ok) {
-          console.error(`API responded with status: ${response.status}`);
-          return;
-        }
-        const data = await response.json();
-        setDistricts(data.data);
-      } catch (error) {
-        console.error("Error fetching districts:", error);
-      }
-    };
-
-    fetchDistricts();
+    if (filter.division) {
+      fetchDistricts(filter.division);
+    }
   }, [filter.division]);
 
-  // Process reports to add location data and extract crime types
   useEffect(() => {
     if (!isLoading && reports?.length > 0) {
       const crimeTypes: Record<string, number> = {};
-
-      const processedReports = reports.map((report: CrimeReport) => {
-        if (report.crimeType) {
-          crimeTypes[report.crimeType] =
-            (crimeTypes[report.crimeType] || 0) + 1;
-        }
-
-        // Process coordinates
-        if (report.districtCoordinates && report.districtCoordinates[0]) {
-          const coordinates = report.districtCoordinates[0].split(",");
-          if (coordinates.length >= 2) {
-            return {
-              ...report,
-              location: {
-                lat: parseFloat(coordinates[0]),
-                lng: parseFloat(coordinates[1]),
-              },
-            };
-          }
-        }
-
-        // Use fallback coordinates if no valid ones
-        if (report.district) {
-          const districtKey = report.district.toLowerCase();
-          // Check if the district is a valid key in fallbackCoordinates
-          if (districtKey in fallbackCoordinates) {
-            const fallback =
-              fallbackCoordinates[
-                districtKey as keyof typeof fallbackCoordinates
-              ];
-            return {
-              ...report,
-              location: {
-                lat: fallback.lat,
-                lng: fallback.lng,
-              },
-            };
-          }
-        }
-
-        return report;
-      });
+      const processedReports = processReports(reports);
 
       const now = new Date();
       const last7Days = reports.filter((report: CrimeReport) => {
@@ -212,17 +95,24 @@ export default function CrimeReportsViewer() {
       ),
     ];
   }, [reportsWithLocation]);
-
   const filteredReports = useMemo(() => {
     if (isLoading || !reportsWithLocation.length) return [];
 
     return reportsWithLocation
       .filter((report) => {
-        if (filter.division && report.division !== filter.division)
+        if (
+          filter?.division?.name &&
+          report.division?.toLowerCase() !==
+            filter?.division?.name.toLowerCase()
+        )
           return false;
-        if (filter.district && report.district !== filter.district)
+        if (
+          filter.district &&
+          report?.district?.toLowerCase() !== filter?.district?.toLowerCase()
+        )
           return false;
-        if (filter.crimeType && report.crimeType !== filter.crimeType)
+
+        if (filter.crimeType?.trim() && report.crimeType !== filter.crimeType)
           return false;
 
         if (filter.timeRange !== "all") {
@@ -279,7 +169,7 @@ export default function CrimeReportsViewer() {
 
   const resetFilters = () => {
     setFilter({
-      division: "",
+      division: null,
       district: "",
       timeRange: "all",
       sortBy: "algorithmScore",
