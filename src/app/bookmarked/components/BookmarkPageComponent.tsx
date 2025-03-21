@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Bookmark,
-  AlertTriangle,
-  Clock,
-  MapPin,
-  Flag,
-  Search,
-} from "lucide-react";
-import DevBanner from "@/components/global/settings/DevBanner";
+import { Bookmark, AlertTriangle, Clock, MapPin, Search } from "lucide-react";
 
 const BookmarkPageComponent = () => {
   const bookmarkedReports = [
@@ -98,7 +90,6 @@ const BookmarkPageComponent = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className=" mx-auto px-4 sm:px-4 lg:px-4 py-6">
-        <DevBanner message="This settings page is currently under development. Functionality is not yet implemented." />
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
@@ -116,16 +107,6 @@ const BookmarkPageComponent = () => {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
               />
               <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-            </div>
-            <div className="flex space-x-2">
-              <button className="bg-white border border-gray-300 rounded-lg px-4 py-2 flex items-center text-sm font-medium text-gray-700 hover:bg-gray-50">
-                <Flag className="h-4 w-4 mr-2" />
-                Filter
-              </button>
-              <button className="bg-blue-600 rounded-lg px-4 py-2 flex items-center text-sm font-medium text-white hover:bg-blue-700">
-                <Bookmark className="h-4 w-4 mr-2" />
-                Manage
-              </button>
             </div>
           </div>
         </div>

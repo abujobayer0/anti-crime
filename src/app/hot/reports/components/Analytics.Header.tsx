@@ -1,10 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Statistics } from "@/types/trending.type";
 
-const AnalyticsHeader = ({ statistics }: any) => {
+const AnalyticsHeader = ({ statistics }: { statistics: Statistics }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className="mb-8"
