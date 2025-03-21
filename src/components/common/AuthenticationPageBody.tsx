@@ -54,7 +54,7 @@ const AuthenticationPageBody = ({ title, subtitle, form }: Props) => {
                   Password:
                 </span>
                 <code className="bg-gray-100 px-2 py-1 rounded text-sm">
-                  Admin123
+                  Admin123@
                 </code>
               </div>
             </div>

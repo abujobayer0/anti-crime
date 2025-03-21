@@ -67,7 +67,7 @@ const HeatmapLayer = ({ data }: HeatmapLayerProps) => {
     });
 
     // Create modern gradient with more distinctive colors
-    const heatLayer = (L as any).heatLayer(heatmapPoints, {
+    const heatLayer = (L as any)?.heatLayer(heatmapPoints, {
       radius: 30,
       blur: 20,
       maxZoom: 15,

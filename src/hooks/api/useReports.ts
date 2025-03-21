@@ -96,10 +96,10 @@ export const useReports = () => {
   const createReport = useMutation({
     mutationFn: async (reportData: any) => {
       try {
-        const { data } = await client.post(
-          ENDPOINTS.reports.create,
-          reportData
-        );
+        const { data } = await client.post(ENDPOINTS.reports.create, {
+          ...reportData,
+          division: reportData.division.name,
+        });
         handleSuccess("Report created successfully");
         queryClient.invalidateQueries({ queryKey: ["reports"] });
         queryClient.invalidateQueries({ queryKey: ["recent-reports"] });

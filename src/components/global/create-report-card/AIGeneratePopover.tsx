@@ -90,7 +90,11 @@ const AIGeneratePopover = () => {
                 label: "images uploaded",
                 required: true,
               },
-              { value: formData.division, label: "division", required: true },
+              {
+                value: formData.division.name,
+                label: "division",
+                required: true,
+              },
               { value: formData.district, label: "district", required: true },
               { value: language, label: "language", required: true },
             ].map((item, i) => (

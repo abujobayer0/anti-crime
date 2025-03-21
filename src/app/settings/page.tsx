@@ -57,11 +57,8 @@ export default function UserSettingsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <DevBanner
-        message=" This settings page is currently under development. Functionality is
-            not yet implemented."
-      />
+    <div className="container mx-auto px-4 py-6">
+      <DevBanner message="This settings page is currently under development. Functionality is not yet implemented." />
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
       <Tabs defaultValue="general">
         <TabsList className="mb-4">

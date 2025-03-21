@@ -10,15 +10,16 @@ import { generateReport } from "@/lib/report";
 
 interface ReportData {
   title: string;
-  division: string;
-  district: string;
-  description: string;
+  division: any;
+  district: any;
+  description: any;
   images?: string[];
   crimeTime: Date;
   postTime: Date;
   userId: string;
   divisionCoordinates: string;
   districtCoordinates: string;
+  crimeType: string;
 }
 
 interface ReportFormContextType {
@@ -73,6 +74,7 @@ export const useReportForm = (user: any) => {
       title: "",
       division: "",
       district: "",
+      crimeType: "",
       description: "",
       images: [],
       crimeTime: new Date(),
@@ -107,6 +109,7 @@ export const useReportForm = (user: any) => {
             userId: user?._id,
             divisionCoordinates: "",
             districtCoordinates: "",
+            crimeType: "",
           });
           setImagePreview([]);
           removeImage(0);
@@ -128,7 +131,7 @@ export const useReportForm = (user: any) => {
     if (formData.division && !formData.district) {
       fetchDistricts(formData.division);
     }
-  }, [formData.division, fetchDistricts]);
+  }, [formData.division]);
 
   useEffect(() => {
     if (user?._id && !formData.userId) {
@@ -162,13 +165,15 @@ export const useReportForm = (user: any) => {
       language
     );
     if (data) {
-      const { title, description } = data;
+      const { title, description, crimeType } = data;
       setFormData({
         ...formData,
         title,
         description,
+        crimeType,
       });
     }
+
     setIsSubmitting(false);
   };
 
@@ -185,11 +190,12 @@ export const useReportForm = (user: any) => {
       customPrompt
     );
     if (data) {
-      const { title, description } = data;
+      const { title, description, crimeType } = data;
       setFormData({
         ...formData,
         title,
         description,
+        crimeType,
       });
     }
     setIsSubmitting(false);
@@ -198,7 +204,7 @@ export const useReportForm = (user: any) => {
 
   const handleDivisionChange = (value: string) => {
     const selectedDivision = divisions.find(
-      (div) => div.division.toLowerCase() === value
+      (div) => div?.division?.toLowerCase() === value
     );
     handleChange("division", value);
     handleChange("divisionCoordinates", selectedDivision?.coordinates || "");
@@ -206,12 +212,15 @@ export const useReportForm = (user: any) => {
     handleChange("districtCoordinates", "");
   };
 
-  const handleDistrictChange = (value: string) => {
-    const selectedDistrict = districts.find(
-      (dist) => dist.district.toLowerCase() === value
+  const handleDistrictChange = (value: any) => {
+    const selectedDistrict: any = districts.find(
+      (dist: any) => dist.name.toLowerCase() === value.name.toLowerCase()
     );
-    handleChange("district", value);
-    handleChange("districtCoordinates", selectedDistrict?.coordinates || "");
+    handleChange("district", value.name);
+    handleChange(
+      "districtCoordinates",
+      `${selectedDistrict?.lat},${selectedDistrict?.lon}` || ""
+    );
   };
 
   return {

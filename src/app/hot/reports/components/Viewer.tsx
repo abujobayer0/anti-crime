@@ -77,11 +77,12 @@ export default function CrimeReportsViewer() {
     recentTrend: 0,
   });
 
-  // Fetch divisions data with error handling and retry
   useEffect(() => {
     const fetchDivisions = async () => {
       try {
-        const response = await fetch("https://bdapis.com/api/v1.2/divisions");
+        const response = await fetch(
+          "https://bdapi.vercel.app/api/v.1/division"
+        );
         if (!response.ok) {
           console.error(`API responded with status: ${response.status}`);
           return;
@@ -104,7 +105,7 @@ export default function CrimeReportsViewer() {
 
       try {
         const response = await fetch(
-          `https://bdapis.com/api/v1.2/division/${filter.division}`
+          `https://bdapi.vercel.app/api/v.1/district/${filter.division}`
         );
         if (!response.ok) {
           console.error(`API responded with status: ${response.status}`);

@@ -22,7 +22,7 @@ export const useLocation = () => {
     const fetchDivisions = async () => {
       try {
         const { data } = await axios.get(
-          "https://bdapis.com/api/v1.2/divisions"
+          "https://bdapi.vercel.app/api/v.1/division"
         );
         setDivisions(data.data);
       } catch (error) {
@@ -32,17 +32,22 @@ export const useLocation = () => {
     fetchDivisions();
   }, []);
 
-  const fetchDistricts = async (division: string) => {
+  const fetchDistricts = async (division: any) => {
     if (!division) return;
-
+    const ac = new AbortController();
     try {
       const { data } = await axios.get(
-        `https://bdapis.com/api/v1.2/division/${division}`
+        `https://bdapi.vercel.app/api/v.1/district/${division.id}`,
+        { signal: ac.signal }
       );
+
       setDistricts(data.data);
     } catch (error) {
-      handleAPIError(error);
+      if (!axios.isCancel(error)) {
+        handleAPIError(error);
+      }
     }
+    return () => ac.abort();
   };
 
   return {

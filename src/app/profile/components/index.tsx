@@ -12,7 +12,7 @@ import { Report } from "@/types";
 import { ProfileImage } from "./ProfileImage";
 import { ProfileForm } from "./ProfileForm";
 import { ProfileInfo } from "./ProfileInfo";
-import { VerificationSection } from "./VerificationSection";
+
 import Image from "next/image";
 import ReportCard from "./ReportCard";
 import ProfilePageSkeleton from "./profile-page-skeleton";
@@ -38,10 +38,6 @@ const ProfilePage = () => {
     reports: [],
     _id: "",
   });
-
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
 
   useEffect(() => {
     if (isPending || isLoading) return;
@@ -100,15 +96,6 @@ const ProfilePage = () => {
       setProfileData({ ...profileData, coverImage: url });
       setCoverUploading(false);
     }
-  };
-
-  const handleSendOTP = () => {
-    // sendOTP.mutate(userData?.phone);
-  };
-
-  const handleVerifyOTP = (otp: string) => {
-    console.log(otp);
-    // verifyOTP.mutate({ phone: userData?.phone, otp });
   };
 
   if (reportsLoading || isLoading) return <ProfilePageSkeleton />;
@@ -193,24 +180,6 @@ const ProfilePage = () => {
             )}
           </div>
         </div>
-
-        {/* {!isEditing && !profileData.isVerified && (
-          <div className="mb-8">
-            <VerificationSection
-              isVerifying={isVerifying}
-              otp={otp}
-              otpSent={otpSent}
-              onOtpChange={(value) => setOtp(value)}
-              onVerifyOTP={() => handleVerifyOTP(otp)}
-              onSendOTP={handleSendOTP}
-              onCancel={() => {
-                setIsVerifying(false);
-                setOtpSent(false);
-                setOtp("");
-              }}
-            />
-          </div>
-        )} */}
 
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-card/50 backdrop-blur-xl p-6 rounded-2xl border border-border/10">

@@ -77,10 +77,10 @@ const MapController = ({ coordinates }: { coordinates: [number, number] }) => {
 
 const HeatmapPage = () => {
   const [reports, setReports] = useState<CrimeReport[]>([]);
-  const [divisions, setDivisions] = useState<{ division: string }[]>([]);
-  const [districts, setDistricts] = useState<{ district: string }[]>([]);
-  const [selectedDivision, setSelectedDivision] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [divisions, setDivisions] = useState<any>([]);
+  const [districts, setDistricts] = useState<any>([]);
+  const [selectedDivision, setSelectedDivision] = useState<any>("");
+  const [selectedDistrict, setSelectedDistrict] = useState<any>("");
   const [currentMapStyle, setCurrentMapStyle] = useState("standard");
   const [timeFilter, setTimeFilter] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -99,12 +99,14 @@ const HeatmapPage = () => {
   });
 
   useEffect(() => {
+    const ac = new AbortController();
     if (reportsData?.data) {
       const fetchData = async () => {
         try {
           setLoading(true);
           const divisionsResponse = await fetch(
-            "https://bdapis.com/api/v1.2/divisions"
+            "https://bdapi.vercel.app/api/v.1/division",
+            { signal: ac.signal }
           );
           const divisionsData = await divisionsResponse.json();
 
@@ -168,9 +170,9 @@ const HeatmapPage = () => {
 
       fetchData();
     }
-  }, [reportsData]);
+    return () => ac.abort();
+  }, [reportsData?.data]);
 
-  // Fetch districts when division changes
   useEffect(() => {
     const fetchDistricts = async () => {
       if (!selectedDivision) return;
@@ -178,7 +180,7 @@ const HeatmapPage = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `https://bdapis.com/api/v1.2/division/${selectedDivision}`
+          `https://bdapi.vercel.app/api/v.1/district/${selectedDivision.id}`
         );
         const data = await response.json();
         setDistricts(data.data);
@@ -205,11 +207,10 @@ const HeatmapPage = () => {
 
   // Update the filter logic to handle time filters
   const filteredReports = reports.filter((report) => {
-    // Division filter
     if (
       selectedDivision &&
       selectedDivision !== "all" &&
-      report.division.toLowerCase() !== selectedDivision.toLowerCase()
+      report.division.toLowerCase() !== selectedDivision.name.toLowerCase()
     )
       return false;
 
@@ -254,7 +255,7 @@ const HeatmapPage = () => {
   };
 
   // Handle division selection
-  const handleDivisionChange = (value: string) => {
+  const handleDivisionChange = (value: any) => {
     setSelectedDivision(value);
     setSelectedDistrict("");
 
@@ -263,18 +264,6 @@ const HeatmapPage = () => {
       setMapZoom(7);
       return;
     }
-
-    const selectedDivisionData: any = divisions.find(
-      (div) => div.division.toLowerCase() === value.toLowerCase()
-    );
-
-    if (selectedDivisionData?.coordinates) {
-      const [lat, lng] = selectedDivisionData.coordinates
-        .split(",")
-        .map((coord: string) => parseFloat(coord.trim()));
-      setCurrentMapCenter([lat, lng]);
-      setMapZoom(9);
-    }
   };
 
   // Handle district selection
@@ -282,29 +271,16 @@ const HeatmapPage = () => {
     setSelectedDistrict(value);
 
     if (value === "all") {
-      const selectedDivisionData: any = divisions.find(
-        (div) => div.division.toLowerCase() === selectedDivision.toLowerCase()
+      const selectedDistrictData: any = districts.find(
+        (dist: any) => dist.name.toLowerCase() === value.toLowerCase()
       );
-      if (selectedDivisionData?.coordinates) {
-        const [lat, lng] = selectedDivisionData.coordinates
-          .split(",")
-          .map((coord: string) => parseFloat(coord.trim()));
-        setCurrentMapCenter([lat, lng]);
-        setMapZoom(9);
+      if (selectedDistrictData) {
+        setCurrentMapCenter([
+          selectedDistrictData.lat,
+          selectedDistrictData.lon,
+        ]);
+        setMapZoom(11);
       }
-      return;
-    }
-
-    const selectedDistrictData: any = districts.find(
-      (dist) => dist.district.toLowerCase() === value.toLowerCase()
-    );
-
-    if (selectedDistrictData?.coordinates) {
-      const [lat, lng] = selectedDistrictData.coordinates
-        .split(",")
-        .map((coord: string) => parseFloat(coord.trim()));
-      setCurrentMapCenter([lat, lng]);
-      setMapZoom(11);
     }
   };
 
@@ -418,12 +394,9 @@ const HeatmapPage = () => {
                     content={
                       <>
                         <SelectItem value="all">All Divisions</SelectItem>
-                        {divisions.map((div) => (
-                          <SelectItem
-                            key={div.division}
-                            value={div.division.toLowerCase()}
-                          >
-                            {div.division}
+                        {divisions.map((div: any) => (
+                          <SelectItem key={div.id} value={div}>
+                            {div.name}
                           </SelectItem>
                         ))}
                       </>
@@ -441,12 +414,12 @@ const HeatmapPage = () => {
                     content={
                       <>
                         <SelectItem value="all">All Districts</SelectItem>
-                        {districts.map((dist) => (
+                        {districts.map((dist: any) => (
                           <SelectItem
-                            key={dist.district}
-                            value={dist.district.toLowerCase()}
+                            key={dist.id}
+                            value={dist.name.toLowerCase()}
                           >
-                            {dist.district}
+                            {dist.name}
                           </SelectItem>
                         ))}
                       </>

@@ -48,5 +48,6 @@ export const config = {
     "/settings",
     "/admin/:path*",
     "/hot/reports",
+    "/bookmarked",
   ],
 };

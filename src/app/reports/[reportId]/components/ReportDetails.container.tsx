@@ -15,5 +15,5 @@ export const ReportDetailsContainer = ({ reportId }: Props) => {
 
   if (isLoading) return <ReportDetailsSkeleton />;
 
-  return <ReportDetailsView report={report} user={user} />;
+  return <ReportDetailsView report={report} user={user} relatedReports={[]} />;
 };

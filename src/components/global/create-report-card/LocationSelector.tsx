@@ -26,11 +26,8 @@ const LocationSelector = () => {
           content={
             <>
               {divisions.map((div) => (
-                <SelectItem
-                  key={div.division}
-                  value={div.division.toLowerCase()}
-                >
-                  {div.division}
+                <SelectItem key={div.id} value={div}>
+                  {div.name}
                 </SelectItem>
               ))}
             </>
@@ -41,17 +38,14 @@ const LocationSelector = () => {
         <MapPin className="w-4 h-4 text-primary/70" />
         <SelectComponent
           selectValue="Select District"
-          value={formData.district}
+          value={formData.district.name}
           onValueChange={handleDistrictChange}
           disabled={!formData.division}
           content={
             <>
               {districts.map((dist) => (
-                <SelectItem
-                  key={dist.district}
-                  value={dist.district.toLowerCase()}
-                >
-                  {dist.district}
+                <SelectItem key={dist.id} value={dist}>
+                  {dist.name}
                 </SelectItem>
               ))}
             </>

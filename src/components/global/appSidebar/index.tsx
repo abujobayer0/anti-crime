@@ -1,6 +1,15 @@
 "use client";
 
-import { Bell, Home, Map, User, Shield, Settings, Flame } from "lucide-react";
+import {
+  Bell,
+  Home,
+  Map,
+  User,
+  Shield,
+  Settings,
+  Flame,
+  Bookmark,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -38,7 +47,11 @@ const mainNavigation = [
     title: "Most Discussed",
     url: "/hot/reports",
     icon: Flame,
-    description: "",
+  },
+  {
+    title: "Bookmarked",
+    url: "/bookmarked",
+    icon: Bookmark,
   },
 ];
 

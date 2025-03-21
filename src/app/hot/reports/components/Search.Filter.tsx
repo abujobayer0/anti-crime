@@ -11,6 +11,18 @@ import {
   X,
 } from "lucide-react";
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const SearchFilter = ({
   view,
@@ -25,253 +37,278 @@ const SearchFilter = ({
   uniqueCrimeTypes,
   resetFilters,
 }: any) => {
+  // Count active filters
+  const activeFilterCount = Object.entries(filter).filter(
+    ([key, value]) => value && key !== "sortBy" && key !== "searchQuery"
+  ).length;
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap gap-3 items-center justify-between">
-          {/* View Toggle */}
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setView("grid")}
-              className={`px-4 py-2 rounded-md flex items-center ${
-                view === "grid"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              } transition-colors`}
-            >
-              <Grid size={18} className="mr-1" />
-              Grid
-            </button>
-            <button
-              onClick={() => setView("map")}
-              className={`px-4 py-2 rounded-md flex items-center ${
-                view === "map"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              } transition-colors`}
-            >
-              <Map size={18} className="mr-1" />
-              Map
-            </button>
-          </div>
+    <Card className="mb-6">
+      <CardContent className="p-4">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap gap-3 items-center justify-between">
+            {/* View Toggle */}
+            <div className="flex space-x-2">
+              <Button
+                onClick={() => setView("grid")}
+                variant={view === "grid" ? "default" : "outline"}
+                size="sm"
+                className="flex items-center"
+              >
+                <Grid size={18} className="mr-1" />
+                Grid
+              </Button>
+              <Button
+                onClick={() => setView("map")}
+                variant={view === "map" ? "default" : "outline"}
+                size="sm"
+                className="flex items-center"
+              >
+                <Map size={18} className="mr-1" />
+                Map
+              </Button>
+            </div>
 
-          {/* Search Bar */}
-          <div className="relative flex-grow max-w-md">
-            <Search
-              size={18}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            />
-            <input
-              type="text"
-              value={filter.searchQuery}
-              onChange={(e) =>
-                setFilter({ ...filter, searchQuery: e.target.value })
-              }
-              placeholder="Search reports..."
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Filter Toggle */}
-          <button
-            onClick={() => setIsFilterExpanded(!isFilterExpanded)}
-            className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-          >
-            <Filter size={18} className="mr-2" />
-            Filters
-            {isFilterExpanded ? (
-              <X size={16} className="ml-2" />
-            ) : (
-              <span className="ml-2 text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">
-                {
-                  Object.entries(filter).filter(
-                    ([key, value]) =>
-                      value && key !== "sortBy" && key !== "searchQuery"
-                  ).length
-                }
-              </span>
-            )}
-          </button>
-        </div>
-
-        {/* Expanded Filters */}
-        <AnimatePresence>
-          {isFilterExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-gray-200">
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-500 mb-1">Division</label>
-                  <select
-                    value={filter.division}
-                    onChange={(e) =>
-                      setFilter({
-                        ...filter,
-                        division: e.target.value,
-                        district: "",
-                      })
-                    }
-                    className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm"
-                  >
-                    <option value="">All Divisions</option>
-                    {divisions.map((div: any) => (
-                      <option
-                        key={div.division}
-                        value={div.division.toLowerCase()}
-                      >
-                        {div.division.charAt(0).toUpperCase() +
-                          div.division.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-500 mb-1">District</label>
-                  <select
-                    value={filter.district}
-                    onChange={(e) =>
-                      setFilter({ ...filter, district: e.target.value })
-                    }
-                    className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm"
-                    disabled={!filter.division}
-                  >
-                    <option value="">All Districts</option>
-                    {districts.map((dist: any) => (
-                      <option
-                        key={dist.district}
-                        value={dist.district.toLowerCase()}
-                      >
-                        {dist.district.charAt(0).toUpperCase() +
-                          dist.district.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-500 mb-1">
-                    Crime Type
-                  </label>
-                  <select
-                    value={filter.crimeType}
-                    onChange={(e) =>
-                      setFilter({ ...filter, crimeType: e.target.value })
-                    }
-                    className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm"
-                  >
-                    <option value="">All Types</option>
-                    {uniqueCrimeTypes.map((type: any) => (
-                      <option key={type} value={type}>
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-500 mb-1">
-                    Time Period
-                  </label>
-                  <select
-                    value={filter.timeRange}
-                    onChange={(e) =>
-                      setFilter({ ...filter, timeRange: e.target.value })
-                    }
-                    className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm"
-                  >
-                    <option value="all">All Time</option>
-                    <option value="week">Last 7 Days</option>
-                    <option value="month">Last 30 Days</option>
-                    <option value="quarter">Last 90 Days</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-sm text-gray-500 mb-1">Sort By</label>
-                  <select
-                    value={filter.sortBy}
-                    onChange={(e) =>
-                      setFilter({ ...filter, sortBy: e.target.value })
-                    }
-                    className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm"
-                  >
-                    <option value="algorithmScore">Relevance</option>
-                    <option value="recent">Most Recent</option>
-                    <option value="engagement">Most Engagement</option>
-                    <option value="severity">Severity</option>
-                  </select>
-                </div>
+            {/* Search Bar */}
+            <div className="relative flex-grow max-w-md">
+              <div className="relative">
+                <Search
+                  size={18}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                />
+                <Input
+                  type="text"
+                  value={filter.searchQuery}
+                  onChange={(e) =>
+                    setFilter({ ...filter, searchQuery: e.target.value })
+                  }
+                  placeholder="Search reports..."
+                  className="pl-10"
+                />
               </div>
-              <div className="mt-4 flex justify-end">
-                <button
-                  onClick={resetFilters}
-                  className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-sm transition-colors"
-                >
-                  Reset All Filters
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
 
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center">
-            <MapPin size={16} className="text-gray-500 mr-1" />
-            <p className="text-sm text-gray-700">
-              {filter.division ? (
-                <span className="font-medium">
-                  {filter.division.charAt(0).toUpperCase() +
-                    filter.division.slice(1)}
-                  {filter.district
-                    ? ` › ${
-                        filter.district.charAt(0).toUpperCase() +
-                        filter.district.slice(1)
-                      }`
-                    : ""}
-                </span>
+            {/* Filter Toggle */}
+            <Button
+              onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+              variant="outline"
+              size="sm"
+              className="flex items-center"
+            >
+              <Filter size={18} className="mr-2" />
+              Filters
+              {isFilterExpanded ? (
+                <X size={16} className="ml-2" />
               ) : (
-                "All Locations"
+                activeFilterCount > 0 && (
+                  <Badge variant="default" className="ml-2">
+                    {activeFilterCount}
+                  </Badge>
+                )
               )}
-            </p>
-
-            {filter.timeRange !== "all" && (
-              <>
-                <span className="mx-2 text-gray-300">|</span>
-                <Calendar size={16} className="text-gray-500 mr-1" />
-                <p className="text-sm text-gray-700">
-                  {filter.timeRange === "week"
-                    ? "Last 7 Days"
-                    : filter.timeRange === "month"
-                    ? "Last 30 Days"
-                    : "Last 90 Days"}
-                </p>
-              </>
-            )}
-
-            {filter.crimeType && (
-              <>
-                <span className="mx-2 text-gray-300">|</span>
-                <AlertTriangle size={16} className="text-gray-500 mr-1" />
-                <p className="text-sm text-gray-700">{filter.crimeType}</p>
-              </>
-            )}
+            </Button>
           </div>
-          <div className="flex items-center">
-            <BarChart2 size={16} className="text-gray-500 mr-1" />
-            <p className="text-sm text-gray-700">
-              <span className="font-medium">{filteredReports.length}</span>{" "}
-              reports found
-            </p>
+
+          {/* Expanded Filters */}
+          <AnimatePresence>
+            {isFilterExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <Separator className="my-4" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-sm text-gray-500">Division</label>
+                    <Select
+                      value={filter.division}
+                      onValueChange={(value) =>
+                        setFilter({
+                          ...filter,
+                          division: value,
+                          district: "",
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Divisions" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Divisions</SelectItem>
+                        {divisions.map((div: any) => (
+                          <SelectItem
+                            key={div.id}
+                            value={div.name.toLowerCase()}
+                          >
+                            {div.name.charAt(0).toUpperCase() +
+                              div.name.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-sm text-gray-500">District</label>
+                    <Select
+                      value={filter.district}
+                      onValueChange={(value) =>
+                        setFilter({ ...filter, district: value })
+                      }
+                      disabled={!filter.division}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Districts" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Districts</SelectItem>
+                        {districts.map((dist: any) => (
+                          <SelectItem
+                            key={dist.district}
+                            value={dist.district.toLowerCase()}
+                          >
+                            {dist.district.charAt(0).toUpperCase() +
+                              dist.district.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-sm text-gray-500">Crime Type</label>
+                    <Select
+                      value={filter.crimeType}
+                      onValueChange={(value) =>
+                        setFilter({ ...filter, crimeType: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Types" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        {uniqueCrimeTypes.map((type: any) => (
+                          <SelectItem key={type} value={type}>
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-sm text-gray-500">Time Period</label>
+                    <Select
+                      value={filter.timeRange}
+                      onValueChange={(value) =>
+                        setFilter({ ...filter, timeRange: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Time</SelectItem>
+                        <SelectItem value="week">Last 7 Days</SelectItem>
+                        <SelectItem value="month">Last 30 Days</SelectItem>
+                        <SelectItem value="quarter">Last 90 Days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-sm text-gray-500">Sort By</label>
+                    <Select
+                      value={filter.sortBy}
+                      onValueChange={(value) =>
+                        setFilter({ ...filter, sortBy: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Relevance" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="algorithmScore">
+                          Relevance
+                        </SelectItem>
+                        <SelectItem value="recent">Most Recent</SelectItem>
+                        <SelectItem value="engagement">
+                          Most Engagement
+                        </SelectItem>
+                        <SelectItem value="severity">Severity</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <Button onClick={resetFilters} variant="outline" size="sm">
+                    Reset All Filters
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex flex-wrap items-center justify-between gap-y-2 pt-2">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <div className="flex items-center">
+                <MapPin size={16} className="text-gray-500 mr-1" />
+                <p className="text-sm text-gray-700">
+                  {filter.division ? (
+                    <span className="font-medium">
+                      {filter.division.charAt(0).toUpperCase() +
+                        filter.division.slice(1)}
+                      {filter.district
+                        ? ` › ${
+                            filter.district.charAt(0).toUpperCase() +
+                            filter.district.slice(1)
+                          }`
+                        : ""}
+                    </span>
+                  ) : (
+                    "All Locations"
+                  )}
+                </p>
+              </div>
+
+              {filter.timeRange !== "all" && (
+                <div className="flex items-center">
+                  <Calendar size={16} className="text-gray-500 mr-1" />
+                  <p className="text-sm text-gray-700">
+                    {filter.timeRange === "week"
+                      ? "Last 7 Days"
+                      : filter.timeRange === "month"
+                      ? "Last 30 Days"
+                      : "Last 90 Days"}
+                  </p>
+                </div>
+              )}
+
+              {filter.crimeType && (
+                <div className="flex items-center">
+                  <AlertTriangle size={16} className="text-gray-500 mr-1" />
+                  <p className="text-sm text-gray-700">
+                    {filter.crimeType.charAt(0).toUpperCase() +
+                      filter.crimeType.slice(1)}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center">
+              <BarChart2 size={16} className="text-gray-500 mr-1" />
+              <p className="text-sm text-gray-700">
+                <span className="font-medium">{filteredReports.length}</span>{" "}
+                reports found
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
