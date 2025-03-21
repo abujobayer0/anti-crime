@@ -19,6 +19,7 @@ const LoginPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const { login } = useAuth();
@@ -33,13 +34,31 @@ const LoginPage = () => {
     }
   };
 
+  const autofillUser = () => {
+    setValue("email", "abu@gmail.com");
+    setValue("password", "123456");
+  };
+
+  const autofillAdmin = () => {
+    setValue("email", "zubayer.munna.dev@gmail.com");
+    setValue("password", "Admin123@");
+  };
+
   return (
     <AuthenticationPageBody
       title="Welcome back"
       subtitle="Enter your credentials to access your account"
       form={
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Email Input */}
+          <div className="flex space-x-2">
+            <Button type="button" onClick={autofillUser}>
+              Autofill User
+            </Button>
+            <Button type="button" onClick={autofillAdmin}>
+              Autofill Admin
+            </Button>
+          </div>
+
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">Email</Label>
             <Input
