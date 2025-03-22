@@ -15,7 +15,7 @@ const NotificationsPage = () => {
 
   useEffect(() => {
     if (data) {
-      setNotifications(data.data);
+      setNotifications(data.data.notifications);
     }
   }, [data]);
 

@@ -12,7 +12,7 @@ export function useUnreadNotificationCount() {
     if (isLoading) return;
 
     if (data) {
-      const unreadNotifications = data.data.filter(
+      const unreadNotifications = data.data.notifications.filter(
         (notification: Notification) => !notification.isRead
       );
 
