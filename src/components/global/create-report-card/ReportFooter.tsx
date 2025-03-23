@@ -8,7 +8,7 @@ const ReportFooter = () => {
   const { formData, handleSubmit, handleImageChange } = useReportFormContext();
 
   return (
-    <div className="flex items-center justify-between pt-4 mt-2 border-t border-border/10 p-5">
+    <div className="flex items-center justify-between pt- border-t border-border/10 p-5">
       <div className="flex gap-1">
         <Button
           variant="ghost"

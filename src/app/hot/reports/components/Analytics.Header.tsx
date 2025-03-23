@@ -11,7 +11,7 @@ const AnalyticsHeader = ({ statistics }: { statistics: Statistics }) => {
       className="mb-8"
     >
       <h1 className="text-3xl font-bold text-gray-800 mb-2">
-        Crime Reports Dashboard
+        Most Discussed Crimes Statistics
       </h1>
       <p className="text-gray-600 mb-4">
         Explore incident reports across Bangladesh, powered by community
